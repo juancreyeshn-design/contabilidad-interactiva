@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 3 — Ingresos y Gastos | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --ingreso:    #1A8A4A;
+  --ingreso-lt: #E4F9ED;
+  --gasto:      #C0392B;
+  --gasto-lt:   #FDECEA;
+  --patrim:     #0D6B8C;
+  --patrim-lt:  #E0F4FA;
+  --gold:       #F4A811;
+  --dark:       #1B2638;
+  --bg:         #F5F7FA;
+  --card-r:     16px;
+  --shadow:     0 6px 24px rgba(0,0,0,0.11);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; overflow-x: hidden; }
+
+/* ── HEADER ── */
+header {
+  background: var(--dark); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 16px;
+  border-bottom: 4px solid var(--gold);
+}
+.app-badge {
+  background: var(--gold); color: var(--dark);
+  font-weight: 900; font-size: 0.75rem; padding: 5px 13px;
+  border-radius: 30px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+}
+header h1 { font-size: 1.4rem; font-weight: 900; }
+header p  { font-size: 0.85rem; color: #b0b8c4; margin-top: 2px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; background: #fff;
+  border-bottom: 2px solid #e0e4ea; padding: 0 20px; gap: 4px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 16px 22px; border: none; background: none;
+  font-family: 'Nunito', sans-serif; font-size: 0.97rem; font-weight: 700;
+  color: #6b7684; cursor: pointer; border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+}
+.tab-btn.active { color: var(--dark); border-bottom-color: var(--gold); }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 24px 18px 60px; max-width: 1080px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* ══════════════════════════════════════
+   TAB 1 — CONCEPTO
+══════════════════════════════════════ */
+.concept-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+}
+@media(max-width:640px){ .concept-grid{ grid-template-columns:1fr; } }
+
+.concept-card {
+  border-radius: var(--card-r); padding: 26px 24px;
+  box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px;
+}
+.concept-card.ingreso { background: var(--ingreso); color: #fff; }
+.concept-card.gasto   { background: var(--gasto);   color: #fff; }
+.concept-card .cc-icon { font-size: 2.8rem; }
+.concept-card h3 { font-size: 1.35rem; font-weight: 900; }
+.concept-card p  { font-size: 0.92rem; opacity: .88; line-height: 1.55; }
+.concept-card .cc-arrow {
+  font-size: 2rem; font-weight: 900;
+  align-self: flex-end; opacity: .8;
+}
+
+.formula-strip {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 24px;
+  text-align: center; margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.formula-strip .fs-eq {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.55rem; letter-spacing: .02em;
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; flex-wrap: wrap;
+}
+.fs-eq .fi  { color: #a8efc1; }
+.fs-eq .fg  { color: #f5b3ae; }
+.fs-eq .fu  { color: var(--gold); font-size: 1.7rem; }
+.formula-strip p { font-size: 0.88rem; color: #b0b8c4; margin-top: 10px; }
+
+.flow-boxes {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap; margin-bottom: 24px;
+}
+.flow-box {
+  border-radius: 14px; padding: 18px 22px; text-align: center;
+  font-weight: 700; font-size: 0.95rem; min-width: 130px;
+  box-shadow: var(--shadow);
+}
+.flow-box.i { background: var(--ingreso-lt); color: var(--ingreso); }
+.flow-box.g { background: var(--gasto-lt);   color: var(--gasto); }
+.flow-box.p { background: var(--patrim-lt);  color: var(--patrim); }
+.flow-box.u { background: #fff8e0; color: #a07000; }
+.flow-arrow { font-size: 1.6rem; color: #c0c8d4; padding: 0 6px; }
+.flow-box .fb-icon { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+.flow-box small { display: block; font-size: 0.78rem; opacity: .75; margin-top: 2px; }
+
+.examples-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+@media(max-width:640px){ .examples-row{ grid-template-columns:1fr; } }
+
+.ex-block { background: #fff; border-radius: var(--card-r); padding: 20px; box-shadow: var(--shadow); }
+.ex-block h4 { font-size: 0.82rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+.ex-block h4.ing { color: var(--ingreso); }
+.ex-block h4.gas { color: var(--gasto); }
+.ex-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #edf0f4; font-size: 0.93rem; }
+.ex-item:last-child { border-bottom: none; }
+.ex-item .ei-amount { font-weight: 900; margin-left: auto; white-space: nowrap; }
+.ex-item .ei-amount.ing { color: var(--ingreso); }
+.ex-item .ei-amount.gas { color: var(--gasto); }
+
+/* ══════════════════════════════════════
+   TAB 2 — SIMULADOR
+══════════════════════════════════════ */
+.sim-layout {
+  display: grid; grid-template-columns: 260px 1fr; gap: 20px;
+}
+@media(max-width:780px){ .sim-layout{ grid-template-columns:1fr; } }
+
+/* Termómetro */
+.thermo-panel {
+  background: #fff; border-radius: var(--card-r);
+  padding: 24px 18px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  position: sticky; top: 16px; height: fit-content;
+}
+.thermo-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing:.08em; color:#6b7684; }
+.thermo-wrap {
+  position: relative; width: 72px; height: 300px;
+  background: #edf0f4; border-radius: 40px;
+  overflow: hidden; box-shadow: inset 0 4px 12px rgba(0,0,0,0.1);
+}
+.thermo-fill {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  border-radius: 40px;
+  transition: height .55s cubic-bezier(.4,0,.2,1), background .55s;
+  height: 50%;
+  background: linear-gradient(180deg, #23B560, #1A8A4A);
+}
+.thermo-fill.negative {
+  background: linear-gradient(180deg, #E05444, #C0392B);
+}
+.thermo-mid {
+  position: absolute; left: 0; right: 0;
+  top: 50%; height: 2px; background: rgba(0,0,0,0.15);
+}
+.thermo-label-top {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  font-size: 0.7rem; font-weight: 700; color: #b0b8c4; white-space: nowrap;
+}
+.thermo-label-mid {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 0.68rem; font-weight: 700; color: #9aa3ad; white-space: nowrap;
+  margin-top: -10px;
+}
+
+.patrim-amount {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.55rem; font-weight: 700; text-align: center;
+  transition: color .4s;
+}
+.patrim-amount.up   { color: var(--ingreso); }
+.patrim-amount.down { color: var(--gasto); }
+.patrim-amount.zero { color: var(--patrim); }
+
+.delta-badge {
+  font-size: 1rem; font-weight: 900; padding: 5px 14px;
+  border-radius: 30px; text-align: center;
+  opacity: 0; transition: opacity .3s;
+  min-width: 100px;
+}
+.delta-badge.show { opacity: 1; }
+.delta-badge.pos  { background: var(--ingreso-lt); color: var(--ingreso); }
+.delta-badge.neg  { background: var(--gasto-lt);   color: var(--gasto); }
+
+.patrim-label { font-size: 0.82rem; color: #6b7684; text-align: center; }
+
+.reset-btn-small {
+  width: 100%; padding: 11px; border-radius: 10px;
+  background: var(--bg); border: 2px solid #dce0e8;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
+  font-size: 0.88rem; cursor: pointer; color: #6b7684;
+  transition: background .2s;
+}
+.reset-btn-small:hover { background: #e0e4ea; }
+
+/* Operations panel */
+.ops-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.ops-section-title {
+  font-size: 0.82rem; text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+}
+.ops-section-title.ing { color: var(--ingreso); }
+.ops-section-title.gas { color: var(--gasto); }
+
+.op-cards { display: flex; flex-direction: column; gap: 10px; }
+
+.op-card {
+  display: flex; align-items: center; gap: 14px;
+  border-radius: 14px; padding: 16px 18px;
+  cursor: pointer; user-select: none;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  border: none; width: 100%; text-align: left; font-family: 'Nunito', sans-serif;
+}
+.op-card:hover  { transform: translateX(4px) scale(1.01); box-shadow: 0 6px 20px rgba(0,0,0,0.14); }
+.op-card:active { transform: scale(.98); }
+.op-card.ingreso { background: var(--ingreso-lt); }
+.op-card.gasto   { background: var(--gasto-lt); }
+.op-card .oc-icon   { font-size: 1.8rem; flex-shrink: 0; }
+.op-card .oc-text   { flex: 1; }
+.op-card .oc-name   { font-size: 1rem; font-weight: 700; display: block; color: var(--dark); }
+.op-card .oc-detail { font-size: 0.82rem; color: #6b7684; }
+.op-card .oc-amount {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.05rem; font-weight: 700; white-space: nowrap;
+}
+.op-card.ingreso .oc-amount { color: var(--ingreso); }
+.op-card.gasto   .oc-amount { color: var(--gasto); }
+.op-card .oc-badge {
+  font-size: 0.72rem; font-weight: 700; padding: 3px 9px;
+  border-radius: 30px; white-space: nowrap;
+}
+.op-card.ingreso .oc-badge { background: #a8efc1; color: var(--ingreso); }
+.op-card.gasto   .oc-badge { background: #f5b3ae; color: var(--gasto); }
+
+/* Log */
+.log-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing:.08em; color:#9aa3ad; margin-bottom: 8px; }
+.log-scroll { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.log-item {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border-radius: 10px; padding: 9px 13px;
+  font-size: 0.88rem; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  animation: slideIn .2s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:none;} }
+.log-item .li-icon { font-size: 1.1rem; }
+.log-item .li-name { flex: 1; font-weight: 700; }
+.log-item .li-amt  { font-family:'Source Code Pro',monospace; font-weight:700; font-size:.92rem; }
+.log-item.ing .li-amt { color: var(--ingreso); }
+.log-item.gas .li-amt { color: var(--gasto); }
+
+/* Summary bar */
+.summary-bar {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow);
+}
+.sb-item { text-align: center; }
+.sb-item .sb-val {
+  font-family:'Source Code Pro',monospace;
+  font-size: 1.3rem; font-weight: 700; display: block;
+}
+.sb-item .sb-val.ing { color: #a8efc1; }
+.sb-item .sb-val.gas { color: #f5b3ae; }
+.sb-item .sb-val.util { color: var(--gold); }
+.sb-item .sb-lbl { font-size: 0.78rem; color: #b0b8c4; }
+.sb-divider { width: 1px; height: 40px; background: rgba(255,255,255,.15); }
+
+/* ══════════════════════════════════════
+   TAB 3 — MINI-JUEGO
+══════════════════════════════════════ */
+.game-intro {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 22px 26px;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 22px;
+}
+.game-intro .gi-icon { font-size: 2.2rem; }
+.game-intro h3 { font-size: 1.1rem; font-weight: 900; }
+.game-intro p  { font-size: 0.87rem; color: #b0b8c4; margin-top: 3px; }
+
+.game-progress { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.prog-bar-wrap { flex:1; background:#e0e4ea; border-radius:99px; height:10px; overflow:hidden; }
+.prog-bar { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--ingreso),var(--patrim)); transition:width .4s ease; width:0%; }
+.prog-label { font-size:.9rem; font-weight:700; color:#6b7684; white-space:nowrap; }
+
+.gj-layout { display: grid; grid-template-columns: 1fr 220px; gap: 20px; }
+@media(max-width:700px){ .gj-layout{ grid-template-columns:1fr; } }
+
+/* flip card */
+.flip-card-area { display:flex; flex-direction:column; align-items:center; gap:18px; }
+.flip-card {
+  width: 100%; max-width: 420px;
+  border-radius: 20px; padding: 36px 28px;
+  text-align: center; box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  background: var(--dark); color: #fff;
+  animation: cardIn .3s ease;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.96);}to{opacity:1;transform:none;}}
+.flip-card .fc-emoji  { font-size: 3.2rem; display:block; margin-bottom:10px; }
+.flip-card .fc-name   { font-size: 1.45rem; font-weight: 900; margin-bottom: 6px; }
+.flip-card .fc-amount {
+  font-family:'Source Code Pro',monospace;
+  font-size: 1.5rem; font-weight: 700; color: var(--gold);
+}
+.flip-card .fc-hint   { font-size: 0.85rem; color: #b0b8c4; margin-top: 8px; }
+
+.classify-btns { display:flex; gap:14px; width:100%; max-width:420px; }
+.cls-btn {
+  flex: 1; padding: 18px 10px; border-radius: 14px; border: none;
+  cursor: pointer; font-family:'Nunito',sans-serif; font-size:1.05rem; font-weight:900;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: var(--shadow);
+}
+.cls-btn:hover  { transform: translateY(-3px) scale(1.03); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
+.cls-btn:active { transform: scale(.97); }
+.cls-btn.ing { background: var(--ingreso); color: #fff; }
+.cls-btn.gas { background: var(--gasto);   color: #fff; }
+.cls-btn .cb-icon  { font-size: 1.8rem; }
+.cls-btn .cb-label { font-size: 0.78rem; opacity:.85; }
+
+.gj-feedback {
+  padding: 14px 18px; border-radius: 12px; font-size:1rem; font-weight:700;
+  text-align:center; display:none; animation: popIn .25s ease; margin-top: 4px;
+  width:100%; max-width:420px;
+}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gj-feedback.correct   { background:var(--ingreso-lt); color:var(--ingreso); display:block; }
+.gj-feedback.incorrect { background:var(--gasto-lt);   color:var(--gasto);   display:block; }
+.gj-feedback.hidden    { display:none; }
+
+/* Mini thermo sidebar */
+.mini-thermo-panel {
+  background:#fff; border-radius:var(--card-r); padding:20px 16px;
+  box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; gap:12px;
+  height:fit-content; position:sticky; top:16px;
+}
+.mini-thermo-title { font-size:0.78rem; text-transform:uppercase; letter-spacing:.08em; color:#6b7684; }
+.mini-thermo-wrap {
+  width:52px; height:200px; background:#edf0f4; border-radius:30px;
+  overflow:hidden; position:relative; box-shadow:inset 0 3px 8px rgba(0,0,0,.1);
+}
+.mini-thermo-fill {
+  position:absolute; bottom:0; left:0; right:0;
+  border-radius:30px; transition:height .5s cubic-bezier(.4,0,.2,1), background .5s;
+  height:50%; background:linear-gradient(180deg,#23B560,#1A8A4A);
+}
+.mini-thermo-fill.negative { background:linear-gradient(180deg,#E05444,#C0392B); }
+.mini-patrim {
+  font-family:'Source Code Pro',monospace; font-size:1.05rem; font-weight:700;
+  text-align:center; transition:color .4s;
+}
+.mini-patrim.up   { color:var(--ingreso); }
+.mini-patrim.down { color:var(--gasto); }
+.mini-patrim.zero { color:var(--patrim); }
+.mini-score { font-size:0.82rem; color:#6b7684; text-align:center; }
+.mini-score strong { display:block; font-size:1.3rem; color:var(--dark); }
+
+/* Game result */
+.game-result {
+  display:none; background:#fff; border-radius:var(--card-r);
+  padding:36px; text-align:center; box-shadow:var(--shadow);
+  position:relative; overflow:hidden;
+}
+.confetti-bg {
+  position:absolute; inset:0; pointer-events:none; overflow:hidden;
+}
+.confetti-piece {
+  position:absolute; width:10px; height:10px; border-radius:2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%  { transform: translateY(-20px) rotate(0deg);   opacity:1; }
+  100%{ transform: translateY(400px) rotate(720deg); opacity:0; }
+}
+.result-icon  { font-size:3.5rem; margin-bottom:10px; }
+.result-title { font-size:1.6rem; font-weight:900; margin-bottom:8px; }
+.result-score {
+  font-size:4rem; font-weight:900; line-height:1;
+  margin-bottom:4px;
+}
+.result-score.util { color:var(--ingreso); }
+.result-score.loss { color:var(--gasto); }
+.result-msg   { font-size:1rem; color:#3d4a5c; margin-bottom:20px; }
+
+.result-cards {
+  display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:24px;
+}
+.rc-card {
+  background:var(--bg); border-radius:12px; padding:14px 22px; min-width:110px;
+}
+.rc-card strong { display:block; font-size:1.5rem; font-weight:900; margin-bottom:2px; }
+.rc-card span   { font-size:0.82rem; color:#6b7684; }
+.rc-card.ing strong { color:var(--ingreso); }
+.rc-card.gas strong { color:var(--gasto); }
+.rc-card.acc strong { color:var(--patrim); }
+
+.edr-box {
+  background:var(--dark); color:#fff; border-radius:14px; padding:20px 24px;
+  text-align:left; margin-bottom:22px; max-width:400px; margin-left:auto; margin-right:auto;
+}
+.edr-box h4 { font-size:0.82rem; text-transform:uppercase; letter-spacing:.08em; color:#b0b8c4; margin-bottom:12px; }
+.edr-row {
+  display:flex; justify-content:space-between; padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.1); font-size:.95rem;
+}
+.edr-row:last-child { border-bottom:none; padding-top:10px; font-size:1.05rem; font-weight:900; }
+.edr-row.total { border-top:2px solid rgba(255,255,255,.25); margin-top:4px; }
+.edr-row .er-ing  { color:#a8efc1; }
+.edr-row .er-gas  { color:#f5b3ae; }
+.edr-row .er-util { color:var(--gold); }
+.edr-row .er-loss { color:#f5b3ae; }
+
+.retry-btn {
+  padding:14px 40px; background:var(--dark); color:#fff; border:none;
+  border-radius:12px; font-family:'Nunito',sans-serif;
+  font-size:1rem; font-weight:700; cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.retry-btn:hover { background:#2a3a54; transform:scale(1.03); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 3</div>
+    <h1>Módulo 3: Ingresos y Gastos</h1>
+    <p>¿Cómo afectan al Patrimonio? — Ferretería "El Maestro", San Pedro Sula</p>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">📘 Concepto</button>
+  <button class="tab-btn" onclick="showTab('simulador',this)">⚡ Simulador</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: CONCEPTO ══════════════ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="concept-grid">
+    <div class="concept-card ingreso">
+      <span class="cc-icon">📈</span>
+      <h3>INGRESOS</h3>
+      <p>Aumentan el Patrimonio. Son los recursos que la empresa gana por su actividad: ventas, servicios prestados, alquileres cobrados.</p>
+      <span class="cc-arrow">▲ Patrimonio sube</span>
+    </div>
+    <div class="concept-card gasto">
+      <span class="cc-icon">📉</span>
+      <h3>GASTOS</h3>
+      <p>Disminuyen el Patrimonio. Son los recursos que la empresa consume para operar: sueldos, servicios públicos, alquileres pagados, suministros.</p>
+      <span class="cc-arrow">▼ Patrimonio baja</span>
+    </div>
+  </div>
+
+  <div class="formula-strip">
+    <div class="fs-eq">
+      <span class="fi">INGRESOS</span>
+      <span style="color:#6b7684">−</span>
+      <span class="fg">GASTOS</span>
+      <span style="color:#6b7684">=</span>
+      <span class="fu">UTILIDAD / PÉRDIDA</span>
+    </div>
+    <p>La Utilidad del período aumenta el Patrimonio · La Pérdida lo disminuye · Base de la NIC 1 / NIIF para PYMES Sección 5</p>
+  </div>
+
+  <div class="flow-boxes">
+    <div class="flow-box i">
+      <span class="fb-icon">📈</span>
+      Ingresos
+      <small>L 9,300</small>
+    </div>
+    <span class="flow-arrow">−</span>
+    <div class="flow-box g">
+      <span class="fb-icon">📉</span>
+      Gastos
+      <small>L 6,400</small>
+    </div>
+    <span class="flow-arrow">=</span>
+    <div class="flow-box u">
+      <span class="fb-icon">💰</span>
+      Utilidad
+      <small>L 2,900</small>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box p">
+      <span class="fb-icon">📊</span>
+      Patrimonio ▲
+      <small>Aumenta</small>
+    </div>
+  </div>
+
+  <div class="examples-row">
+    <div class="ex-block">
+      <h4 class="ing">📈 Ingresos — Ferretería "El Maestro"</h4>
+      <div class="ex-item"><span>🔩</span> Venta de productos<span class="ei-amount ing">+ L 5,000</span></div>
+      <div class="ex-item"><span>🔧</span> Servicios de reparación<span class="ei-amount ing">+ L 2,500</span></div>
+      <div class="ex-item"><span>🏠</span> Alquiler de bodega cobrado<span class="ei-amount ing">+ L 1,800</span></div>
+      <div class="ex-item" style="border-top:2px solid var(--ingreso-lt); margin-top:4px; padding-top:10px;">
+        <span style="font-weight:900;">Total Ingresos</span>
+        <span class="ei-amount ing" style="font-size:1.1rem;">L 9,300</span>
+      </div>
+    </div>
+    <div class="ex-block">
+      <h4 class="gas">📉 Gastos — Ferretería "El Maestro"</h4>
+      <div class="ex-item"><span>👷</span> Pago de sueldos<span class="ei-amount gas">− L 3,000</span></div>
+      <div class="ex-item"><span>💡</span> Factura ENEE (luz)<span class="ei-amount gas">− L 800</span></div>
+      <div class="ex-item"><span>🏪</span> Alquiler local pagado<span class="ei-amount gas">− L 2,000</span></div>
+      <div class="ex-item"><span>🛒</span> Compra de suministros<span class="ei-amount gas">− L 600</span></div>
+      <div class="ex-item" style="border-top:2px solid var(--gasto-lt); margin-top:4px; padding-top:10px;">
+        <span style="font-weight:900;">Total Gastos</span>
+        <span class="ei-amount gas" style="font-size:1.1rem;">L 6,400</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2: SIMULADOR ══════════════ -->
+<div id="tab-simulador" class="section">
+
+  <!-- Summary bar -->
+  <div class="summary-bar" id="summary-bar">
+    <div class="sb-item">
+      <span class="sb-val ing" id="sb-ing">L 0</span>
+      <span class="sb-lbl">📈 Total Ingresos</span>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-item">
+      <span class="sb-val gas" id="sb-gas">L 0</span>
+      <span class="sb-lbl">📉 Total Gastos</span>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-item">
+      <span class="sb-val util" id="sb-util">L 0</span>
+      <span class="sb-lbl">💰 Resultado</span>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-item">
+      <span class="sb-val" id="sb-pat" style="color:#fff;">L 50,000</span>
+      <span class="sb-lbl">📊 Patrimonio</span>
+    </div>
+  </div>
+
+  <div style="margin: 18px 0;"></div>
+
+  <div class="sim-layout">
+
+    <!-- TERMÓMETRO -->
+    <div class="thermo-panel">
+      <div class="thermo-title">Patrimonio</div>
+      <div class="thermo-wrap" id="thermo-wrap">
+        <div class="thermo-fill" id="thermo-fill"></div>
+        <div class="thermo-mid"></div>
+        <div class="thermo-label-top">Máx</div>
+        <div class="thermo-label-mid">Base</div>
+      </div>
+      <div class="patrim-amount zero" id="patrim-amount">L 50,000</div>
+      <div class="delta-badge" id="delta-badge"></div>
+      <div class="patrim-label">Capital inicial: L 50,000</div>
+      <button class="reset-btn-small" onclick="resetSim()">🔄 Reiniciar</button>
+
+      <div style="margin-top:8px; width:100%;">
+        <div class="log-title">Operaciones realizadas</div>
+        <div class="log-scroll" id="sim-log"></div>
+      </div>
+    </div>
+
+    <!-- OPERACIONES -->
+    <div class="ops-panel">
+
+      <div>
+        <div class="ops-section-title ing">📈 Toca para registrar un Ingreso</div>
+        <div class="op-cards">
+          <button class="op-card ingreso" onclick="applyOp(5000,'ingreso','🔩','Venta de productos','Clientes de ferrería')">
+            <span class="oc-icon">🔩</span>
+            <div class="oc-text">
+              <span class="oc-name">Venta de productos</span>
+              <span class="oc-detail">Clientes de ferretería — pago en caja</span>
+            </div>
+            <span class="oc-amount">+ L 5,000</span>
+            <span class="oc-badge">Ingreso</span>
+          </button>
+          <button class="op-card ingreso" onclick="applyOp(2500,'ingreso','🔧','Servicios de reparación','Instalación eléctrica y plomería')">
+            <span class="oc-icon">🔧</span>
+            <div class="oc-text">
+              <span class="oc-name">Servicios prestados</span>
+              <span class="oc-detail">Instalación eléctrica y plomería</span>
+            </div>
+            <span class="oc-amount">+ L 2,500</span>
+            <span class="oc-badge">Ingreso</span>
+          </button>
+          <button class="op-card ingreso" onclick="applyOp(1800,'ingreso','🏠','Alquiler cobrado','Bodega trasera arrendada a tercero')">
+            <span class="oc-icon">🏠</span>
+            <div class="oc-text">
+              <span class="oc-name">Alquiler de bodega cobrado</span>
+              <span class="oc-detail">Bodega trasera arrendada a tercero</span>
+            </div>
+            <span class="oc-amount">+ L 1,800</span>
+            <span class="oc-badge">Ingreso</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="ops-section-title gas">📉 Toca para registrar un Gasto</div>
+        <div class="op-cards">
+          <button class="op-card gasto" onclick="applyOp(-3000,'gasto','👷','Pago de sueldos','2 empleados — nómina quincenal')">
+            <span class="oc-icon">👷</span>
+            <div class="oc-text">
+              <span class="oc-name">Pago de sueldos</span>
+              <span class="oc-detail">2 empleados — nómina quincenal</span>
+            </div>
+            <span class="oc-amount">− L 3,000</span>
+            <span class="oc-badge">Gasto</span>
+          </button>
+          <button class="op-card gasto" onclick="applyOp(-800,'gasto','💡','Factura ENEE','Electricidad del local comercial')">
+            <span class="oc-icon">💡</span>
+            <div class="oc-text">
+              <span class="oc-name">Factura de luz ENEE</span>
+              <span class="oc-detail">Electricidad del local comercial</span>
+            </div>
+            <span class="oc-amount">− L 800</span>
+            <span class="oc-badge">Gasto</span>
+          </button>
+          <button class="op-card gasto" onclick="applyOp(-2000,'gasto','🏪','Alquiler pagado','Local en Barrio Guamilito, SPS')">
+            <span class="oc-icon">🏪</span>
+            <div class="oc-text">
+              <span class="oc-name">Alquiler del local pagado</span>
+              <span class="oc-detail">Local en Barrio Guamilito, SPS</span>
+            </div>
+            <span class="oc-amount">− L 2,000</span>
+            <span class="oc-badge">Gasto</span>
+          </button>
+          <button class="op-card gasto" onclick="applyOp(-600,'gasto','🛒','Compra de suministros','Materiales de oficina y empaque')">
+            <span class="oc-icon">🛒</span>
+            <div class="oc-text">
+              <span class="oc-name">Compra de suministros</span>
+              <span class="oc-detail">Materiales de oficina y empaque</span>
+            </div>
+            <span class="oc-amount">− L 600</span>
+            <span class="oc-badge">Gasto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+
+  <div class="game-intro">
+    <div class="gi-icon">🎯</div>
+    <div>
+      <h3>Clasifica: ¿Ingreso o Gasto? Observa el impacto en el Patrimonio</h3>
+      <p>Cada acierto acumula en el Patrimonio. Al final verás el Estado de Resultados del período.</p>
+    </div>
+  </div>
+
+  <div class="game-progress">
+    <div class="prog-bar-wrap"><div class="prog-bar" id="gj-prog-bar"></div></div>
+    <div class="prog-label" id="gj-prog-label">0 / 10</div>
+  </div>
+
+  <div id="gj-area">
+    <div class="gj-layout">
+      <div class="flip-card-area">
+        <div class="flip-card" id="gj-card">
+          <span class="fc-emoji" id="gj-emoji">❓</span>
+          <div class="fc-name"   id="gj-name">Cargando...</div>
+          <div class="fc-amount" id="gj-amount"></div>
+          <div class="fc-hint"   id="gj-hint"></div>
+        </div>
+        <div class="classify-btns">
+          <button class="cls-btn ing" onclick="gjClassify('ingreso')">
+            <span class="cb-icon">📈</span>
+            INGRESO
+            <span class="cb-label">Aumenta patrimonio</span>
+          </button>
+          <button class="cls-btn gas" onclick="gjClassify('gasto')">
+            <span class="cb-icon">📉</span>
+            GASTO
+            <span class="cb-label">Disminuye patrimonio</span>
+          </button>
+        </div>
+        <div class="gj-feedback hidden" id="gj-feedback"></div>
+      </div>
+
+      <!-- Mini termómetro -->
+      <div class="mini-thermo-panel">
+        <div class="mini-thermo-title">Patrimonio</div>
+        <div class="mini-thermo-wrap">
+          <div class="mini-thermo-fill" id="gj-thermo"></div>
+        </div>
+        <div class="mini-patrim zero" id="gj-patrim-amt">L 50,000</div>
+        <div class="mini-score">
+          Aciertos<strong id="gj-score">0</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="game-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="result-icon" id="r-icon">🏆</div>
+    <div class="result-title" id="r-title">¡Período finalizado!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg"   id="r-msg"></div>
+    <div class="result-cards" id="r-cards"></div>
+    <div class="edr-box" id="r-edr">
+      <h4>📊 Estado de Resultados del Período</h4>
+    </div>
+    <button class="retry-btn" onclick="startGame()">🔄 Nuevo período</button>
+  </div>
+</div><!-- /tab juego -->
+
+<script>
+// ─── TABS ───
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── SIMULATOR ───
+const BASE_PATRIM = 50000;
+const MAX_DELTA   = 15000; // max swing for thermometer scale
+
+let simPatrim = BASE_PATRIM;
+let simIng = 0, simGas = 0;
+
+function fmt(n) {
+  return 'L ' + Math.abs(n).toLocaleString('es-HN', {minimumFractionDigits:0});
+}
+
+function updateThermo(patrim, delta) {
+  const ratio = Math.min(Math.max((patrim - BASE_PATRIM) / MAX_DELTA, -1), 1);
+  const pct   = 50 + ratio * 50; // 0–100%
+  const fill  = document.getElementById('thermo-fill');
+  fill.style.height = pct + '%';
+  fill.className    = 'thermo-fill' + (patrim < BASE_PATRIM ? ' negative' : '');
+
+  const amtEl = document.getElementById('patrim-amount');
+  amtEl.textContent = fmt(patrim);
+  amtEl.className   = 'patrim-amount ' + (patrim > BASE_PATRIM ? 'up' : patrim < BASE_PATRIM ? 'down' : 'zero');
+
+  if (delta !== 0) {
+    const badge = document.getElementById('delta-badge');
+    badge.textContent  = (delta > 0 ? '▲ +' : '▼ ') + fmt(delta);
+    badge.className    = 'delta-badge show ' + (delta > 0 ? 'pos' : 'neg');
+    setTimeout(() => badge.className = 'delta-badge', 1800);
+  }
+
+  // summary bar
+  const util = simIng - simGas;
+  document.getElementById('sb-ing').textContent  = fmt(simIng);
+  document.getElementById('sb-gas').textContent  = fmt(simGas);
+  document.getElementById('sb-util').textContent = (util >= 0 ? '+ ' : '− ') + fmt(util);
+  document.getElementById('sb-util').style.color = util >= 0 ? '#a8efc1' : '#f5b3ae';
+  document.getElementById('sb-pat').textContent  = fmt(patrim);
+}
+
+function applyOp(delta, type, icon, name, detail) {
+  if (type === 'ingreso') simIng += delta;
+  else                    simGas += Math.abs(delta);
+  simPatrim += delta;
+  updateThermo(simPatrim, delta);
+
+  // log
+  const log  = document.getElementById('sim-log');
+  const item = document.createElement('div');
+  item.className = 'log-item ' + type;
+  item.innerHTML = `
+    <span class="li-icon">${icon}</span>
+    <span class="li-name">${name}</span>
+    <span class="li-amt">${delta > 0 ? '+' : '−'} ${fmt(delta)}</span>`;
+  log.prepend(item);
+}
+
+function resetSim() {
+  simPatrim = BASE_PATRIM; simIng = 0; simGas = 0;
+  document.getElementById('sim-log').innerHTML = '';
+  updateThermo(BASE_PATRIM, 0);
+}
+
+// init simulator display
+updateThermo(BASE_PATRIM, 0);
+
+// ─── MINI-JUEGO ───
+const gjQuestions = [
+  { emoji:'🔩', name:'Venta de materiales de construcción', amount:4200,  type:'ingreso', hint:'El cliente pagó en efectivo en la ferretería' },
+  { emoji:'👷', name:'Pago de sueldos del mes',             amount:3500,  type:'gasto',   hint:'Nómina de los 3 empleados de la tienda' },
+  { emoji:'💡', name:'Factura ENEE del mes',                amount:850,   type:'gasto',   hint:'Electricidad del local comercial en SPS' },
+  { emoji:'🔧', name:'Servicio de instalación cobrado',     amount:1500,  type:'ingreso', hint:'Trabajo técnico en casa de un cliente' },
+  { emoji:'🏪', name:'Alquiler del local pagado',           amount:2200,  type:'gasto',   hint:'Pago mensual al dueño del inmueble' },
+  { emoji:'🏠', name:'Alquiler de bodega cobrado',          amount:1800,  type:'ingreso', hint:'Bodega que la empresa arrienda a un tercero' },
+  { emoji:'🛒', name:'Compra de suministros de oficina',    amount:450,   type:'gasto',   hint:'Papelería, tóner, bolsas de empaque' },
+  { emoji:'💧', name:'Factura Aguas de San Pedro',          amount:320,   type:'gasto',   hint:'Servicio de agua potable del local' },
+  { emoji:'📦', name:'Venta al crédito a cliente frecuente',amount:3800,  type:'ingreso', hint:'Factura a 30 días a distribuidora local' },
+  { emoji:'📱', name:'Publicidad en redes sociales',        amount:600,   type:'gasto',   hint:'Pago a community manager de SPS' },
+  { emoji:'🚚', name:'Cobro por flete de entrega',          amount:950,   type:'ingreso', hint:'Servicio de entrega a domicilio cobrado' },
+  { emoji:'⛽', name:'Combustible del camión de reparto',   amount:700,   type:'gasto',   hint:'Gasolinera DIPPSA — semana de entregas' },
+];
+
+let gjDeck=[], gjIdx=0, gjScore=0, gjIng=0, gjGas=0, gjPatrim=BASE_PATRIM;
+let gjHistory=[];
+
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-.5); }
+
+function startGame() {
+  gjDeck    = shuffle(gjQuestions).slice(0,10);
+  gjIdx=0; gjScore=0; gjIng=0; gjGas=0;
+  gjPatrim  = BASE_PATRIM;
+  gjHistory = [];
+  document.getElementById('gj-result').style.display = 'none';
+  document.getElementById('gj-area').style.display   = 'block';
+  document.getElementById('gj-score').textContent     = '0';
+  document.getElementById('gj-feedback').className    = 'gj-feedback hidden';
+  updateGjThermo(0);
+  updateGjProgress();
+  loadGjCard();
+}
+
+function loadGjCard() {
+  if (gjIdx >= gjDeck.length) { endGame(); return; }
+  const q = gjDeck[gjIdx];
+  document.getElementById('gj-emoji').textContent  = q.emoji;
+  document.getElementById('gj-name').textContent   = q.name;
+  document.getElementById('gj-amount').textContent = 'L ' + q.amount.toLocaleString('es-HN');
+  document.getElementById('gj-hint').textContent   = q.hint;
+  document.getElementById('gj-card').style.animation = 'none';
+  void document.getElementById('gj-card').offsetWidth;
+  document.getElementById('gj-card').style.animation = 'cardIn .3s ease';
+  document.getElementById('gj-feedback').className = 'gj-feedback hidden';
+  // disable buttons briefly to prevent double-tap
+  document.querySelectorAll('.cls-btn').forEach(b => b.disabled = false);
+}
+
+function gjClassify(type) {
+  document.querySelectorAll('.cls-btn').forEach(b => b.disabled = true);
+  const q       = gjDeck[gjIdx];
+  const correct = type === q.type;
+  if (correct) {
+    gjScore++;
+    document.getElementById('gj-score').textContent = gjScore;
+  }
+  // Always apply real effect (educational: see both outcomes)
+  const delta = q.type === 'ingreso' ? q.amount : -q.amount;
+  if (q.type==='ingreso') gjIng += q.amount;
+  else                    gjGas += q.amount;
+  gjPatrim += delta;
+  updateGjThermo(delta);
+  gjHistory.push({ ...q, correct });
+
+  const fb = document.getElementById('gj-feedback');
+  if (correct) {
+    fb.textContent  = q.type==='ingreso'
+      ? `✅ Correcto — INGRESO: patrimonio sube L ${q.amount.toLocaleString('es-HN')}`
+      : `✅ Correcto — GASTO: patrimonio baja L ${q.amount.toLocaleString('es-HN')}`;
+    fb.className = 'gj-feedback correct';
+  } else {
+    fb.textContent  = q.type==='ingreso'
+      ? `❌ Era INGRESO — aumenta el patrimonio en L ${q.amount.toLocaleString('es-HN')}`
+      : `❌ Era GASTO — disminuye el patrimonio en L ${q.amount.toLocaleString('es-HN')}`;
+    fb.className = 'gj-feedback incorrect';
+  }
+
+  gjIdx++;
+  updateGjProgress();
+  setTimeout(() => loadGjCard(), correct ? 950 : 1500);
+}
+
+function updateGjThermo(delta) {
+  const ratio = Math.min(Math.max((gjPatrim - BASE_PATRIM) / MAX_DELTA, -1), 1);
+  const pct   = 50 + ratio * 50;
+  const fill  = document.getElementById('gj-thermo');
+  fill.style.height = pct + '%';
+  fill.className    = 'mini-thermo-fill' + (gjPatrim < BASE_PATRIM ? ' negative' : '');
+  const el = document.getElementById('gj-patrim-amt');
+  el.textContent = fmt(gjPatrim);
+  el.className   = 'mini-patrim ' + (gjPatrim > BASE_PATRIM ? 'up' : gjPatrim < BASE_PATRIM ? 'down' : 'zero');
+}
+
+function updateGjProgress() {
+  const pct = gjDeck.length > 0 ? (gjIdx / gjDeck.length * 100) : 0;
+  document.getElementById('gj-prog-bar').style.width  = pct + '%';
+  document.getElementById('gj-prog-label').textContent = `${gjIdx} / ${gjDeck.length}`;
+}
+
+function endGame() {
+  document.getElementById('gj-area').style.display   = 'none';
+  const res = document.getElementById('gj-result');
+  res.style.display = 'block';
+
+  const util    = gjIng - gjGas;
+  const isProfit = util >= 0;
+  const pct     = Math.round(gjScore / gjDeck.length * 100);
+
+  document.getElementById('r-icon').textContent  = isProfit ? (pct===100?'🏆':'🎉') : '📚';
+  document.getElementById('r-title').textContent = isProfit ? '¡Período con Utilidad!' : 'Período con Pérdida';
+  document.getElementById('r-score').textContent = `${gjScore}/${gjDeck.length}`;
+  document.getElementById('r-score').className   = 'result-score ' + (isProfit ? 'util' : 'loss');
+  document.getElementById('r-msg').textContent   =
+    pct===100 ? '¡Clasificación perfecta! Dominas la diferencia entre ingresos y gastos.'
+    : pct>=70  ? `Muy bien — ${pct}% de aciertos. Repasa las tarjetas que fallaste.`
+    : pct>=50  ? `Buen intento — ${pct}%. Regresa al concepto y vuelve a intentarlo.`
+    :            `Sigue practicando — ${pct}%. El simulador te ayudará a visualizarlo mejor.`;
+
+  document.getElementById('r-cards').innerHTML = `
+    <div class="rc-card ing"><strong>L ${gjIng.toLocaleString('es-HN')}</strong><span>📈 Ingresos</span></div>
+    <div class="rc-card gas"><strong>L ${gjGas.toLocaleString('es-HN')}</strong><span>📉 Gastos</span></div>
+    <div class="rc-card acc"><strong style="color:${isProfit?'var(--ingreso)':'var(--gasto)'}">
+      ${isProfit?'+':'−'} L ${Math.abs(util).toLocaleString('es-HN')}
+    </strong><span>${isProfit?'💰 Utilidad':'⚠️ Pérdida'}</span></div>
+    <div class="rc-card"><strong>${pct}%</strong><span>🎯 Aciertos</span></div>`;
+
+  // Estado de resultados mini
+  const edr = document.getElementById('r-edr');
+  edr.innerHTML = `
+    <h4>📊 Estado de Resultados del Período</h4>
+    <div class="edr-row"><span>Ingresos operacionales</span><span class="er-ing">L ${gjIng.toLocaleString('es-HN')}</span></div>
+    <div class="edr-row"><span>Gastos operacionales</span><span class="er-gas">(L ${gjGas.toLocaleString('es-HN')})</span></div>
+    <div class="edr-row total"><span>${isProfit?'UTILIDAD DEL PERÍODO':'PÉRDIDA DEL PERÍODO'}</span>
+      <span class="${isProfit?'er-util':'er-loss'}">${isProfit?'L':'(L'} ${Math.abs(util).toLocaleString('es-HN')}${isProfit?'':')'}</span>
+    </div>`;
+
+  // Confetti solo si hay utilidad
+  if (isProfit && pct >= 60) spawnConfetti();
+}
+
+function spawnConfetti() {
+  const bg = document.getElementById('confetti-bg');
+  bg.innerHTML = '';
+  const colors = ['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#fff','#a8efc1','#f5b3ae'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left      = Math.random() * 100 + '%';
+    el.style.top       = '-20px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.width     = (6 + Math.random()*8) + 'px';
+    el.style.height    = (6 + Math.random()*8) + 'px';
+    el.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    el.style.animationDuration  = (1.8 + Math.random()*2) + 's';
+    el.style.animationDelay     = (Math.random()*1.2) + 's';
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+startGame();
+</script>
+</body>
+</html>

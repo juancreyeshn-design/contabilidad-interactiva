@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 7 — Balance y Estado de Resultados | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --activo:   #0D6B8C; --activo-lt: #E0F4FA;
+  --pasivo:   #C0392B; --pasivo-lt: #FDECEA;
+  --patrim:   #1A8A4A; --patrim-lt: #E4F9ED;
+  --ingreso:  #E67E22; --ingreso-lt:#FFF5E6;
+  --gasto:    #8E44AD; --gasto-lt:  #F8F0FF;
+  --gold:     #F4A811;
+  --dark:     #1B2638;
+  --bg:       #F5F7FA;
+  --card-r:   16px;
+  --shadow:   0 6px 24px rgba(0,0,0,.11);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.75rem;padding:5px 13px;border-radius:30px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.4rem;font-weight:900;}
+header p{font-size:.85rem;color:#b0b8c4;margin-top:2px;}
+
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e4ea;padding:0 20px;gap:4px;overflow-x:auto;}
+.tab-btn{padding:16px 20px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;color:#6b7684;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold);}
+
+.section{display:none;padding:24px 18px 64px;max-width:1100px;margin:0 auto;}
+.section.active{display:block;}
+
+/* ── SHARED ── */
+.intro-banner{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:22px 26px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;}
+.intro-banner .ib-icon{font-size:2.4rem;flex-shrink:0;}
+.intro-banner h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+.intro-banner p{font-size:.88rem;color:#b0b8c4;line-height:1.6;}
+
+.sec-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px;}
+
+/* ══════════ TAB 1 CONCEPTO ══════════ */
+.concept-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:620px){.concept-cards{grid-template-columns:1fr;}}
+
+.cc-big{border-radius:var(--card-r);padding:24px;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s,box-shadow .18s;}
+.cc-big:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.15);}
+.cc-big .ccb-icon{font-size:2.6rem;display:block;margin-bottom:10px;}
+.cc-big h3{font-size:1.2rem;font-weight:900;margin-bottom:6px;}
+.cc-big p{font-size:.88rem;line-height:1.55;opacity:.88;}
+.cc-big.balance{background:var(--activo);color:#fff;}
+.cc-big.edr{background:var(--ingreso);color:#fff;}
+.cc-big .ccb-tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:.75rem;font-weight:700;margin-top:10px;}
+
+/* Relación entre estados */
+.relation-strip{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:22px;margin-bottom:22px;}
+.relation-strip h4{font-size:.9rem;font-weight:900;margin-bottom:14px;color:#6b7684;text-transform:uppercase;letter-spacing:.06em;}
+.rel-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;}
+.rel-box{border-radius:12px;padding:14px 18px;text-align:center;min-width:130px;}
+.rel-box .rb-icon{font-size:1.6rem;display:block;margin-bottom:4px;}
+.rel-box .rb-name{font-size:.88rem;font-weight:900;}
+.rel-box .rb-val{font-family:'Source Code Pro',monospace;font-size:.85rem;font-weight:700;margin-top:4px;display:block;}
+.rel-box.ing{background:var(--ingreso-lt);color:var(--ingreso);}
+.rel-box.gas{background:var(--gasto-lt);color:var(--gasto);}
+.rel-box.util{background:#fff8e0;color:#a07000;}
+.rel-box.pat{background:var(--patrim-lt);color:var(--patrim);}
+.rel-arrow{font-size:1.8rem;color:#c0c8d4;padding:0 8px;}
+.rel-label{font-size:.72rem;color:#9aa3ad;display:block;margin-top:3px;}
+
+/* ══════════ TAB 2 BALANCE ══════════ */
+.ef-header{background:var(--dark);color:#fff;border-radius:var(--card-r) var(--card-r) 0 0;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.ef-header h3{font-size:1rem;font-weight:900;}
+.ef-header .ef-empresa{font-size:.82rem;color:#b0b8c4;}
+.ef-header .ef-fecha{font-size:.82rem;color:var(--gold);}
+
+.ef-body{background:#fff;border-radius:0 0 var(--card-r) var(--card-r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px;}
+
+/* Section blocks */
+.ef-section{border-bottom:1px solid #edf0f4;}
+.ef-section:last-child{border-bottom:none;}
+.ef-section-header{padding:13px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .18s;user-select:none;}
+.ef-section-header:hover{background:var(--bg);}
+.ef-section-header .esh-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.ef-section-header .esh-name{font-weight:900;font-size:.95rem;flex:1;}
+.ef-section-header .esh-total{font-family:'Source Code Pro',monospace;font-weight:700;font-size:.95rem;}
+.ef-section-header .esh-chev{font-size:.9rem;color:#9aa3ad;transition:transform .25s;}
+.ef-section.open .esh-chev{transform:rotate(180deg);}
+
+.ef-rows{display:none;padding:0 18px 12px;}
+.ef-section.open .ef-rows{display:block;}
+.ef-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;font-size:.9rem;margin-bottom:4px;transition:background .15s;cursor:pointer;}
+.ef-row:hover{background:var(--bg);}
+.ef-row .er-name{display:flex;align-items:center;gap:8px;font-weight:700;}
+.ef-row .er-amount{font-family:'Source Code Pro',monospace;font-weight:700;}
+
+/* Totals */
+.ef-subtotal{display:flex;justify-content:space-between;padding:10px 12px;border-radius:8px;font-weight:900;font-size:.92rem;margin:6px 0;}
+.ef-grand-total{display:flex;justify-content:space-between;padding:14px 18px;font-weight:900;font-size:1rem;border-top:3px solid var(--dark);}
+.ef-grand-total span:last-child{font-family:'Source Code Pro',monospace;}
+
+/* Ecuación visual */
+.ecuacion-vis{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:22px;}
+@media(max-width:600px){.ecuacion-vis{grid-template-columns:1fr;}}
+.ev-block{border-radius:var(--card-r);padding:18px;text-align:center;box-shadow:var(--shadow);}
+.ev-block.activo{background:var(--activo);}
+.ev-block.pasivo-patrim{background:linear-gradient(135deg,var(--pasivo) 50%,var(--patrim) 50%);}
+.ev-label{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.06em;}
+.ev-value{font-family:'Source Code Pro',monospace;font-size:1.5rem;font-weight:900;color:#fff;display:block;margin-top:6px;}
+.ev-eq{font-size:2.5rem;font-weight:900;color:#c0c8d4;text-align:center;}
+.ev-check{margin-top:8px;font-size:.88rem;font-weight:700;padding:8px 16px;border-radius:20px;display:inline-block;}
+.ev-check.ok{background:var(--patrim-lt);color:var(--patrim);}
+
+/* ══════════ TAB 3 EDR ══════════ */
+.edr-progress{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;}
+.edr-progress-title{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:14px;}
+.edr-bars{display:flex;flex-direction:column;gap:10px;}
+.edr-bar-row{display:flex;align-items:center;gap:12px;}
+.edr-bar-label{min-width:140px;font-size:.88rem;font-weight:700;}
+.edr-bar-track{flex:1;background:#edf0f4;border-radius:99px;height:18px;overflow:hidden;position:relative;}
+.edr-bar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.edr-bar-val{min-width:100px;font-family:'Source Code Pro',monospace;font-weight:700;font-size:.88rem;text-align:right;}
+
+/* ══════════ TAB 4 CONEXIÓN ══════════ */
+.conn-layout{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;}
+@media(max-width:700px){.conn-layout{grid-template-columns:1fr;}}
+.conn-arrow-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:80px;}
+.conn-arrow{font-size:2.5rem;color:var(--gold);animation:pulse-arrow 1.5s ease infinite;}
+@keyframes pulse-arrow{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+.conn-label{font-size:.78rem;font-weight:700;color:var(--gold);margin-top:6px;text-align:center;}
+.conn-card{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;}
+.conn-card-header{padding:14px 16px;font-weight:900;font-size:1rem;color:#fff;}
+.conn-row{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #edf0f4;font-size:.9rem;}
+.conn-row:last-child{border-bottom:none;}
+.conn-row.highlight-row{background:#fffbe6;font-weight:900;}
+.conn-row.highlight-row .cr-val{color:var(--gold);}
+.cr-name{color:#6b7684;}
+.cr-val{font-family:'Source Code Pro',monospace;font-weight:700;}
+.conn-total{display:flex;justify-content:space-between;padding:12px 16px;background:var(--bg);border-top:2px solid var(--dark);font-weight:900;}
+.conn-total span:last-child{font-family:'Source Code Pro',monospace;}
+
+.anim-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);margin-top:16px;}
+.anim-btn:hover{background:#2a3a54;transform:scale(1.02);}
+
+.util-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:16px 0;}
+.uf-box{border-radius:12px;padding:14px 20px;text-align:center;min-width:120px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;}
+.uf-box.show{opacity:1;transform:none;}
+.uf-box .ufb-val{font-family:'Source Code Pro',monospace;font-size:1.1rem;font-weight:900;display:block;margin-top:4px;}
+.uf-box.er{background:var(--ingreso-lt);color:var(--ingreso);}
+.uf-box.util{background:#fff8e0;color:#a07000;}
+.uf-box.pat{background:var(--patrim-lt);color:var(--patrim);}
+.uf-arrow{font-size:2rem;color:#c0c8d4;opacity:0;transition:opacity .4s;}
+.uf-arrow.show{opacity:1;}
+
+/* ══════════ TAB 5 MINI-JUEGO ══════════ */
+.gj-header{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;box-shadow:var(--shadow);}
+.gj-header .gh-icon{font-size:2.2rem;}
+.gj-header h3{font-size:1.05rem;font-weight:900;}
+.gj-header p{font-size:.87rem;color:#b0b8c4;margin-top:3px;}
+
+.gj-prog{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.prog-wrap{flex:1;background:#e0e4ea;border-radius:99px;height:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--activo),var(--patrim));transition:width .4s;width:0%;}
+.prog-lbl{font-size:.9rem;font-weight:700;color:#6b7684;white-space:nowrap;}
+
+/* Card to classify */
+.gj-card{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:26px 22px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px;animation:cardIn .3s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.gj-card .gc-seq{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px;}
+.gj-card .gc-icon{font-size:3rem;display:block;margin-bottom:10px;}
+.gj-card .gc-name{font-size:1.35rem;font-weight:900;margin-bottom:6px;}
+.gj-card .gc-amount{font-family:'Source Code Pro',monospace;font-size:1.2rem;color:var(--gold);}
+.gj-card .gc-hint{font-size:.85rem;color:#b0b8c4;margin-top:8px;}
+
+/* Step 1: Estado */
+.step-label{text-align:center;font-size:.88rem;font-weight:700;color:#6b7684;margin-bottom:12px;}
+.gj-estado-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.gj-est-btn{padding:18px 12px;border-radius:14px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;color:#fff;transition:all .18s;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:5px;}
+.gj-est-btn:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.18);}
+.gj-est-btn.balance{background:var(--activo);}
+.gj-est-btn.edr{background:var(--ingreso);}
+.gj-est-btn .geb-icon{font-size:1.8rem;}
+.gj-est-btn .geb-sub{font-size:.75rem;opacity:.8;}
+
+/* Step 2: Sección */
+.gj-seccion-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:18px;}
+.gj-sec-btn{padding:14px 18px;border-radius:12px;border:2px solid transparent;background:#fff;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:0 3px 10px rgba(0,0,0,.08);}
+.gj-sec-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.14);}
+.gj-sec-btn.sel{color:#fff;}
+
+.gj-feedback{border-radius:12px;padding:14px 18px;font-size:.95rem;font-weight:700;display:none;animation:popIn .25s ease;line-height:1.5;margin-bottom:12px;}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gj-feedback.ok{background:var(--patrim-lt);color:var(--patrim);display:block;}
+.gj-feedback.bad{background:var(--pasivo-lt);color:var(--pasivo);display:block;}
+.gj-next-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--activo);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;display:none;margin-bottom:8px;}
+.gj-next-btn.show{display:block;}
+.gj-next-btn:hover{background:#1A9BBF;}
+
+/* Live score */
+.live-score{background:#fff;border-radius:12px;padding:14px;display:flex;gap:16px;justify-content:center;align-items:center;box-shadow:var(--shadow);margin-bottom:8px;flex-wrap:wrap;}
+.ls-item strong{display:block;font-size:1.5rem;font-weight:900;}
+.ls-item span{font-size:.78rem;color:#6b7684;}
+.ls-item.cor strong{color:var(--patrim);}
+.ls-item.err strong{color:var(--pasivo);}
+.ls-div{width:1px;height:36px;background:#e0e4ea;}
+
+/* Result */
+.gj-result{display:none;background:#fff;border-radius:var(--card-r);padding:36px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.confetti-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(450px) rotate(720deg);opacity:0;}}
+.r-emoji{font-size:3.5rem;margin-bottom:8px;}
+.r-title{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+.r-score{font-size:3.8rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.r-msg{font-size:1rem;color:#3d4a5c;margin-bottom:20px;}
+.r-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.r-stat{background:var(--bg);border-radius:12px;padding:12px 20px;}
+.r-stat strong{display:block;font-size:1.4rem;font-weight:900;}
+.r-stat span{font-size:.8rem;color:#6b7684;}
+.retry-btn{padding:14px 40px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.retry-btn:hover{background:#2a3a54;transform:scale(1.03);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 7</div>
+    <h1>Módulo 7: Balance y Estado de Resultados</h1>
+    <p>Ferretería "El Maestro" — San Pedro Sula · Período: junio 2025</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">📋 Concepto</button>
+  <button class="tab-btn" onclick="showTab('balance',this)">⚖️ Balance</button>
+  <button class="tab-btn" onclick="showTab('edr',this)">📈 Edo. Resultados</button>
+  <button class="tab-btn" onclick="showTab('conexion',this)">🔗 Conexión</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════ TAB 1: CONCEPTO ══════════ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="concept-cards">
+    <div class="cc-big balance" onclick="showTab('balance', document.querySelectorAll('.tab-btn')[1])">
+      <span class="ccb-icon">⚖️</span>
+      <h3>Balance de Situación</h3>
+      <p>Fotografía financiera en un momento dado. Muestra lo que la empresa TIENE (Activos), lo que DEBE (Pasivos) y lo que es del DUEÑO (Patrimonio).</p>
+      <span class="ccb-tag">📅 En una fecha específica</span>
+    </div>
+    <div class="cc-big edr" onclick="showTab('edr', document.querySelectorAll('.tab-btn')[2])">
+      <span class="ccb-icon">📈</span>
+      <h3>Estado de Resultados</h3>
+      <p>Película financiera de un período. Muestra los INGRESOS obtenidos, los GASTOS incurridos y la UTILIDAD o PÉRDIDA del período.</p>
+      <span class="ccb-tag">📅 Durante un período</span>
+    </div>
+  </div>
+
+  <div class="relation-strip">
+    <h4>¿Cómo se conectan los dos estados?</h4>
+    <div class="rel-flow">
+      <div class="rel-box ing">
+        <span class="rb-icon">📈</span>
+        <div class="rb-name">Ingresos</div>
+        <span class="rb-val">L 12,000</span>
+        <span class="rel-label">Estado de Resultados</span>
+      </div>
+      <span class="rel-arrow">−</span>
+      <div class="rel-box gas">
+        <span class="rb-icon">📉</span>
+        <div class="rb-name">Gastos</div>
+        <span class="rb-val">L 3,500</span>
+        <span class="rel-label">Estado de Resultados</span>
+      </div>
+      <span class="rel-arrow">=</span>
+      <div class="rel-box util">
+        <span class="rb-icon">💰</span>
+        <div class="rb-name">Utilidad Neta</div>
+        <span class="rb-val">L 8,500</span>
+        <span class="rel-label">Cierra en Resultados</span>
+      </div>
+      <span class="rel-arrow">→</span>
+      <div class="rel-box pat">
+        <span class="rb-icon">👤</span>
+        <div class="rb-name">Patrimonio ▲</div>
+        <span class="rb-val">L 58,500</span>
+        <span class="rel-label">Balance de Situación</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:var(--card-r);padding:20px 24px;box-shadow:var(--shadow);">
+    <div class="sec-title" style="color:#9aa3ad;margin-bottom:14px;">Referencia normativa</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div style="background:var(--activo-lt);border-radius:12px;padding:14px 16px;">
+        <div style="font-weight:900;color:var(--activo);margin-bottom:4px;">⚖️ Balance de Situación</div>
+        <div style="font-size:.85rem;color:#3d4a5c;line-height:1.6;">NIIF para PYMES — Sección 4<br><em>Estado de Situación Financiera</em><br>Presenta activos, pasivos y patrimonio en una fecha concreta.</div>
+      </div>
+      <div style="background:var(--ingreso-lt);border-radius:12px;padding:14px 16px;">
+        <div style="font-weight:900;color:var(--ingreso);margin-bottom:4px;">📈 Estado de Resultados</div>
+        <div style="font-size:.85rem;color:#3d4a5c;line-height:1.6;">NIIF para PYMES — Sección 5<br><em>Estado del Resultado Integral</em><br>Presenta ingresos, gastos y resultado del período.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 2: BALANCE ══════════ -->
+<div id="tab-balance" class="section">
+
+  <!-- Ecuación visual -->
+  <div class="ecuacion-vis">
+    <div class="ev-block activo">
+      <div class="ev-label">Total Activo</div>
+      <span class="ev-value">L 58,500</span>
+      <div class="ev-check ok" style="margin-top:8px;">= Pasivo + Patrimonio</div>
+    </div>
+    <div class="ev-eq">=</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="ev-block" style="background:var(--pasivo);border-radius:var(--card-r);">
+        <div class="ev-label" style="color:rgba(255,255,255,.8);">Total Pasivo</div>
+        <span class="ev-value">L 0</span>
+      </div>
+      <div class="ev-block" style="background:var(--patrim);border-radius:var(--card-r);">
+        <div class="ev-label" style="color:rgba(255,255,255,.8);">Total Patrimonio</div>
+        <span class="ev-value">L 58,500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Balance interactivo -->
+  <div class="ef-header">
+    <div>
+      <h3>⚖️ Balance de Situación</h3>
+      <div class="ef-empresa">Ferretería "El Maestro" — San Pedro Sula, Cortés</div>
+    </div>
+    <div class="ef-fecha">Al 30 de junio de 2025</div>
+  </div>
+
+  <div class="ef-body">
+
+    <!-- ACTIVO CORRIENTE -->
+    <div class="ef-section open" id="bs-ac">
+      <div class="ef-section-header" onclick="toggleSection('bs-ac')">
+        <span class="esh-dot" style="background:var(--activo);"></span>
+        <span class="esh-name" style="color:var(--activo);">⚡ Activo Corriente</span>
+        <span class="esh-total" style="color:var(--activo);">L 52,500</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div class="ef-row" onclick="showRowDetail('Caja y Bancos','Activo Corriente','L 44,500','Efectivo disponible en caja chica y cuenta corriente Banco de Honduras, S.A.. Saldo resultante de los 5 asientos del período.')">
+          <span class="er-name"><span>💵</span>Caja y Bancos</span>
+          <span class="er-amount" style="color:var(--activo);">L 44,500</span>
+        </div>
+        <div class="ef-row" onclick="showRowDetail('Cuentas por Cobrar','Activo Corriente','L 6,000','Factura pendiente de cobro al contratista. Se registró en As.4 (venta al crédito) y se cobró parcialmente en As.5.')">
+          <span class="er-name"><span>🧾</span>Cuentas por Cobrar</span>
+          <span class="er-amount" style="color:var(--activo);">L 6,000</span>
+        </div>
+        <div class="ef-row" onclick="showRowDetail('Inventario de Mercadería','Activo Corriente','L 8,000','Compra de materiales a Dist. La Colonia (As.2). Aún no vendida — permanece como activo corriente.')">
+          <span class="er-name"><span>📦</span>Inventario de Mercadería</span>
+          <span class="er-amount" style="color:var(--activo);">L 8,000</span>
+        </div>
+        <div class="ef-subtotal" style="background:var(--activo-lt);">
+          <span style="color:var(--activo);">Subtotal Activo Corriente</span>
+          <span style="font-family:'Source Code Pro',monospace;color:var(--activo);">L 52,500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVO NO CORRIENTE -->
+    <div class="ef-section" id="bs-anc">
+      <div class="ef-section-header" onclick="toggleSection('bs-anc')">
+        <span class="esh-dot" style="background:#0A4F6B;"></span>
+        <span class="esh-name" style="color:#0A4F6B;">🏗️ Activo No Corriente</span>
+        <span class="esh-total" style="color:#0A4F6B;">L 6,000</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div class="ef-row" onclick="showRowDetail('Equipo de Cómputo','Activo No Corriente','L 6,000','2 computadoras adquiridas para la administración de la ferretería. Vida útil estimada 3 años según SAR.')">
+          <span class="er-name"><span>💻</span>Equipo de Cómputo</span>
+          <span class="er-amount" style="color:#0A4F6B;">L 6,000</span>
+        </div>
+        <div class="ef-subtotal" style="background:#e8edf5;">
+          <span style="color:#0A4F6B;">Subtotal Activo No Corriente</span>
+          <span style="font-family:'Source Code Pro',monospace;color:#0A4F6B;">L 6,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL ACTIVO -->
+    <div class="ef-grand-total" style="background:var(--activo);">
+      <span style="color:#fff;font-size:1.05rem;">TOTAL ACTIVO</span>
+      <span style="color:#fff;font-family:'Source Code Pro',monospace;font-size:1.1rem;">L 58,500</span>
+    </div>
+
+    <!-- PASIVO CORRIENTE -->
+    <div class="ef-section" id="bs-pc">
+      <div class="ef-section-header" onclick="toggleSection('bs-pc')">
+        <span class="esh-dot" style="background:var(--pasivo);"></span>
+        <span class="esh-name" style="color:var(--pasivo);">⚡ Pasivo Corriente</span>
+        <span class="esh-total" style="color:var(--pasivo);">L 0</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div style="padding:12px;font-size:.88rem;color:#9aa3ad;text-align:center;">
+          La empresa no tiene deudas a corto plazo en este período. Todas las compras fueron al contado.
+        </div>
+        <div class="ef-subtotal" style="background:var(--pasivo-lt);">
+          <span style="color:var(--pasivo);">Subtotal Pasivo Corriente</span>
+          <span style="font-family:'Source Code Pro',monospace;color:var(--pasivo);">L 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASIVO NO CORRIENTE -->
+    <div class="ef-section" id="bs-pnc">
+      <div class="ef-section-header" onclick="toggleSection('bs-pnc')">
+        <span class="esh-dot" style="background:#8B1A10;"></span>
+        <span class="esh-name" style="color:#8B1A10;">🏗️ Pasivo No Corriente</span>
+        <span class="esh-total" style="color:#8B1A10;">L 0</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div style="padding:12px;font-size:.88rem;color:#9aa3ad;text-align:center;">
+          Sin préstamos a largo plazo en este período inicial de operaciones.
+        </div>
+        <div class="ef-subtotal" style="background:#fde8e6;">
+          <span style="color:#8B1A10;">Subtotal Pasivo No Corriente</span>
+          <span style="font-family:'Source Code Pro',monospace;color:#8B1A10;">L 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL PASIVO -->
+    <div class="ef-grand-total" style="background:var(--pasivo);">
+      <span style="color:#fff;">TOTAL PASIVO</span>
+      <span style="color:#fff;font-family:'Source Code Pro',monospace;">L 0</span>
+    </div>
+
+    <!-- PATRIMONIO -->
+    <div class="ef-section open" id="bs-pat">
+      <div class="ef-section-header" onclick="toggleSection('bs-pat')">
+        <span class="esh-dot" style="background:var(--patrim);"></span>
+        <span class="esh-name" style="color:var(--patrim);">👤 Patrimonio</span>
+        <span class="esh-total" style="color:var(--patrim);">L 58,500</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div class="ef-row" onclick="showRowDetail('Capital Social','Patrimonio','L 50,000','Aportación inicial del socio fundador (As.1). Monto mínimo para S.A. según Código de Comercio Honduras.')">
+          <span class="er-name"><span>💼</span>Capital Social</span>
+          <span class="er-amount" style="color:var(--patrim);">L 50,000</span>
+        </div>
+        <div class="ef-row" onclick="showRowDetail('Utilidad del Período','Patrimonio','L 8,500','Ingresos por Ventas (L 12,000) menos Gasto de Alquiler (L 3,500). Resultado neto del período junio 2025.')">
+          <span class="er-name"><span>💰</span>Utilidad del Período</span>
+          <span class="er-amount" style="color:var(--patrim);">L 8,500</span>
+        </div>
+        <div class="ef-subtotal" style="background:var(--patrim-lt);">
+          <span style="color:var(--patrim);">Subtotal Patrimonio</span>
+          <span style="font-family:'Source Code Pro',monospace;color:var(--patrim);">L 58,500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL PASIVO + PATRIMONIO -->
+    <div class="ef-grand-total" style="background:var(--patrim);">
+      <span style="color:#fff;">TOTAL PASIVO + PATRIMONIO</span>
+      <span style="color:#fff;font-family:'Source Code Pro',monospace;">L 58,500</span>
+    </div>
+
+  </div><!-- /ef-body -->
+
+  <!-- Detail popup -->
+  <div id="row-detail" style="display:none;background:#fff;border-radius:var(--card-r);padding:18px 22px;box-shadow:var(--shadow);border-left:4px solid var(--gold);animation:slideIn .25s ease;">
+    <div id="rd-title" style="font-weight:900;font-size:1rem;margin-bottom:4px;"></div>
+    <div id="rd-sec" style="font-size:.78rem;color:#9aa3ad;margin-bottom:8px;"></div>
+    <div id="rd-val" style="font-family:'Source Code Pro',monospace;font-size:1.3rem;font-weight:900;color:var(--activo);margin-bottom:8px;"></div>
+    <div id="rd-desc" style="font-size:.88rem;color:#3d4a5c;line-height:1.6;"></div>
+  </div>
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+
+</div>
+
+<!-- ══════════ TAB 3: ESTADO DE RESULTADOS ══════════ -->
+<div id="tab-edr" class="section">
+
+  <div class="ef-header">
+    <div>
+      <h3>📈 Estado de Resultados</h3>
+      <div class="ef-empresa">Ferretería "El Maestro" — San Pedro Sula, Cortés</div>
+    </div>
+    <div class="ef-fecha">Del 01 al 30 de junio de 2025</div>
+  </div>
+
+  <div class="ef-body">
+
+    <!-- INGRESOS -->
+    <div class="ef-section open" id="edr-ing">
+      <div class="ef-section-header" onclick="toggleSection('edr-ing')">
+        <span class="esh-dot" style="background:var(--ingreso);"></span>
+        <span class="esh-name" style="color:var(--ingreso);">📈 Ingresos Operacionales</span>
+        <span class="esh-total" style="color:var(--ingreso);">L 12,000</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div class="ef-row" onclick="showEdrDetail('Ingresos por Ventas','Ingresos Operacionales','L 12,000','Venta de materiales de construcción al crédito a un contratista (As.4). NIIF PYMES Sec.23.')">
+          <span class="er-name"><span>🔩</span>Ingresos por Ventas</span>
+          <span class="er-amount" style="color:var(--ingreso);">L 12,000</span>
+        </div>
+        <div class="ef-subtotal" style="background:var(--ingreso-lt);">
+          <span style="color:var(--ingreso);">Total Ingresos</span>
+          <span style="font-family:'Source Code Pro',monospace;color:var(--ingreso);">L 12,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GASTOS -->
+    <div class="ef-section open" id="edr-gas">
+      <div class="ef-section-header" onclick="toggleSection('edr-gas')">
+        <span class="esh-dot" style="background:var(--gasto);"></span>
+        <span class="esh-name" style="color:var(--gasto);">📉 Gastos Operacionales</span>
+        <span class="esh-total" style="color:var(--gasto);">L 3,500</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div class="ef-row" onclick="showEdrDetail('Gasto de Alquiler','Gastos Operacionales','L 3,500','Alquiler mensual del local comercial en Barrio Guamilito, SPS (As.3). NIIF PYMES Sec.5.')">
+          <span class="er-name"><span>🏪</span>Gasto de Alquiler</span>
+          <span class="er-amount" style="color:var(--gasto);">(L 3,500)</span>
+        </div>
+        <div class="ef-subtotal" style="background:var(--gasto-lt);">
+          <span style="color:var(--gasto);">Total Gastos</span>
+          <span style="font-family:'Source Code Pro',monospace;color:var(--gasto);">(L 3,500)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UTILIDAD BRUTA -->
+    <div class="ef-grand-total" style="background:#fff8e0;">
+      <span style="color:#a07000;">Utilidad Bruta del Período</span>
+      <span style="color:#a07000;font-family:'Source Code Pro',monospace;">L 8,500</span>
+    </div>
+
+    <!-- ISR -->
+    <div class="ef-section" id="edr-isr">
+      <div class="ef-section-header" onclick="toggleSection('edr-isr')">
+        <span class="esh-dot" style="background:#555;"></span>
+        <span class="esh-name" style="color:#555;">📊 Impuesto Sobre la Renta (ISR)</span>
+        <span class="esh-total" style="color:#555;">L 0 *</span>
+        <span class="esh-chev">▼</span>
+      </div>
+      <div class="ef-rows">
+        <div style="background:var(--bg);border-radius:10px;padding:14px 16px;font-size:.85rem;color:#3d4a5c;line-height:1.6;">
+          <strong>Nota:</strong> El ISR en Honduras es del <strong>25%</strong> sobre la renta neta gravable (Ley del ISR, Art. 22). 
+          Para empresas con ingresos anuales menores a L 500,000 existe exoneración según el régimen de tributación simplificada del SAR. 
+          En este período de inicio, la empresa aún no determina ISR definitivo hasta el cierre del ejercicio fiscal.
+        </div>
+      </div>
+    </div>
+
+    <!-- UTILIDAD NETA -->
+    <div class="ef-grand-total" style="background:var(--patrim);">
+      <span style="color:#fff;font-size:1.05rem;">✅ UTILIDAD NETA DEL PERÍODO</span>
+      <span style="color:#fff;font-family:'Source Code Pro',monospace;font-size:1.1rem;">L 8,500</span>
+    </div>
+
+  </div>
+
+  <!-- Barras visuales -->
+  <div style="margin-top:20px;">
+  <div class="edr-progress">
+    <div class="edr-progress-title">Composición del resultado — Visualización proporcional</div>
+    <div class="edr-bars" id="edr-bars">
+      <div class="edr-bar-row">
+        <span class="edr-bar-label" style="color:var(--ingreso);">📈 Ingresos</span>
+        <div class="edr-bar-track"><div class="edr-bar-fill" style="background:var(--ingreso);width:0%" id="bar-ing"></div></div>
+        <span class="edr-bar-val" style="color:var(--ingreso);">L 12,000</span>
+      </div>
+      <div class="edr-bar-row">
+        <span class="edr-bar-label" style="color:var(--gasto);">📉 Gastos</span>
+        <div class="edr-bar-track"><div class="edr-bar-fill" style="background:var(--gasto);width:0%" id="bar-gas"></div></div>
+        <span class="edr-bar-val" style="color:var(--gasto);">L 3,500</span>
+      </div>
+      <div class="edr-bar-row">
+        <span class="edr-bar-label" style="color:var(--patrim);">💰 Utilidad</span>
+        <div class="edr-bar-track"><div class="edr-bar-fill" style="background:var(--patrim);width:0%" id="bar-util"></div></div>
+        <span class="edr-bar-val" style="color:var(--patrim);">L 8,500</span>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- EDR detail popup -->
+  <div id="edr-detail" style="display:none;background:#fff;border-radius:var(--card-r);padding:18px 22px;box-shadow:var(--shadow);border-left:4px solid var(--ingreso);margin-top:12px;animation:slideIn .25s ease;">
+    <div id="edrd-title" style="font-weight:900;font-size:1rem;margin-bottom:4px;"></div>
+    <div id="edrd-sec" style="font-size:.78rem;color:#9aa3ad;margin-bottom:8px;"></div>
+    <div id="edrd-val" style="font-family:'Source Code Pro',monospace;font-size:1.3rem;font-weight:900;margin-bottom:8px;"></div>
+    <div id="edrd-desc" style="font-size:.88rem;color:#3d4a5c;line-height:1.6;"></div>
+  </div>
+
+</div>
+
+<!-- ══════════ TAB 4: CONEXIÓN ══════════ -->
+<div id="tab-conexion" class="section">
+
+  <div class="intro-banner">
+    <span class="ib-icon">🔗</span>
+    <div>
+      <h3>La Utilidad conecta ambos estados</h3>
+      <p>El Estado de Resultados calcula la Utilidad o Pérdida del período. Ese resultado se traslada automáticamente al Patrimonio en el Balance de Situación, cerrando el ciclo contable del período.</p>
+    </div>
+  </div>
+
+  <!-- Animación flujo -->
+  <div class="util-flow" id="util-flow">
+    <div class="uf-box er" id="uf-er">
+      <span style="font-size:1.4rem;">📈</span>
+      <div style="font-size:.88rem;font-weight:900;margin-top:4px;">Estado de Resultados</div>
+      <span class="ufb-val">Utilidad: L 8,500</span>
+    </div>
+    <div class="uf-arrow" id="uf-arr1">→</div>
+    <div class="uf-box util" id="uf-util">
+      <span style="font-size:1.4rem;">💰</span>
+      <div style="font-size:.88rem;font-weight:900;margin-top:4px;">Utilidad del Período</div>
+      <span class="ufb-val">L 8,500</span>
+    </div>
+    <div class="uf-arrow" id="uf-arr2">→</div>
+    <div class="uf-box pat" id="uf-pat">
+      <span style="font-size:1.4rem;">👤</span>
+      <div style="font-size:.88rem;font-weight:900;margin-top:4px;">Patrimonio (Balance)</div>
+      <span class="ufb-val">Capital + Utilidad</span>
+    </div>
+  </div>
+
+  <button class="anim-btn" onclick="animarConexion()">▶ Ver animación del flujo</button>
+
+  <div style="margin-top:24px;">
+  <div class="conn-layout">
+    <!-- EDR -->
+    <div class="conn-card">
+      <div class="conn-card-header" style="background:var(--ingreso);">📈 Estado de Resultados</div>
+      <div class="conn-row"><span class="cr-name">📈 Ingresos por Ventas</span><span class="cr-val" style="color:var(--ingreso);">L 12,000</span></div>
+      <div class="conn-row"><span class="cr-name">📉 Gasto de Alquiler</span><span class="cr-val" style="color:var(--gasto);">(L 3,500)</span></div>
+      <div class="conn-row highlight-row"><span class="cr-name" style="font-weight:900;">💰 Utilidad Neta</span><span class="cr-val">L 8,500</span></div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="conn-arrow-col">
+      <div class="conn-arrow">→</div>
+      <div class="conn-label">Utilidad<br>se traslada</div>
+    </div>
+
+    <!-- Balance Patrimonio -->
+    <div class="conn-card">
+      <div class="conn-card-header" style="background:var(--patrim);">⚖️ Balance — Sección Patrimonio</div>
+      <div class="conn-row"><span class="cr-name">💼 Capital Social</span><span class="cr-val" style="color:var(--patrim);">L 50,000</span></div>
+      <div class="conn-row highlight-row"><span class="cr-name" style="font-weight:900;">💰 Utilidad del Período ← viene del EDR</span><span class="cr-val">L 8,500</span></div>
+      <div class="conn-total"><span>Total Patrimonio</span><span style="font-family:'Source Code Pro',monospace;color:var(--patrim);">L 58,500</span></div>
+    </div>
+  </div>
+  </div>
+
+  <div style="background:var(--dark);color:#fff;border-radius:var(--card-r);padding:18px 22px;margin-top:20px;box-shadow:var(--shadow);">
+    <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--gold);margin-bottom:8px;">Verificación final</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+      <div style="font-family:'Source Code Pro',monospace;font-size:1rem;">Activo <span style="color:#93d8f0;">L 58,500</span> = Pasivo <span style="color:#f5b3ae;">L 0</span> + Patrimonio <span style="color:#a8efc1;">L 58,500</span></div>
+      <div style="background:var(--patrim);color:#fff;border-radius:20px;padding:5px 14px;font-size:.82rem;font-weight:700;">✅ Ecuación equilibrada</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 5: MINI-JUEGO ══════════ -->
+<div id="tab-juego" class="section">
+  <div class="gj-header">
+    <span class="gh-icon">🎯</span>
+    <div>
+      <h3>¿En qué estado va esta cuenta? ¿En qué sección?</h3>
+      <p>Clasifica cada cuenta primero en el estado financiero correcto y luego en la sección exacta. 10 preguntas.</p>
+    </div>
+  </div>
+  <div class="gj-prog"><div class="prog-wrap"><div class="prog-fill" id="gj-prog-fill"></div></div><div class="prog-lbl" id="gj-prog-lbl">0 / 10</div></div>
+
+  <div id="gj-area">
+    <div class="gj-card" id="gj-card">
+      <div class="gc-seq" id="gc-seq"></div>
+      <span class="gc-icon" id="gc-icon"></span>
+      <div class="gc-name" id="gc-name"></div>
+      <div class="gc-amount" id="gc-amount"></div>
+      <div class="gc-hint" id="gc-hint"></div>
+    </div>
+
+    <div id="step1-area">
+      <div class="step-label">Paso 1: ¿En qué estado financiero aparece esta cuenta?</div>
+      <div class="gj-estado-btns">
+        <button class="gj-est-btn balance" onclick="gjSelEstado('balance')">
+          <span class="geb-icon">⚖️</span>
+          Balance de Situación
+          <span class="geb-sub">Activos · Pasivos · Patrimonio</span>
+        </button>
+        <button class="gj-est-btn edr" onclick="gjSelEstado('edr')">
+          <span class="geb-icon">📈</span>
+          Estado de Resultados
+          <span class="geb-sub">Ingresos · Gastos · Utilidad</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="step2-area" style="display:none;">
+      <div class="step-label" id="step2-label">Paso 2: ¿En qué sección del Balance va?</div>
+      <div class="gj-seccion-btns" id="gj-seccion-btns"></div>
+    </div>
+
+    <div class="gj-feedback" id="gj-feedback"></div>
+    <button class="gj-next-btn" id="gj-next-btn" onclick="gjNext()">▶ Siguiente cuenta</button>
+
+    <div class="live-score">
+      <div class="ls-item cor"><strong id="ls-cor">0</strong><span>✅ Correctas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item err"><strong id="ls-err">0</strong><span>❌ Incorrectas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item"><strong id="ls-rem">10</strong><span>Restantes</span></div>
+    </div>
+  </div>
+
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-emoji" id="r-emoji"></div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div>
+    <div class="r-msg"   id="r-msg"></div>
+    <div class="r-stats" id="r-stats"></div>
+    <button class="retry-btn" onclick="gjInit()">🔄 Nuevo intento</button>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+function showTab(n, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (n === 'edr') animateEdrBars();
+  if (n === 'conexion') resetConexion();
+}
+
+// ─── SECTIONS toggle ───
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ─── BALANCE row detail ───
+function showRowDetail(title, sec, val, desc) {
+  const d = document.getElementById('row-detail');
+  document.getElementById('rd-title').textContent = title;
+  document.getElementById('rd-sec').textContent = sec;
+  document.getElementById('rd-val').textContent = val;
+  document.getElementById('rd-desc').textContent = desc;
+  d.style.display = 'block';
+  d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── EDR detail ───
+function showEdrDetail(title, sec, val, desc) {
+  const d = document.getElementById('edr-detail');
+  document.getElementById('edrd-title').textContent = title;
+  document.getElementById('edrd-sec').textContent = sec;
+  document.getElementById('edrd-val').textContent = val;
+  document.getElementById('edrd-desc').textContent = desc;
+  d.style.display = 'block';
+  d.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ─── EDR bars ───
+function animateEdrBars() {
+  const max = 12000;
+  setTimeout(() => { document.getElementById('bar-ing').style.width = '100%'; }, 200);
+  setTimeout(() => { document.getElementById('bar-gas').style.width = (3500 / max * 100) + '%'; }, 500);
+  setTimeout(() => { document.getElementById('bar-util').style.width = (8500 / max * 100) + '%'; }, 800);
+}
+
+// ─── CONEXIÓN animation ───
+function resetConexion() {
+  ['uf-er', 'uf-util', 'uf-pat'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['uf-arr1', 'uf-arr2'].forEach(id => document.getElementById(id).classList.remove('show'));
+}
+function animarConexion() {
+  resetConexion();
+  setTimeout(() => document.getElementById('uf-er').classList.add('show'), 200);
+  setTimeout(() => document.getElementById('uf-arr1').classList.add('show'), 700);
+  setTimeout(() => document.getElementById('uf-util').classList.add('show'), 1000);
+  setTimeout(() => document.getElementById('uf-arr2').classList.add('show'), 1500);
+  setTimeout(() => document.getElementById('uf-pat').classList.add('show'), 1800);
+}
+
+// ─── MINI-JUEGO data ───
+const gjQuestions = [
+  { icon: '💵', name: 'Caja y Bancos', amount: 'L 44,500', hint: 'Efectivo disponible en la empresa',
+    estado: 'balance', seccion: 'Activo Corriente',
+    why: 'El efectivo es un Activo Corriente — se presenta en el Balance de Situación.' },
+  { icon: '📦', name: 'Inventario de Mercadería', amount: 'L 8,000', hint: 'Productos para la venta',
+    estado: 'balance', seccion: 'Activo Corriente',
+    why: 'El inventario es un Activo Corriente — se presenta en el Balance de Situación.' },
+  { icon: '💻', name: 'Equipo de Cómputo', amount: 'L 6,000', hint: 'Computadoras de la empresa',
+    estado: 'balance', seccion: 'Activo No Corriente',
+    why: 'El equipo de cómputo es un Activo No Corriente (vida útil > 1 año) — va en el Balance.' },
+  { icon: '🧾', name: 'Cuentas por Cobrar', amount: 'L 6,000', hint: 'Facturas pendientes de clientes',
+    estado: 'balance', seccion: 'Activo Corriente',
+    why: 'Las cuentas por cobrar a corto plazo son Activo Corriente — van en el Balance.' },
+  { icon: '🏦', name: 'Préstamo Bancario L/P', amount: 'L 25,000', hint: 'Crédito Banco de Honduras, S.A. a 5 años',
+    estado: 'balance', seccion: 'Pasivo No Corriente',
+    why: 'Un préstamo a largo plazo es Pasivo No Corriente — va en el Balance de Situación.' },
+  { icon: '📋', name: 'Cuentas por Pagar', amount: 'L 4,000', hint: 'Facturas a proveedores pendientes',
+    estado: 'balance', seccion: 'Pasivo Corriente',
+    why: 'Las cuentas por pagar a corto plazo son Pasivo Corriente — van en el Balance.' },
+  { icon: '💼', name: 'Capital Social', amount: 'L 50,000', hint: 'Aportación del socio fundador',
+    estado: 'balance', seccion: 'Patrimonio',
+    why: 'El Capital Social es parte del Patrimonio — se presenta en el Balance de Situación.' },
+  { icon: '🔩', name: 'Ingresos por Ventas', amount: 'L 12,000', hint: 'Ventas del período',
+    estado: 'edr', seccion: 'Ingresos Operacionales',
+    why: 'Los ingresos por ventas se presentan en el Estado de Resultados, sección Ingresos.' },
+  { icon: '🏪', name: 'Gasto de Alquiler', amount: 'L 3,500', hint: 'Pago mensual del local',
+    estado: 'edr', seccion: 'Gastos Operacionales',
+    why: 'El gasto de alquiler se presenta en el Estado de Resultados, sección Gastos.' },
+  { icon: '💡', name: 'Gasto de Electricidad', amount: 'L 800', hint: 'Factura ENEE del mes',
+    estado: 'edr', seccion: 'Gastos Operacionales',
+    why: 'Los gastos operativos como la electricidad van en el Estado de Resultados.' },
+  { icon: '💰', name: 'Utilidades Retenidas', amount: 'L 8,500', hint: 'Ganancias no distribuidas',
+    estado: 'balance', seccion: 'Patrimonio',
+    why: 'Las utilidades retenidas forman parte del Patrimonio en el Balance de Situación.' },
+  { icon: '🚛', name: 'Vehículo de Reparto', amount: 'L 120,000', hint: 'Camión de distribución',
+    estado: 'balance', seccion: 'Activo No Corriente',
+    why: 'Los vehículos son Activos No Corrientes (vida útil > 1 año) — van en el Balance.' },
+];
+
+const seccionesBalance = ['Activo Corriente', 'Activo No Corriente', 'Pasivo Corriente', 'Pasivo No Corriente', 'Patrimonio'];
+const seccionesEdr     = ['Ingresos Operacionales', 'Gastos Operacionales'];
+const secColores = {
+  'Activo Corriente':     { bg: 'var(--activo)',   sel: '#fff' },
+  'Activo No Corriente':  { bg: '#0A4F6B',         sel: '#fff' },
+  'Pasivo Corriente':     { bg: 'var(--pasivo)',   sel: '#fff' },
+  'Pasivo No Corriente':  { bg: '#8B1A10',         sel: '#fff' },
+  'Patrimonio':           { bg: 'var(--patrim)',   sel: '#fff' },
+  'Ingresos Operacionales':{ bg: 'var(--ingreso)', sel: '#fff' },
+  'Gastos Operacionales': { bg: 'var(--gasto)',    sel: '#fff' },
+};
+
+let gjDeck = [], gjIdx = 0, gjCorr = 0, gjErr = 0;
+let gjSelEstadoVal = null, gjSelSeccionVal = null;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+function gjInit() {
+  gjDeck = shuffle(gjQuestions).slice(0, 10);
+  gjIdx = 0; gjCorr = 0; gjErr = 0;
+  document.getElementById('gj-result').style.display = 'none';
+  document.getElementById('gj-area').style.display = 'block';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  updateLive();
+  gjLoadQ();
+}
+
+function gjLoadQ() {
+  if (gjIdx >= gjDeck.length) { gjEnd(); return; }
+  const q = gjDeck[gjIdx];
+  gjSelEstadoVal = null; gjSelSeccionVal = null;
+  document.getElementById('gc-seq').textContent = `Cuenta ${gjIdx + 1} de ${gjDeck.length}`;
+  document.getElementById('gc-icon').textContent = q.icon;
+  document.getElementById('gc-name').textContent = q.name;
+  document.getElementById('gc-amount').textContent = q.amount;
+  document.getElementById('gc-hint').textContent = q.hint;
+  document.getElementById('gj-card').style.animation = 'none';
+  void document.getElementById('gj-card').offsetWidth;
+  document.getElementById('gj-card').style.animation = 'cardIn .3s ease';
+  document.getElementById('step1-area').style.display = 'block';
+  document.getElementById('step2-area').style.display = 'none';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  document.querySelectorAll('.gj-est-btn').forEach(b => b.disabled = false);
+  updateProgress();
+}
+
+function gjSelEstado(estado) {
+  gjSelEstadoVal = estado;
+  document.querySelectorAll('.gj-est-btn').forEach(b => b.disabled = true);
+  const q = gjDeck[gjIdx];
+  const estadoOk = estado === q.estado;
+  // Build step 2
+  const secciones = estado === 'balance' ? seccionesBalance : seccionesEdr;
+  const label2 = document.getElementById('step2-label');
+  label2.textContent = `Paso 2: ¿En qué sección del ${estado === 'balance' ? 'Balance' : 'Estado de Resultados'} va?`;
+  const btns = document.getElementById('gj-seccion-btns');
+  btns.innerHTML = secciones.map(s => {
+    const c = secColores[s];
+    return `<button class="gj-sec-btn" onclick="gjSelSeccion('${s}')" style="border-color:${c.bg};">${s}</button>`;
+  }).join('');
+  document.getElementById('step1-area').style.display = 'none';
+  document.getElementById('step2-area').style.display = 'block';
+  // If wrong estado, mark wrong immediately after sec selection
+  if (!estadoOk) { gjSelEstadoVal = estado; } // keep for feedback
+}
+
+function gjSelSeccion(seccion) {
+  gjSelSeccionVal = seccion;
+  document.querySelectorAll('.gj-sec-btn').forEach(b => b.disabled = true);
+  const q = gjDeck[gjIdx];
+  const estadoOk = gjSelEstadoVal === q.estado;
+  const seccionOk = seccion === q.seccion;
+  const allOk = estadoOk && seccionOk;
+  if (allOk) gjCorr++; else gjErr++;
+  const fb = document.getElementById('gj-feedback');
+  fb.className = 'gj-feedback ' + (allOk ? 'ok' : 'bad');
+  fb.innerHTML = allOk
+    ? `✅ ¡Correcto! ${q.why}`
+    : `❌ No es correcto. ${q.name} va en el <strong>${q.estado === 'balance' ? 'Balance de Situación' : 'Estado de Resultados'}</strong>, sección <strong>${q.seccion}</strong>.<br><span style="font-size:.88rem;">${q.why}</span>`;
+  updateLive();
+  gjIdx++;
+  document.getElementById('gj-next-btn').className = 'gj-next-btn show';
+  updateProgress();
+}
+
+function gjNext() {
+  gjLoadQ();
+}
+
+function updateProgress() {
+  const pct = gjDeck.length > 0 ? (gjIdx / gjDeck.length * 100) : 0;
+  document.getElementById('gj-prog-fill').style.width = pct + '%';
+  document.getElementById('gj-prog-lbl').textContent = `${gjIdx} / ${gjDeck.length}`;
+}
+
+function updateLive() {
+  document.getElementById('ls-cor').textContent = gjCorr;
+  document.getElementById('ls-err').textContent = gjErr;
+  document.getElementById('ls-rem').textContent = Math.max(0, gjDeck.length - gjIdx);
+}
+
+function gjEnd() {
+  document.getElementById('gj-area').style.display = 'none';
+  const res = document.getElementById('gj-result');
+  res.style.display = 'block';
+  const pct = Math.round(gjCorr / gjDeck.length * 100);
+  document.getElementById('r-emoji').textContent = pct === 100 ? '🏆' : pct >= 70 ? '🎉' : '📚';
+  document.getElementById('r-title').textContent = pct >= 70 ? '¡Excelente clasificación de estados!' : 'Sigue practicando la ubicación de cuentas';
+  document.getElementById('r-score').textContent = `${gjCorr}/${gjDeck.length}`;
+  document.getElementById('r-score').style.color = pct >= 70 ? 'var(--patrim)' : 'var(--pasivo)';
+  document.getElementById('r-msg').textContent =
+    pct === 100 ? '¡Perfecto! Identificas con precisión el estado y sección de cada cuenta.'
+    : pct >= 70 ? `${pct}% de aciertos. Revisa el Balance y el Estado de Resultados interactivos.`
+    : `${pct}% de aciertos. Explora las pestañas de Balance y Estado de Resultados antes de reintentar.`;
+  document.getElementById('r-stats').innerHTML = `
+    <div class="r-stat"><strong style="color:var(--patrim);">${gjCorr}</strong><span>✅ Correctas</span></div>
+    <div class="r-stat"><strong style="color:var(--pasivo);">${gjErr}</strong><span>❌ Incorrectas</span></div>
+    <div class="r-stat"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  if (pct >= 70) spawnConfetti();
+}
+
+function spawnConfetti() {
+  const bg = document.getElementById('confetti-bg');
+  bg.innerHTML = '';
+  const colors = ['#F4A811', '#1A8A4A', '#0D6B8C', '#C0392B', '#E67E22', '#fff', '#a8efc1'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const sz = 6 + Math.random() * 8;
+    el.style.cssText = `left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+gjInit();
+// Animate bars on page if EDR tab is first shown
+</script>
+</body>
+</html>

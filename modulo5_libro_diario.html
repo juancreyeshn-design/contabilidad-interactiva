@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 5 — Libro Diario y Partida Doble | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --debe:     #0D6B8C; --debe-lt:  #E0F4FA;
+  --haber:    #1A8A4A; --haber-lt: #E4F9ED;
+  --gold:     #F4A811; --gold-lt:  #FFF8E0;
+  --dark:     #1B2638;
+  --bg:       #F5F7FA;
+  --card-r:   16px;
+  --shadow:   0 6px 24px rgba(0,0,0,0.11);
+  --activo:   #0D6B8C; --pasivo: #C0392B;
+  --patrim:   #1A8A4A; --ingreso:#E67E22;
+  --gasto:    #8E44AD; --isv:    #D97706;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.75rem;padding:5px 13px;border-radius:30px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.4rem;font-weight:900;}
+header p{font-size:.85rem;color:#b0b8c4;margin-top:2px;}
+
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e4ea;padding:0 20px;gap:4px;overflow-x:auto;}
+.tab-btn{padding:16px 20px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;color:#6b7684;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold);}
+
+.section{display:none;padding:24px 18px 64px;max-width:1080px;margin:0 auto;}
+.section.active{display:block;}
+
+/* ISV note */
+.isv-note{background:#FEF3C7;border-left:4px solid var(--isv);border-radius:0 12px 12px 0;padding:12px 16px;font-size:.85rem;color:#6b3200;line-height:1.6;margin-bottom:18px;}
+.isv-note strong{color:#5a2a00;}
+.isv-chip{display:inline-block;background:var(--isv);color:#fff;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700;margin-left:4px;}
+
+/* BALANZA */
+.balance-stage{display:flex;flex-direction:column;align-items:center;margin:28px 0;}
+.balance-beam-wrap{position:relative;width:340px;height:180px;}
+.fulcrum{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:48px solid var(--dark);}
+.beam{position:absolute;bottom:48px;left:50%;transform:translateX(-50%) rotate(0deg);transform-origin:center center;width:300px;height:8px;background:var(--dark);border-radius:4px;transition:transform .6s cubic-bezier(.4,0,.2,1);}
+.pan.left{left:0;position:absolute;bottom:56px;width:90px;height:12px;background:#6b7684;border-radius:6px;}
+.pan.right{right:0;position:absolute;bottom:56px;width:90px;height:12px;background:#6b7684;border-radius:6px;}
+.pan-label{position:absolute;bottom:68px;font-weight:900;font-size:1rem;}
+.pan-label.left{left:10px;color:var(--debe);}
+.pan-label.right{right:10px;color:var(--haber);}
+.balance-status{margin-top:20px;font-size:1.1rem;font-weight:900;padding:10px 28px;border-radius:30px;transition:all .4s;}
+.balance-status.eq{background:var(--haber-lt);color:var(--haber);}
+.balance-status.neq{background:#FDECEA;color:#C0392B;}
+
+/* Concept */
+.concept-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:600px){.concept-row{grid-template-columns:1fr;}}
+.concept-card{border-radius:var(--card-r);padding:22px 20px;box-shadow:var(--shadow);}
+.concept-card.debe{background:var(--debe);color:#fff;}
+.concept-card.haber{background:var(--haber);color:#fff;}
+.concept-card h3{font-size:1.25rem;font-weight:900;margin-bottom:6px;}
+.concept-card p{font-size:.9rem;opacity:.88;line-height:1.55;}
+.concept-card .cc-icon{font-size:2.4rem;margin-bottom:8px;display:block;}
+
+/* Diario anatomy */
+.diario-anatomy{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px;}
+.da-head{background:var(--dark);color:#fff;display:grid;grid-template-columns:100px 1fr 130px 130px;padding:12px 16px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.da-row{display:grid;grid-template-columns:100px 1fr 130px 130px;padding:11px 16px;border-bottom:1px solid #edf0f4;font-size:.93rem;align-items:center;}
+.da-row:last-child{border-bottom:none;}
+.da-row.isv-row{background:#FEF9EE;}
+.cell-debe{color:var(--debe);font-family:'Source Code Pro',monospace;font-weight:700;text-align:right;}
+.cell-haber{color:var(--haber);font-family:'Source Code Pro',monospace;font-weight:700;text-align:right;}
+.cell-sub{padding-left:24px;color:#6b7684;}
+.cell-isv{padding-left:24px;color:var(--isv);font-weight:700;}
+.da-total{display:grid;grid-template-columns:100px 1fr 130px 130px;padding:10px 16px;background:var(--bg);border-top:2px solid var(--dark);}
+.cell-total{font-family:'Source Code Pro',monospace;font-weight:900;text-align:right;}
+.cell-total.debe{color:var(--debe);}
+.cell-total.haber{color:var(--haber);}
+
+/* Casos */
+.casos-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.caso-tab{padding:10px 16px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;color:#6b7684;transition:all .2s;}
+.caso-tab.active{background:var(--dark);color:#fff;border-color:var(--dark);}
+
+.caso-desc{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;margin-bottom:18px;box-shadow:var(--shadow);}
+.caso-desc .cd-tag{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--gold);margin-bottom:6px;}
+.caso-desc h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+.caso-desc p{font-size:.88rem;color:#b0b8c4;}
+
+/* Paso */
+.paso-stage{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;}
+.paso-header{display:grid;grid-template-columns:36px 1fr 120px 120px;padding:10px 14px;background:var(--bg);border-bottom:2px solid #e0e4ea;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9aa3ad;}
+.paso-row{display:grid;grid-template-columns:36px 1fr 120px 120px;padding:11px 14px;border-bottom:1px solid #f0f3f7;align-items:center;font-size:.9rem;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;}
+.paso-row.isv-paso{background:#FEF9EE;}
+.paso-row.show{opacity:1;transform:none;}
+.pr-num{background:var(--dark);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;}
+.pr-cuenta{font-weight:700;}
+.pr-cuenta.sub{padding-left:20px;font-weight:600;color:#6b7684;}
+.pr-cuenta.isv{padding-left:20px;font-weight:700;color:var(--isv);}
+.pr-debe{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.pr-haber{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.paso-total{display:grid;grid-template-columns:36px 1fr 120px 120px;padding:10px 14px;background:var(--bg);border-top:2px solid var(--dark);}
+.paso-total span{font-family:'Source Code Pro',monospace;font-weight:900;}
+.pt-debe{color:var(--debe);text-align:right;}
+.pt-haber{color:var(--haber);text-align:right;}
+
+.eq-badge{display:none;text-align:center;padding:12px;border-radius:12px;font-size:1rem;font-weight:900;animation:popIn .3s ease;}
+.eq-badge.show{display:block;}
+.eq-badge.ok{background:var(--haber-lt);color:var(--haber);}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+.paso-controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.paso-btn{padding:12px 24px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);}
+.paso-btn.primary{background:var(--dark);color:#fff;}
+.paso-btn.primary:hover{background:#2a3a54;}
+.paso-btn.secondary{background:#fff;color:var(--dark);border:2px solid #dce0e8;}
+.paso-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.paso-explanation{background:var(--debe-lt);border-radius:12px;padding:13px 17px;font-size:.87rem;color:var(--dark);line-height:1.6;margin-bottom:6px;display:none;}
+.paso-explanation.haber-exp{background:var(--haber-lt);}
+.paso-explanation.isv-exp{background:#FEF3C7;}
+.paso-explanation.show{display:block;}
+
+/* Constructor */
+.catalog-panel{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:16px;}
+.catalog-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:12px;}
+.catalog-group{margin-bottom:12px;}
+.catalog-group-label{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:4px 8px;border-radius:6px;display:inline-block;}
+.catalog-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;margin-bottom:4px;cursor:grab;font-size:.88rem;font-weight:700;transition:transform .15s,box-shadow .15s;user-select:none;touch-action:none;}
+.catalog-item:hover{transform:translateX(3px);box-shadow:0 3px 12px rgba(0,0,0,.12);}
+.catalog-item.activo{background:#EBF5FF;color:var(--activo);}
+.catalog-item.pasivo{background:#FFF0EF;color:var(--pasivo);}
+.catalog-item.patrim{background:#F0FFF5;color:var(--patrim);}
+.catalog-item.ingreso{background:#FFF5E6;color:var(--ingreso);}
+.catalog-item.gasto{background:#F8F0FF;color:var(--gasto);}
+.catalog-item.isv{background:#FEF3C7;color:var(--isv);}
+.ci-drag{color:#c0c8d4;font-size:.9rem;}
+
+.asiento-panel{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;}
+.asiento-top{background:var(--dark);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.asiento-top h3{font-size:1rem;font-weight:900;}
+.asiento-cols{display:grid;grid-template-columns:1fr 1fr;min-height:220px;}
+.asiento-col{padding:14px;display:flex;flex-direction:column;gap:8px;}
+.asiento-col.debe-col{border-right:2px solid #e0e4ea;background:var(--debe-lt);}
+.asiento-col.haber-col{background:var(--haber-lt);}
+.asiento-col-title{font-weight:900;font-size:.88rem;text-align:center;padding-bottom:8px;border-bottom:2px solid currentColor;margin-bottom:4px;}
+.asiento-col.debe-col .asiento-col-title{color:var(--debe);}
+.asiento-col.haber-col .asiento-col-title{color:var(--haber);}
+.drop-zone-inner{flex:1;min-height:120px;border:2px dashed rgba(0,0,0,.1);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;transition:background .2s,border-color .2s;}
+.drop-zone-inner.drag-over{background:rgba(255,255,255,.6);border-color:var(--gold);}
+.dz-hint{text-align:center;color:#b0b8c4;font-size:.82rem;padding:20px 10px;}
+.placed-item{border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:700;animation:slideIn .2s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.placed-item .pi-remove{margin-left:auto;cursor:pointer;opacity:.5;font-size:.8rem;}
+.placed-item .pi-remove:hover{opacity:1;}
+.placed-item input[type=number]{border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:4px 8px;width:100px;font-family:'Source Code Pro',monospace;font-size:.88rem;background:#fff;color:var(--dark);}
+
+.asiento-footer{padding:14px 18px;background:var(--bg);border-top:2px solid #e0e4ea;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.at-item{text-align:center;}
+.at-item .at-val{font-family:'Source Code Pro',monospace;font-weight:900;font-size:1.1rem;display:block;}
+.at-item .at-lbl{font-size:.75rem;color:#9aa3ad;}
+.at-item .at-val.debe{color:var(--debe);}
+.at-item .at-val.haber{color:var(--haber);}
+.at-item .at-val.ok{color:var(--haber);}
+.at-item .at-val.bad{color:#C0392B;}
+.validate-btn{padding:12px 24px;border-radius:10px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.validate-btn:hover{background:#2a3a54;}
+.clear-btn{padding:12px 16px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;color:#6b7684;}
+.validation-result{padding:14px 18px;font-size:1rem;font-weight:700;text-align:center;display:none;}
+.validation-result.ok{background:var(--haber-lt);color:var(--haber);display:block;}
+.validation-result.bad{background:#FDECEA;color:#C0392B;display:block;}
+
+.libro-diario-table{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;margin-top:18px;}
+.ldt-header{display:grid;grid-template-columns:110px 1fr 120px 120px;padding:11px 16px;background:var(--dark);color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.ldt-row{display:grid;grid-template-columns:110px 1fr 120px 120px;padding:10px 16px;border-bottom:1px solid #edf0f4;font-size:.88rem;align-items:center;}
+.ldt-row.isv-ldt{background:#FEF9EE;}
+.ldt-separator{padding:6px 16px;background:var(--bg);font-size:.75rem;color:#9aa3ad;border-bottom:1px solid #e0e4ea;}
+.ldt-total-row{display:grid;grid-template-columns:110px 1fr 120px 120px;padding:12px 16px;background:var(--bg);border-top:3px solid var(--dark);font-weight:900;}
+
+/* Mini-juego */
+.gj-header-bar{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:22px;box-shadow:var(--shadow);}
+.gj-header-bar .gh-icon{font-size:2.2rem;}
+.gj-header-bar h3{font-size:1.1rem;font-weight:900;}
+.gj-header-bar p{font-size:.87rem;color:#b0b8c4;margin-top:3px;}
+.gj-progress{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.prog-bar-wrap{flex:1;background:#e0e4ea;border-radius:99px;height:10px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--debe),var(--haber));transition:width .4s ease;width:0%;}
+.prog-label{font-size:.9rem;font-weight:700;color:#6b7684;white-space:nowrap;}
+.gj-op-card{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:22px;text-align:center;box-shadow:var(--shadow);margin-bottom:20px;animation:cardIn .3s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px) scale(.97);}to{opacity:1;transform:none;}}
+.goc-num{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:6px;}
+.goc-emoji{font-size:2.6rem;display:block;margin-bottom:8px;}
+.goc-text{font-size:1.05rem;font-weight:900;margin-bottom:4px;}
+.goc-amount{font-family:'Source Code Pro',monospace;font-size:1.2rem;color:var(--gold);}
+.choices-label{font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding:6px 12px;border-radius:8px;display:inline-block;}
+.choices-label.debe-lbl{background:var(--debe-lt);color:var(--debe);}
+.choices-label.haber-lbl{background:var(--haber-lt);color:var(--haber);}
+.choices-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.choice-chip{padding:10px 15px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.choice-chip:hover{transform:translateY(-2px);}
+.choice-chip.selected-debe{background:var(--debe);color:#fff;border-color:var(--debe);}
+.choice-chip.selected-haber{background:var(--haber);color:#fff;border-color:var(--haber);}
+.choice-chip.correct-chip{background:#d4edda;color:#155724;border-color:#a8efc1;}
+.choice-chip.wrong-chip{background:#f8d7da;color:#721c24;border-color:#f5b3ae;}
+.gj-submit-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;margin-bottom:12px;}
+.gj-submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+.gj-feedback-box{border-radius:12px;padding:14px 18px;font-size:.93rem;font-weight:700;display:none;animation:popIn .25s ease;line-height:1.5;margin-bottom:10px;}
+.gj-feedback-box.ok{background:var(--haber-lt);color:var(--haber);display:block;}
+.gj-feedback-box.bad{background:#FDECEA;color:#C0392B;display:block;}
+.gj-next-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--debe);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;display:none;margin-top:8px;}
+.gj-next-btn.show{display:block;}
+.gj-result{display:none;background:#fff;border-radius:var(--card-r);padding:36px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.confetti-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(450px) rotate(720deg);opacity:0;}}
+.r-emoji{font-size:3.5rem;margin-bottom:8px;}
+.r-title{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+.r-score{font-size:3.8rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.r-msg{font-size:1rem;color:#3d4a5c;margin-bottom:20px;}
+.r-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.r-stat{background:var(--bg);border-radius:12px;padding:12px 20px;}
+.r-stat strong{display:block;font-size:1.4rem;font-weight:900;}
+.r-stat span{font-size:.8rem;color:#6b7684;}
+.retry-btn{padding:14px 40px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.retry-btn:hover{background:#2a3a54;}
+
+.builder-layout{display:grid;grid-template-columns:260px 1fr;gap:18px;}
+@media(max-width:760px){.builder-layout{grid-template-columns:1fr;}}
+.asiento-fecha input{border:none;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;color:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 5</div>
+    <h1>Módulo 5: El Libro Diario y la Partida Doble</h1>
+    <p>DEBE = HABER siempre · Asientos con ISV 15% (Práctica Hondureña Real)</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">⚖️ Concepto</button>
+  <button class="tab-btn" onclick="showTab('casos',this)">📋 Casos Prácticos</button>
+  <button class="tab-btn" onclick="showTab('constructor',this)">🔧 Constructor</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══ TAB 1: CONCEPTO ══ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="isv-note">
+    🧾 <strong>ISV en Honduras — Impuesto Sobre Ventas 15%:</strong> La Ley del ISV (Decreto 24-98 y reformas SAR) obliga a registrar el ISV como cuenta separada en cada compra/venta.
+    En <strong>ventas</strong>: el ISV cobrado al cliente es un pasivo → <span class="isv-chip">ISV por Pagar</span>.
+    En <strong>compras</strong>: el ISV pagado al proveedor es un activo recuperable → <span class="isv-chip">ISV Acreditable</span>.
+    El ISV neto (por pagar − acreditable) se remesa mensualmente al SAR.
+  </div>
+
+  <!-- Balanza -->
+  <div class="balance-stage">
+    <div style="text-align:center;margin-bottom:14px;font-size:1rem;color:#6b7684;">Toca los botones para experimentar con la Partida Doble</div>
+    <div class="balance-beam-wrap" id="beam-wrap">
+      <div class="beam" id="beam"></div>
+      <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:48px solid var(--dark);"></div>
+      <div class="pan left" id="pan-left"></div>
+      <div class="pan right" id="pan-right"></div>
+      <div class="pan-label left" id="lbl-left">DEBE<br><span id="val-left" style="font-family:'Source Code Pro',monospace;font-size:.9rem;">L 0</span></div>
+      <div class="pan-label right" id="lbl-right">HABER<br><span id="val-right" style="font-family:'Source Code Pro',monospace;font-size:.9rem;">L 0</span></div>
+    </div>
+    <div class="balance-status eq" id="balance-status">⚖️ Equilibrado: DEBE = HABER</div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center;">
+      <button onclick="addBalance('debe',5000)" style="padding:11px 18px;border-radius:10px;border:none;background:var(--debe);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;">+ L5,000 al DEBE</button>
+      <button onclick="addBalance('haber',5000)" style="padding:11px 18px;border-radius:10px;border:none;background:var(--haber);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;">+ L5,000 al HABER</button>
+      <button onclick="addBalance('debe',3000)" style="padding:11px 18px;border-radius:10px;border:none;background:var(--debe);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;">+ L3,000 al DEBE</button>
+      <button onclick="addBalance('haber',3000)" style="padding:11px 18px;border-radius:10px;border:none;background:var(--haber);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;">+ L3,000 al HABER</button>
+      <button onclick="resetBalance()" style="padding:11px 18px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;color:#6b7684;">🔄 Reiniciar</button>
+    </div>
+  </div>
+
+  <div class="concept-row">
+    <div class="concept-card debe"><span class="cc-icon">←</span><h3>DEBE (Cargo)</h3><p>Lo que la empresa recibe o lo que gasta. Lado izquierdo de la cuenta T. Activos y Gastos aumentan por el Debe.</p></div>
+    <div class="concept-card haber"><span class="cc-icon">→</span><h3>HABER (Abono)</h3><p>Lo que la empresa entrega o lo que genera. Lado derecho de la cuenta T. Pasivos, Patrimonio e Ingresos aumentan por el Haber.</p></div>
+  </div>
+
+  <!-- Anatomía con ISV -->
+  <div style="font-size:1.05rem;font-weight:900;margin-bottom:12px;text-align:center;">Asiento con ISV — Venta de L 5,000 + ISV 15% = Total L 5,600</div>
+  <div class="diario-anatomy">
+    <div class="da-head"><span>Fecha</span><span>Cuenta</span><span style="text-align:right;">Debe (L)</span><span style="text-align:right;">Haber (L)</span></div>
+    <div class="da-row"><span style="color:#9aa3ad;font-size:.85rem;">15/06/2025</span><span style="font-weight:700;color:var(--activo);">💵 Caja y Bancos</span><span class="cell-debe">5,600</span><span></span></div>
+    <div class="da-row"><span></span><span class="cell-sub">📈 Ingresos por Ventas</span><span></span><span class="cell-haber">5,000</span></div>
+    <div class="da-row isv-row"><span></span><span class="cell-isv">🧾 ISV por Pagar (15%)</span><span></span><span class="cell-haber" style="color:var(--isv);">750</span></div>
+    <div class="da-row" style="background:#fffbe6;"><span></span><span style="font-size:.82rem;color:#9aa3ad;font-style:italic;">Concepto: Venta de materiales · Precio + ISV 15% cobrado al cliente</span><span></span><span></span></div>
+    <div class="da-total"><span></span><span style="font-size:.82rem;color:#9aa3ad;">TOTALES</span><span class="cell-total debe">L 5,600</span><span class="cell-total haber">L 5,600</span></div>
+  </div>
+  <div style="margin-top:8px;margin-bottom:24px;">
+  <div class="diario-anatomy">
+    <div style="background:var(--dark);color:var(--gold);padding:10px 16px;font-size:.85rem;font-weight:900;">Asiento con ISV — Compra de L 8,000 + ISV 15% = Total L 9,200</div>
+    <div class="da-head"><span>Fecha</span><span>Cuenta</span><span style="text-align:right;">Debe (L)</span><span style="text-align:right;">Haber (L)</span></div>
+    <div class="da-row"><span style="color:#9aa3ad;font-size:.85rem;">15/06/2025</span><span style="font-weight:700;color:var(--activo);">📦 Inventario Mercadería</span><span class="cell-debe">8,000</span><span></span></div>
+    <div class="da-row isv-row"><span></span><span class="cell-isv">🧾 ISV Acreditable (15%)</span><span class="cell-debe" style="color:var(--isv);">960</span><span></span></div>
+    <div class="da-row"><span></span><span class="cell-sub">💵 Caja y Bancos</span><span></span><span class="cell-haber">8,960</span></div>
+    <div class="da-total"><span></span><span style="font-size:.82rem;color:#9aa3ad;">TOTALES</span><span class="cell-total debe">L 9,200</span><span class="cell-total haber">L 9,200</span></div>
+  </div>
+  </div>
+</div>
+
+<!-- ══ TAB 2: CASOS PRÁCTICOS ══ -->
+<div id="tab-casos" class="section">
+  <div class="isv-note">🧾 <strong>Todos los asientos incluyen ISV 15%</strong> conforme a la práctica contable hondureña real. El precio pactado es la base gravable; el ISV se calcula sobre ese precio y se registra en cuenta separada.</div>
+  <div class="casos-nav" id="casos-nav"></div>
+  <div id="caso-content"></div>
+</div>
+
+<!-- ══ TAB 3: CONSTRUCTOR ══ -->
+<div id="tab-constructor" class="section">
+  <div style="background:var(--dark);color:#fff;border-radius:var(--card-r);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+    <span style="font-size:2rem;">🔧</span>
+    <div><h3 style="font-size:1.05rem;font-weight:900;">Constructor de Asientos</h3><p style="font-size:.87rem;color:#b0b8c4;margin-top:3px;">Arrastra cuentas al DEBE o HABER, incluye ISV cuando aplique, ingresa montos y valida que el asiento cuadre.</p></div>
+  </div>
+  <div class="builder-layout">
+    <div class="catalog-panel">
+      <div class="catalog-title">📂 Catálogo de Cuentas</div>
+      <div class="catalog-group">
+        <div class="catalog-group-label" style="background:#EBF5FF;color:var(--activo);">🏦 Activo</div>
+        <div class="catalog-item activo" draggable="true" data-cuenta="Caja y Bancos" data-grupo="activo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>💵 Caja y Bancos</div>
+        <div class="catalog-item activo" draggable="true" data-cuenta="Cuentas por Cobrar" data-grupo="activo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🧾 Cuentas por Cobrar</div>
+        <div class="catalog-item activo" draggable="true" data-cuenta="Inventario de Mercadería" data-grupo="activo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>📦 Inventario Mercadería</div>
+        <div class="catalog-item activo" draggable="true" data-cuenta="Equipo de Cómputo" data-grupo="activo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>💻 Equipo de Cómputo</div>
+        <div class="catalog-item isv"    draggable="true" data-cuenta="ISV Acreditable" data-grupo="activo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🧾 ISV Acreditable (15%)</div>
+      </div>
+      <div class="catalog-group">
+        <div class="catalog-group-label" style="background:#FFF0EF;color:var(--pasivo);">📋 Pasivo</div>
+        <div class="catalog-item pasivo" draggable="true" data-cuenta="Cuentas por Pagar" data-grupo="pasivo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>📋 Cuentas por Pagar</div>
+        <div class="catalog-item pasivo" draggable="true" data-cuenta="Préstamo Bancario" data-grupo="pasivo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🏦 Préstamo Bancario</div>
+        <div class="catalog-item isv"    draggable="true" data-cuenta="ISV por Pagar" data-grupo="pasivo" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🧾 ISV por Pagar (15%)</div>
+      </div>
+      <div class="catalog-group">
+        <div class="catalog-group-label" style="background:#F0FFF5;color:var(--patrim);">👤 Patrimonio</div>
+        <div class="catalog-item patrim" draggable="true" data-cuenta="Capital Social" data-grupo="patrim" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>💼 Capital Social</div>
+      </div>
+      <div class="catalog-group">
+        <div class="catalog-group-label" style="background:#FFF5E6;color:var(--ingreso);">📈 Ingresos</div>
+        <div class="catalog-item ingreso" draggable="true" data-cuenta="Ingresos por Ventas" data-grupo="ingreso" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>📈 Ingresos por Ventas</div>
+        <div class="catalog-item ingreso" draggable="true" data-cuenta="Ingresos por Servicios" data-grupo="ingreso" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🔧 Ingresos por Servicios</div>
+      </div>
+      <div class="catalog-group">
+        <div class="catalog-group-label" style="background:#F8F0FF;color:var(--gasto);">📉 Gastos</div>
+        <div class="catalog-item gasto" draggable="true" data-cuenta="Gasto de Sueldos" data-grupo="gasto" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>👷 Gasto de Sueldos</div>
+        <div class="catalog-item gasto" draggable="true" data-cuenta="Gasto de Alquiler" data-grupo="gasto" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>🏪 Gasto de Alquiler</div>
+        <div class="catalog-item gasto" draggable="true" data-cuenta="Gasto de Electricidad" data-grupo="gasto" ondragstart="catDragStart(event)" ontouchstart="catTouchStart(event)" ontouchmove="catTouchMove(event)" ontouchend="catTouchEnd(event)"><span class="ci-drag">⠿</span>💡 Gasto Electricidad</div>
+      </div>
+    </div>
+    <div>
+      <div class="asiento-panel">
+        <div class="asiento-top">
+          <h3>📒 Asiento en Blanco</h3>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.85rem;opacity:.7;">Fecha:</span><input type="date" id="asiento-fecha" value="2025-06-15" class="asiento-fecha" style="border:none;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;color:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;"></div>
+        </div>
+        <div class="asiento-cols">
+          <div class="asiento-col debe-col">
+            <div class="asiento-col-title">← DEBE (Cargo)</div>
+            <div class="drop-zone-inner" id="drop-debe" ondragover="dzOver(event)" ondrop="dzDrop(event,'debe')" ondragleave="dzLeave(event)"><div class="dz-hint">Arrastra cuentas aquí</div></div>
+          </div>
+          <div class="asiento-col haber-col">
+            <div class="asiento-col-title">HABER (Abono) →</div>
+            <div class="drop-zone-inner" id="drop-haber" ondragover="dzOver(event)" ondrop="dzDrop(event,'haber')" ondragleave="dzLeave(event)"><div class="dz-hint">Arrastra cuentas aquí</div></div>
+          </div>
+        </div>
+        <div class="asiento-footer">
+          <div style="display:flex;gap:16px;">
+            <div class="at-item"><span class="at-val debe" id="total-debe">L 0</span><span class="at-lbl">Total DEBE</span></div>
+            <div class="at-item" style="font-size:1.5rem;font-weight:900;color:#c0c8d4;padding-top:4px;">=</div>
+            <div class="at-item"><span class="at-val haber" id="total-haber">L 0</span><span class="at-lbl">Total HABER</span></div>
+            <div class="at-item"><span class="at-val" id="balance-icon">⏳</span><span class="at-lbl">Estado</span></div>
+          </div>
+          <div style="display:flex;gap:10px;"><button class="clear-btn" onclick="clearAsiento()">🗑️ Limpiar</button><button class="validate-btn" onclick="validateAsiento()">✅ Validar</button></div>
+        </div>
+        <div class="validation-result" id="validation-result"></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:1rem;font-weight:900;">📒 Libro Diario acumulado</div>
+          <button onclick="clearLibro()" style="padding:8px 16px;border-radius:8px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;color:#6b7684;">🗑️ Limpiar</button>
+        </div>
+        <div class="libro-diario-table">
+          <div class="ldt-header"><span>Fecha</span><span>Cuenta</span><span style="text-align:right;">Debe (L)</span><span style="text-align:right;">Haber (L)</span></div>
+          <div id="libro-body"><div style="padding:20px;text-align:center;color:#9aa3ad;font-size:.9rem;">Valida asientos para registrarlos aquí</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 4: MINI-JUEGO ══ -->
+<div id="tab-juego" class="section">
+  <div class="gj-header-bar"><span class="gh-icon">🎯</span><div><h3>Arma el asiento correcto con ISV — 5 operaciones</h3><p>Selecciona qué cuenta va al DEBE y cuál al HABER. Los asientos incluyen el ISV 15% de Honduras.</p></div></div>
+  <div class="gj-progress"><div class="prog-bar-wrap"><div class="prog-bar" id="gj-prog-bar"></div></div><div class="prog-label" id="gj-prog-label">0 / 5</div></div>
+  <div id="gj-area">
+    <div class="gj-op-card" id="gj-op-card"><div class="goc-num" id="goc-num"></div><span class="goc-emoji" id="goc-emoji"></span><div class="goc-text" id="goc-text"></div><div class="goc-amount" id="goc-amount"></div></div>
+    <div class="choices-section" style="margin-bottom:14px;">
+      <div class="choices-label debe-lbl">← ¿Qué cuentas van al DEBE? (pueden ser varias)</div>
+      <div class="choices-grid" id="debe-choices"></div>
+    </div>
+    <div class="choices-section" style="margin-bottom:14px;">
+      <div class="choices-label haber-lbl">¿Qué cuentas van al HABER? →</div>
+      <div class="choices-grid" id="haber-choices"></div>
+    </div>
+    <button class="gj-submit-btn" id="gj-submit" onclick="gjSubmit()" disabled>✅ Verificar asiento</button>
+    <div class="gj-feedback-box" id="gj-feedback-box"></div>
+    <button class="gj-next-btn" id="gj-next-btn" onclick="gjNext()">▶ Siguiente operación</button>
+  </div>
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-emoji" id="r-emoji">🏆</div><div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div><div class="r-msg" id="r-msg"></div>
+    <div class="r-stats" id="r-stats"></div>
+    <button class="retry-btn" onclick="gjInit()">🔄 Repetir ejercicio</button>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+function showTab(n,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── BALANZA ───
+let bD=0,bH=0;
+function addBalance(s,a){if(s==='debe')bD+=a;else bH+=a;updateBalance();}
+function resetBalance(){bD=0;bH=0;updateBalance();}
+function updateBalance(){
+  document.getElementById('val-left').textContent='L '+bD.toLocaleString('es-HN');
+  document.getElementById('val-right').textContent='L '+bH.toLocaleString('es-HN');
+  const diff=bD-bH;const angle=Math.max(-25,Math.min(25,diff/15000*25));
+  document.getElementById('beam').style.transform=`translateX(-50%) rotate(${angle}deg)`;
+  const st=document.getElementById('balance-status');
+  if(diff===0){st.className='balance-status eq';st.textContent='⚖️ Equilibrado: DEBE = HABER';}
+  else{st.className='balance-status neq';st.textContent=`⚠️ Diferencia L ${Math.abs(diff).toLocaleString('es-HN')}`;}
+}
+
+// ─── CASOS CON ISV ───
+// ISV = 15% sobre precio base
+const casos=[
+  {id:0,icon:'💼',titulo:'Aportación inicial de capital en efectivo',
+   empresa:'Ferretería "El Maestro" — San Pedro Sula',
+   detalle:'El socio aporta L 50,000 en efectivo. Esta operación NO lleva ISV — no es compra/venta.',
+   norm:'NIIF PYMES Sección 22 · Sin ISV (operación de capital)',
+   isv:false,
+   pasos:[
+     {cuenta:'Caja y Bancos',sub:false,debe:50000,haber:0,tipo:'activo',exp:'La empresa recibe efectivo → Activo (Caja) AUMENTA → DEBE.'},
+     {cuenta:'Capital Social',sub:true,debe:0,haber:50000,tipo:'patrim',exp:'El dueño aporta capital → Patrimonio (Capital Social) AUMENTA → HABER.'},
+   ]},
+  {id:1,icon:'🛒',titulo:'Compra de mercadería al contado a Dist. La Colonia',
+   empresa:'Ferretería "El Maestro" — San Pedro Sula',
+   detalle:'Compra L 8,000 de materiales (precio sin ISV). ISV 15% = L 1,200. Total pagado: L 9,200.',
+   norm:'NIIF PYMES Sección 13 · Ley ISV Honduras Art. 3 — el ISV pagado en compras es ISV Acreditable',
+   isv:true, isvTipo:'compra', baseGrav:8000,
+   pasos:[
+     {cuenta:'Inventario de Mercadería',sub:false,debe:8000,haber:0,tipo:'activo',exp:'Se recibe mercadería → Activo (Inventario) AUMENTA → DEBE. Solo el precio base, SIN ISV.'},
+     {cuenta:'ISV Acreditable (15%)',sub:false,debe:1200,haber:0,tipo:'activo',exp:'El ISV pagado al proveedor es un ACTIVO recuperable → ISV Acreditable AUMENTA → DEBE. (15% × L 8,000 = L 1,200)'},
+     {cuenta:'Caja y Bancos',sub:true,debe:0,haber:8960,tipo:'activo',exp:'Se paga el total (precio + ISV) → Activo (Caja) DISMINUYE → HABER. (L 8,000 + L 1,200 = L 9,200)'},
+   ]},
+  {id:2,icon:'🏪',titulo:'Pago de alquiler del local — sin ISV (servicio exento)',
+   empresa:'Ferretería "El Maestro" — Barrio Guamilito',
+   detalle:'Alquiler mensual L 3,500. Los arriendos de inmuebles para uso comercial están exentos de ISV según Art. 15 Ley ISV Honduras.',
+   norm:'Ley ISV Art. 15 — Exenciones · NIIF PYMES Sección 5',
+   isv:false,
+   pasos:[
+     {cuenta:'Gasto de Alquiler',sub:false,debe:3500,haber:0,tipo:'gasto',exp:'Se incurre en gasto → Gasto Alquiler AUMENTA → DEBE. Exento de ISV (Art. 15 Ley ISV).'},
+     {cuenta:'Caja y Bancos',sub:true,debe:0,haber:3500,tipo:'activo',exp:'Sale efectivo del banco → Activo (Caja) DISMINUYE → HABER.'},
+   ]},
+  {id:3,icon:'📈',titulo:'Venta de materiales al crédito',
+   empresa:'Ferretería "El Maestro" — San Pedro Sula',
+   detalle:'Venta L 12,000 (precio base sin ISV) al crédito a un contratista. ISV 15% = L 1,800. Total factura: L 13,800.',
+   norm:'NIIF PYMES Sección 23 · Ley ISV Honduras — el ISV cobrado es pasivo (ISV por Pagar)',
+   isv:true, isvTipo:'venta', baseGrav:12000,
+   pasos:[
+     {cuenta:'Cuentas por Cobrar',sub:false,debe:13440,haber:0,tipo:'activo',exp:'El cliente queda debiendo el total (precio + ISV) → Activo (Cuentas por Cobrar) AUMENTA → DEBE. (L 12,000 + L 1,800 = L 13,800)'},
+     {cuenta:'Ingresos por Ventas',sub:true,debe:0,haber:12000,tipo:'ingreso',exp:'Solo el precio base es ingreso → Ingresos por Ventas AUMENTA → HABER. El ISV no es ingreso de la empresa.'},
+     {cuenta:'ISV por Pagar (15%)',sub:true,debe:0,haber:1800,tipo:'pasivo',exp:'El ISV cobrado al cliente es un PASIVO → ISV por Pagar AUMENTA → HABER. (15% × L 12,000 = L 1,800) Se remesará al SAR.'},
+   ]},
+  {id:4,icon:'💵',titulo:'Cobro de factura pendiente del cliente',
+   empresa:'Ferretería "El Maestro" — San Pedro Sula',
+   detalle:'El contratista paga L 6,900 en efectivo (incluye precio L 6,000 + ISV L 900 ya registrado). Solo se cancela la cuenta por cobrar.',
+   norm:'NIIF PYMES Sección 11 · El ISV no se registra de nuevo — ya fue contabilizado en la venta',
+   isv:false,
+   pasos:[
+     {cuenta:'Caja y Bancos',sub:false,debe:6720,haber:0,tipo:'activo',exp:'Entra efectivo total (precio + ISV ya registrado) → Caja AUMENTA → DEBE.'},
+     {cuenta:'Cuentas por Cobrar',sub:true,debe:0,haber:6720,tipo:'activo',exp:'Se cancela la deuda del cliente → Cuentas por Cobrar DISMINUYE → HABER. El ISV ya estaba en el pasivo ISV por Pagar.'},
+   ]},
+];
+
+const tipoColor={activo:'var(--activo)',pasivo:'var(--pasivo)',patrim:'var(--patrim)',ingreso:'var(--ingreso)',gasto:'var(--gasto)'};
+let casoActivo=0,pasoActivo=0;
+
+function buildCasosNav(){
+  const nav=document.getElementById('casos-nav');
+  nav.innerHTML=casos.map((c,i)=>`<button class="caso-tab${i===0?' active':''}" onclick="loadCaso(${i},this)">${c.icon} Caso ${i+1}${c.isv?' 🧾':''}</button>`).join('');
+}
+
+function fmt(n){return 'L '+n.toLocaleString('es-HN');}
+
+function loadCaso(idx,btn){
+  casoActivo=idx;pasoActivo=0;
+  document.querySelectorAll('.caso-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const c=casos[idx];
+  const totD=c.pasos.reduce((s,p)=>s+p.debe,0);
+  const totH=c.pasos.reduce((s,p)=>s+p.haber,0);
+  const rows=c.pasos.map((_,i)=>`
+    <div class="paso-row${_.cuenta.includes('ISV')?' isv-paso':''}" id="paso-row-${i}">
+      <div class="pr-num">${i+1}</div>
+      <div class="pr-cuenta${_.sub?' sub':''}${_.cuenta.includes('ISV')?' isv':''}" style="color:${_.cuenta.includes('ISV')?'var(--isv)':tipoColor[_.tipo]}">${_.cuenta}</div>
+      <div class="pr-debe">${_.debe>0?fmt(_.debe):''}</div>
+      <div class="pr-haber">${_.haber>0?fmt(_.haber):''}</div>
+    </div>`).join('');
+  const exps=c.pasos.map((p,i)=>`
+    <div class="paso-explanation${p.haber>0&&!p.cuenta.includes('ISV')?' haber-exp':''}${p.cuenta.includes('ISV')?' isv-exp':''}" id="exp-${i}">${p.exp}</div>`).join('');
+  const isvBadge=c.isv?`<div style="margin-top:8px;background:rgba(217,119,6,.15);border-radius:8px;padding:8px 12px;font-size:.8rem;color:#fcd34d;">🧾 <strong>Con ISV:</strong> Base gravable ${fmt(c.baseGrav)} · ISV 15% = ${fmt(c.baseGrav*0.12)} · Total = ${fmt(c.baseGrav*1.12)}</div>`:'';
+  document.getElementById('caso-content').innerHTML=`
+    <div class="caso-desc">
+      <div class="cd-tag">Operación ${idx+1} de ${casos.length}</div>
+      <h3>${c.icon} ${c.titulo}</h3>
+      <p>${c.empresa} · ${c.detalle}</p>
+      <p style="margin-top:6px;font-size:.78rem;color:rgba(255,255,255,.4);">📖 ${c.norm}</p>
+      ${isvBadge}
+    </div>
+    <div class="paso-stage">
+      <div class="paso-header"><span>#</span><span>Cuenta</span><span style="text-align:right;">Debe (L)</span><span style="text-align:right;">Haber (L)</span></div>
+      ${rows}
+      <div class="paso-total" style="opacity:0;transition:opacity .4s;" id="paso-total">
+        <span></span><span style="font-size:.78rem;color:#9aa3ad;">TOTALES</span>
+        <span class="pt-debe" style="text-align:right;">${fmt(totD)}</span>
+        <span class="pt-haber" style="text-align:right;">${fmt(totH)}</span>
+      </div>
+    </div>
+    ${exps}
+    <div class="eq-badge" id="eq-badge">✅ Asiento cuadrado — DEBE ${fmt(totD)} = HABER ${fmt(totH)}</div>
+    <div class="paso-controls">
+      <button class="paso-btn secondary" onclick="loadCaso(${idx},null)">🔄 Reiniciar</button>
+      <button class="paso-btn primary" id="paso-next-btn" onclick="nextPaso()">▶ Siguiente paso</button>
+    </div>`;
+}
+
+function nextPaso(){
+  const c=casos[casoActivo];
+  if(pasoActivo<c.pasos.length){
+    document.getElementById(`paso-row-${pasoActivo}`)?.classList.add('show');
+    document.getElementById(`exp-${pasoActivo}`)?.classList.add('show');
+    pasoActivo++;
+  }
+  if(pasoActivo>=c.pasos.length){
+    const tot=document.getElementById('paso-total');
+    const badge=document.getElementById('eq-badge');
+    if(tot)tot.style.opacity='1';
+    if(badge){badge.classList.add('show','ok');}
+    const btn=document.getElementById('paso-next-btn');
+    if(btn){btn.textContent='✅ Completado';btn.disabled=true;}
+  }
+}
+
+// ─── CONSTRUCTOR ───
+let debeItems=[],haberItems=[],dragData=null,touchGhost=null,touchDragData=null;
+
+function catDragStart(e){dragData={cuenta:e.currentTarget.dataset.cuenta,grupo:e.currentTarget.dataset.grupo};}
+function dzOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function dzLeave(e){e.currentTarget.classList.remove('drag-over');}
+function dzDrop(e,side){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!dragData)return;
+  addToAsiento(dragData.cuenta,dragData.grupo,side);dragData=null;
+}
+function catTouchStart(e){
+  const el=e.currentTarget;touchDragData={cuenta:el.dataset.cuenta,grupo:el.dataset.grupo};
+  touchGhost=el.cloneNode(true);
+  touchGhost.style.cssText=`position:fixed;opacity:.85;pointer-events:none;z-index:9999;transform:scale(1.05);width:${el.offsetWidth}px;left:${el.getBoundingClientRect().left}px;top:${el.getBoundingClientRect().top}px;`;
+  document.body.appendChild(touchGhost);
+}
+function catTouchMove(e){
+  e.preventDefault();const t=e.touches[0];
+  if(touchGhost){touchGhost.style.left=(t.clientX-100)+'px';touchGhost.style.top=(t.clientY-20)+'px';}
+  document.querySelectorAll('.drop-zone-inner').forEach(z=>z.classList.remove('drag-over'));
+  const under=document.elementFromPoint(t.clientX,t.clientY);
+  if(under){const dz=under.closest('.drop-zone-inner');if(dz)dz.classList.add('drag-over');}
+}
+function catTouchEnd(e){
+  document.querySelectorAll('.drop-zone-inner').forEach(z=>z.classList.remove('drag-over'));
+  if(touchGhost){touchGhost.remove();touchGhost=null;}
+  const t=e.changedTouches[0];const under=document.elementFromPoint(t.clientX,t.clientY);
+  if(!under||!touchDragData)return;
+  const dz=under.closest('.drop-zone-inner');
+  if(dz){const side=dz.id==='drop-debe'?'debe':'haber';addToAsiento(touchDragData.cuenta,touchDragData.grupo,side);}
+  touchDragData=null;
+}
+
+const grupoColors={activo:'var(--activo)',pasivo:'var(--pasivo)',patrim:'var(--patrim)',ingreso:'var(--ingreso)',gasto:'var(--gasto)'};
+const grupoLt={activo:'#EBF5FF',pasivo:'#FFF0EF',patrim:'#F0FFF5',ingreso:'#FFF5E6',gasto:'#F8F0FF'};
+const isvLt='#FEF3C7';const isvColor='var(--isv)';
+
+function addToAsiento(cuenta,grupo,side){
+  const list=side==='debe'?debeItems:haberItems;
+  if(list.find(i=>i.cuenta===cuenta)){alert('Esta cuenta ya está en el '+side.toUpperCase()+'.');return;}
+  list.push({cuenta,grupo,monto:0});renderAsiento();
+}
+
+function renderAsiento(){
+  ['debe','haber'].forEach(side=>{
+    const list=side==='debe'?debeItems:haberItems;
+    const dz=document.getElementById('drop-'+side);
+    dz.innerHTML=list.length===0?'<div class="dz-hint">Arrastra cuentas aquí</div>':'';
+    list.forEach((item,idx)=>{
+      const isv=item.cuenta.includes('ISV');
+      const div=document.createElement('div');
+      div.className='placed-item';
+      div.style.background=isv?isvLt:grupoLt[item.grupo];
+      div.style.color=isv?isvColor:grupoColors[item.grupo];
+      div.innerHTML=`<span style="flex:1;font-size:.88rem;">${item.cuenta}</span>
+        <input type="number" placeholder="Monto" min="0" value="${item.monto||''}"
+          oninput="updateMonto('${side}',${idx},this.value)" style="color:${isv?isvColor:grupoColors[item.grupo]};">
+        <span class="pi-remove" onclick="removeItem('${side}',${idx})">✕</span>`;
+      dz.appendChild(div);
+    });
+  });
+  calcTotals();
+}
+
+function updateMonto(side,idx,val){const list=side==='debe'?debeItems:haberItems;list[idx].monto=parseFloat(val)||0;calcTotals();}
+function removeItem(side,idx){if(side==='debe')debeItems.splice(idx,1);else haberItems.splice(idx,1);renderAsiento();}
+function clearAsiento(){debeItems=[];haberItems=[];renderAsiento();document.getElementById('validation-result').style.display='none';}
+
+function calcTotals(){
+  const td=debeItems.reduce((s,i)=>s+i.monto,0);
+  const th=haberItems.reduce((s,i)=>s+i.monto,0);
+  document.getElementById('total-debe').textContent='L '+td.toLocaleString('es-HN');
+  document.getElementById('total-haber').textContent='L '+th.toLocaleString('es-HN');
+  const icon=document.getElementById('balance-icon');
+  if(td===0&&th===0){icon.textContent='⏳';icon.className='at-val';}
+  else if(td===th&&td>0){icon.textContent='✅';icon.className='at-val ok';}
+  else{icon.textContent='⚠️';icon.className='at-val bad';}
+}
+
+let libroEntries=[];
+function validateAsiento(){
+  const td=debeItems.reduce((s,i)=>s+i.monto,0);
+  const th=haberItems.reduce((s,i)=>s+i.monto,0);
+  const vr=document.getElementById('validation-result');
+  if(debeItems.length===0||haberItems.length===0){vr.className='validation-result bad';vr.textContent='⚠️ Necesitas al menos una cuenta en cada lado.';return;}
+  if(td!==th){vr.className='validation-result bad';vr.textContent=`❌ No cuadra. DEBE L ${td.toLocaleString('es-HN')} ≠ HABER L ${th.toLocaleString('es-HN')}`;return;}
+  vr.className='validation-result ok';vr.textContent=`✅ Asiento válido — DEBE = HABER = L ${td.toLocaleString('es-HN')}`;
+  const fecha=document.getElementById('asiento-fecha').value||'2025-06-15';
+  libroEntries.push({fecha,debe:[...debeItems],haber:[...haberItems],total:td});
+  renderLibro();
+}
+
+function renderLibro(){
+  const body=document.getElementById('libro-body');
+  if(libroEntries.length===0){body.innerHTML='<div style="padding:20px;text-align:center;color:#9aa3ad;">Valida asientos para registrarlos aquí</div>';return;}
+  let html='';let gD=0,gH=0;
+  libroEntries.forEach((e,ei)=>{
+    html+=`<div class="ldt-separator">Asiento ${ei+1} — ${e.fecha}</div>`;
+    e.debe.forEach(i=>{const isv=i.cuenta.includes('ISV');html+=`<div class="ldt-row${isv?' isv-ldt':''}"><span style="color:#9aa3ad;font-size:.82rem;">${e.fecha}</span><span style="font-weight:700;color:${isv?'var(--isv)':grupoColors[i.grupo]}">${i.cuenta}</span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;">L ${i.monto.toLocaleString('es-HN')}</span><span></span></div>`;gD+=i.monto;});
+    e.haber.forEach(i=>{const isv=i.cuenta.includes('ISV');html+=`<div class="ldt-row${isv?' isv-ldt':''}"><span></span><span style="padding-left:20px;color:${isv?'var(--isv)':grupoColors[i.grupo]}">${i.cuenta}</span><span></span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;">L ${i.monto.toLocaleString('es-HN')}</span></div>`;gH+=i.monto;});
+  });
+  html+=`<div class="ldt-total-row"><span></span><span style="font-size:.78rem;color:#9aa3ad;">TOTALES</span><span style="font-family:'Source Code Pro',monospace;color:var(--debe);text-align:right;">L ${gD.toLocaleString('es-HN')}</span><span style="font-family:'Source Code Pro',monospace;color:var(--haber);text-align:right;">L ${gH.toLocaleString('es-HN')}</span></div>`;
+  body.innerHTML=html;
+}
+function clearLibro(){libroEntries=[];renderLibro();}
+
+// ─── MINI-JUEGO con ISV ───
+const gjOps=[
+  {
+    emoji:'💼',text:'Aportación inicial de capital en efectivo — SIN ISV',amount:'L 50,000',
+    debeCorrect:'Caja y Bancos',haberCorrect:'Capital Social',
+    debeOpts:['Caja y Bancos','Capital Social','ISV Acreditable'],
+    haberOpts:['Capital Social','Caja y Bancos','ISV por Pagar'],
+    why:'Operación de capital — no lleva ISV. Caja sube (DEBE), Capital sube (HABER).'
+  },
+  {
+    emoji:'🛒',text:'Compra de mercadería al contado — precio base L 8,000 + ISV 15% = L 9,200',amount:'Total L 9,200',
+    debeCorrect:'Inventario de Mercadería + ISV Acreditable',haberCorrect:'Caja y Bancos',
+    debeOpts:['Inventario de Mercadería + ISV Acreditable','Caja y Bancos','ISV por Pagar'],
+    haberOpts:['Caja y Bancos','Inventario de Mercadería','ISV Acreditable'],
+    why:'En compras: Inventario (L 8,000) + ISV Acreditable (L 1,200) al DEBE. Caja total (L 9,200) al HABER.'
+  },
+  {
+    emoji:'📈',text:'Venta al crédito — precio base L 12,000 + ISV 15% = L 13,800',amount:'Factura L 13,800',
+    debeCorrect:'Cuentas por Cobrar',haberCorrect:'Ingresos por Ventas + ISV por Pagar',
+    debeOpts:['Cuentas por Cobrar','Ingresos por Ventas','ISV por Pagar'],
+    haberOpts:['Ingresos por Ventas + ISV por Pagar','Cuentas por Cobrar','ISV Acreditable'],
+    why:'En ventas: Cuentas por Cobrar (L 13,800) al DEBE. Ingresos (L 12,000) + ISV por Pagar (L 1,800) al HABER.'
+  },
+  {
+    emoji:'🏪',text:'Pago de alquiler del local — EXENTO de ISV según Art. 15 Ley ISV',amount:'L 3,500',
+    debeCorrect:'Gasto de Alquiler',haberCorrect:'Caja y Bancos',
+    debeOpts:['Gasto de Alquiler','ISV Acreditable','Caja y Bancos'],
+    haberOpts:['Caja y Bancos','ISV por Pagar','Gasto de Alquiler'],
+    why:'El arrendamiento de inmuebles está exento de ISV (Art.15 Ley ISV). Solo Gasto (DEBE) y Caja (HABER).'
+  },
+  {
+    emoji:'💵',text:'Cobro de la factura pendiente del cliente (precio + ISV ya registrados)',amount:'L 6,900',
+    debeCorrect:'Caja y Bancos',haberCorrect:'Cuentas por Cobrar',
+    debeOpts:['Caja y Bancos','ISV por Pagar','Ingresos por Ventas'],
+    haberOpts:['Cuentas por Cobrar','ISV Acreditable','Caja y Bancos'],
+    why:'Solo se cancela la deuda del cliente. El ISV ya estaba contabilizado en la venta original. Caja (DEBE), Cuentas por Cobrar (HABER).'
+  },
+];
+
+let gjIdx=0,gjScore=0,gjSelDebe=null,gjSelHaber=null;
+
+function gjInit(){
+  gjIdx=0;gjScore=0;gjSelDebe=null;gjSelHaber=null;
+  document.getElementById('gj-result').style.display='none';
+  document.getElementById('gj-area').style.display='block';
+  document.getElementById('gj-feedback-box').className='gj-feedback-box';
+  document.getElementById('gj-next-btn').className='gj-next-btn';
+  gjLoadQ();
+}
+
+function gjLoadQ(){
+  if(gjIdx>=gjOps.length){gjEndGame();return;}
+  const op=gjOps[gjIdx];
+  gjSelDebe=null;gjSelHaber=null;
+  document.getElementById('goc-num').textContent=`Operación ${gjIdx+1} de ${gjOps.length}`;
+  document.getElementById('goc-emoji').textContent=op.emoji;
+  document.getElementById('goc-text').textContent=op.text;
+  document.getElementById('goc-amount').textContent=op.amount;
+  document.getElementById('gj-op-card').style.animation='none';
+  void document.getElementById('gj-op-card').offsetWidth;
+  document.getElementById('gj-op-card').style.animation='cardIn .3s ease';
+  document.getElementById('gj-feedback-box').className='gj-feedback-box';
+  document.getElementById('gj-next-btn').className='gj-next-btn';
+  document.getElementById('gj-submit').disabled=true;
+  const dc=document.getElementById('debe-choices');
+  const hc=document.getElementById('haber-choices');
+  dc.innerHTML=op.debeOpts.map(o=>`<button class="choice-chip${o.includes('ISV')?' isv-chip':''}" onclick="gjSelectDebe('${o}',this)">${o}</button>`).join('');
+  hc.innerHTML=op.haberOpts.map(o=>`<button class="choice-chip${o.includes('ISV')?' isv-chip':''}" onclick="gjSelectHaber('${o}',this)">${o}</button>`).join('');
+  // Style ISV chips
+  document.querySelectorAll('.isv-chip').forEach(c=>{c.style.background='#FEF3C7';c.style.borderColor='var(--isv)';c.style.color='var(--isv)';});
+  const gl=`${gjIdx}/${gjOps.length}`;
+  document.getElementById('gj-prog-label').textContent=gl;
+  document.getElementById('gj-prog-bar').style.width=(gjIdx/gjOps.length*100)+'%';
+}
+
+function gjSelectDebe(val,btn){gjSelDebe=val;document.querySelectorAll('#debe-choices .choice-chip').forEach(b=>b.classList.remove('selected-debe'));btn.classList.add('selected-debe');checkGjReady();}
+function gjSelectHaber(val,btn){gjSelHaber=val;document.querySelectorAll('#haber-choices .choice-chip').forEach(b=>b.classList.remove('selected-haber'));btn.classList.add('selected-haber');checkGjReady();}
+function checkGjReady(){document.getElementById('gj-submit').disabled=!(gjSelDebe&&gjSelHaber);}
+
+function gjSubmit(){
+  const op=gjOps[gjIdx];
+  const dOk=gjSelDebe===op.debeCorrect;
+  const hOk=gjSelHaber===op.haberCorrect;
+  const allOk=dOk&&hOk;
+  if(allOk)gjScore++;
+  document.querySelectorAll('#debe-choices .choice-chip').forEach(b=>{
+    if(b.textContent===op.debeCorrect)b.classList.add('correct-chip');
+    else if(b.classList.contains('selected-debe')&&!dOk)b.classList.add('wrong-chip');
+    b.disabled=true;
+  });
+  document.querySelectorAll('#haber-choices .choice-chip').forEach(b=>{
+    if(b.textContent===op.haberCorrect)b.classList.add('correct-chip');
+    else if(b.classList.contains('selected-haber')&&!hOk)b.classList.add('wrong-chip');
+    b.disabled=true;
+  });
+  const fb=document.getElementById('gj-feedback-box');
+  fb.className='gj-feedback-box '+(allOk?'ok':'bad');
+  fb.innerHTML=allOk
+    ?`✅ ¡Correcto! ${op.why}`
+    :`❌ No es correcto. DEBE: <strong>${op.debeCorrect}</strong> · HABER: <strong>${op.haberCorrect}</strong><br><span style="font-size:.88rem;">${op.why}</span>`;
+  document.getElementById('gj-submit').disabled=true;
+  document.getElementById('gj-next-btn').className='gj-next-btn show';
+  gjIdx++;
+  document.getElementById('gj-prog-bar').style.width=(gjIdx/gjOps.length*100)+'%';
+  document.getElementById('gj-prog-label').textContent=`${gjIdx}/${gjOps.length}`;
+}
+
+function gjNext(){gjLoadQ();}
+
+function gjEndGame(){
+  document.getElementById('gj-area').style.display='none';
+  const res=document.getElementById('gj-result');res.style.display='block';
+  const pct=Math.round(gjScore/gjOps.length*100);
+  document.getElementById('r-emoji').textContent=pct===100?'🏆':pct>=60?'🎉':'📚';
+  document.getElementById('r-title').textContent=pct>=60?'¡Dominas la Partida Doble con ISV!':'Sigue practicando los asientos con ISV';
+  document.getElementById('r-score').textContent=`${gjScore}/${gjOps.length}`;
+  document.getElementById('r-score').style.color=pct>=60?'var(--haber)':'var(--pasivo)';
+  document.getElementById('r-msg').textContent=
+    pct===100?'¡Perfecto! Construiste todos los asientos con ISV correctamente.'
+    :pct>=60?`${pct}% — Repasa los casos que fallaste en la pestaña Casos Prácticos.`
+    :`${pct}% — Revisa el ISV en compras (Acreditable) vs. ventas (por Pagar).`;
+  document.getElementById('r-stats').innerHTML=`
+    <div class="r-stat"><strong style="color:var(--haber);">${gjScore}</strong><span>✅ Correctos</span></div>
+    <div class="r-stat"><strong style="color:var(--pasivo);">${gjOps.length-gjScore}</strong><span>❌ Incorrectos</span></div>
+    <div class="r-stat"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  if(pct>=60)spawnConfetti();
+}
+
+function spawnConfetti(){
+  const bg=document.getElementById('confetti-bg');bg.innerHTML='';
+  const colors=['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#D97706','#fff','#a8efc1'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');el.className='confetti-piece';
+    const sz=6+Math.random()*8;
+    el.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+buildCasosNav();
+loadCaso(0,null);
+renderAsiento();
+</script>
+</body>
+</html>

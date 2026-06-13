@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 2 — Componentes de la Ecuación | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@600&display=swap');
+
+:root {
+  --activo:       #0D6B8C;
+  --activo-lt:    #E0F4FA;
+  --activo-mid:   #B3E3F5;
+  --ac-corriente: #1A9BBF;
+  --ac-nocorr:    #0A4F6B;
+  --pasivo:       #C0392B;
+  --pasivo-lt:    #FDECEA;
+  --pasivo-mid:   #F5B3AE;
+  --pa-corriente: #E05444;
+  --pa-nocorr:    #8B1A10;
+  --patrim:       #1A8A4A;
+  --patrim-lt:    #E4F9ED;
+  --patrim-mid:   #A8EBC4;
+  --pt-capital:   #23B560;
+  --pt-utilid:    #157A3A;
+  --pt-reserva:   #0F5228;
+  --bg:           #F5F7FA;
+  --dark:         #1B2638;
+  --gold:         #F4A811;
+  --card-r:       16px;
+  --shadow:       0 6px 24px rgba(0,0,0,0.11);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; overflow-x: hidden; }
+
+/* HEADER */
+header {
+  background: var(--dark); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 16px;
+  border-bottom: 4px solid var(--gold);
+}
+.app-badge {
+  background: var(--gold); color: var(--dark);
+  font-weight: 900; font-size: 0.75rem; padding: 5px 13px;
+  border-radius: 30px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+}
+header h1 { font-size: 1.4rem; font-weight: 900; }
+header p  { font-size: 0.85rem; color: #b0b8c4; margin-top: 2px; }
+
+/* TABS */
+.tabs {
+  display: flex; background: #fff;
+  border-bottom: 2px solid #e0e4ea; padding: 0 20px; gap: 4px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 16px 24px; border: none; background: none;
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700;
+  color: #6b7684; cursor: pointer; border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+}
+.tab-btn.active { color: var(--dark); border-bottom-color: var(--gold); }
+
+/* SECTIONS */
+.section { display: none; padding: 28px 20px 56px; max-width: 1120px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* ── EXPLORER ── */
+.explorer-hint { text-align:center; color:#6b7684; margin-bottom:28px; font-size:1rem; }
+
+.main-blocks { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+@media(max-width:780px){ .main-blocks{ grid-template-columns:1fr; } }
+
+.main-block { border-radius: var(--card-r); overflow: hidden; box-shadow: var(--shadow); }
+
+/* Main block header — big tap target */
+.block-header {
+  padding: 24px 20px; cursor: pointer; user-select: none;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; transition: filter .2s;
+  position: relative;
+}
+.block-header:hover { filter: brightness(.93); }
+.block-header .bh-icon  { font-size: 2.8rem; margin-bottom: 8px; }
+.block-header h2        { font-size: 1.5rem; font-weight: 900; color: #fff; }
+.block-header .bh-sub   { font-size: 0.85rem; color: rgba(255,255,255,.8); margin-top: 4px; }
+.block-header .chevron  {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%) rotate(0deg);
+  font-size: 1.4rem; color: rgba(255,255,255,.7);
+  transition: transform .3s;
+}
+.main-block.open .chevron { transform: translateY(-50%) rotate(180deg); }
+
+.block-header.activo { background: var(--activo); }
+.block-header.pasivo { background: var(--pasivo); }
+.block-header.patrim { background: var(--patrim); }
+
+/* Subcategories panel */
+.sub-panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height .45s cubic-bezier(.4,0,.2,1);
+  background: #fff;
+}
+.main-block.open .sub-panel { max-height: 900px; }
+
+.sub-cat {
+  border-bottom: 1px solid #edf0f4;
+  padding: 0;
+}
+.sub-cat:last-child { border-bottom: none; }
+
+.sub-cat-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; cursor: pointer;
+  font-weight: 700; font-size: 1rem;
+  transition: background .18s;
+}
+.sub-cat-header:hover { background: var(--bg); }
+.sub-cat-header .sc-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.sub-cat-header .sc-chevron { margin-left: auto; font-size: 1rem; color: #9aa3ad; transition: transform .25s; }
+.sub-cat.open .sc-chevron   { transform: rotate(180deg); }
+
+.sc-items { display: none; padding: 4px 20px 16px 44px; }
+.sub-cat.open .sc-items { display: block; }
+
+.sc-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
+  font-size: 0.93rem; line-height: 1.4;
+  transition: background .15s;
+}
+.sc-item:hover { background: var(--bg); }
+.sc-item .si-emoji { font-size: 1.3rem; flex-shrink: 0; }
+.sc-item .si-text  { flex: 1; }
+.sc-item .si-name  { font-weight: 700; display: block; }
+.sc-item .si-desc  { font-size: 0.82rem; color: #6b7684; }
+.sc-item .si-tag   {
+  font-size: 0.72rem; font-weight: 700; padding: 3px 9px;
+  border-radius: 30px; white-space: nowrap; flex-shrink: 0; align-self: center;
+}
+
+/* ── MINI-JUEGO ── */
+.game-intro {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 22px 26px;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+}
+.game-intro .gi-icon { font-size: 2.4rem; }
+.game-intro h3 { font-size: 1.15rem; font-weight: 900; }
+.game-intro p  { font-size: 0.88rem; color: #b0b8c4; margin-top: 3px; }
+
+/* progress */
+.game-progress {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 22px;
+}
+.prog-bar-wrap {
+  flex: 1; background: #e0e4ea; border-radius: 99px; height: 10px; overflow: hidden;
+}
+.prog-bar {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--activo), var(--patrim));
+  transition: width .4s ease; width: 0%;
+}
+.prog-label { font-size: 0.9rem; font-weight: 700; color: #6b7684; white-space: nowrap; }
+
+/* card display */
+.game-card-area { text-align: center; margin-bottom: 24px; }
+.game-card {
+  display: inline-block; background: var(--dark); color: #fff;
+  border-radius: 18px; padding: 28px 40px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+  animation: cardIn .3s ease;
+}
+@keyframes cardIn { from{ opacity:0; transform:translateY(12px) scale(.96); } to{ opacity:1; transform:none; } }
+.game-card .gc-emoji  { font-size: 3.2rem; display: block; margin-bottom: 10px; }
+.game-card .gc-name   { font-size: 1.5rem; font-weight: 900; }
+.game-card .gc-hint   { font-size: 0.88rem; color: #b0b8c4; margin-top: 6px; }
+
+/* step indicator */
+.step-label {
+  font-size: 0.82rem; color: #9aa3ad; text-align: center; margin-bottom: 18px;
+}
+.step-label span { font-weight: 900; color: var(--dark); }
+
+/* choice grids */
+.choices-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing:.07em; color:#9aa3ad; text-align:center; margin-bottom:12px; }
+
+.comp-choices { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:22px; }
+.comp-btn {
+  padding: 16px 28px; border-radius: 14px; border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 900;
+  color: #fff; transition: transform .15s, box-shadow .15s, opacity .2s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 120px; box-shadow: var(--shadow);
+}
+.comp-btn:hover  { transform: translateY(-3px) scale(1.04); box-shadow: 0 10px 28px rgba(0,0,0,0.18); }
+.comp-btn:active { transform: scale(.97); }
+.comp-btn.activo { background: var(--activo); }
+.comp-btn.pasivo { background: var(--pasivo); }
+.comp-btn.patrim { background: var(--patrim); }
+.comp-btn .cb-icon { font-size: 1.6rem; }
+.comp-btn .cb-label { font-size: 0.82rem; }
+
+.sub-choices { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom: 18px; }
+.sub-btn {
+  padding: 13px 22px; border-radius: 12px; border: 3px solid transparent;
+  cursor: pointer; font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  transition: all .18s; box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+.sub-btn:hover { transform: translateY(-2px); }
+
+/* feedback */
+.feedback-bubble {
+  text-align: center; padding: 16px 20px; border-radius: 14px;
+  font-size: 1.05rem; font-weight: 700; margin-bottom: 18px;
+  animation: popIn .25s ease;
+  display: none;
+}
+@keyframes popIn { from{transform:scale(.9);opacity:0;} to{transform:scale(1);opacity:1;} }
+.feedback-bubble.correct   { background: #d4edda; color: #155724; }
+.feedback-bubble.incorrect { background: #f8d7da; color: #721c24; }
+
+/* score final */
+.score-final {
+  background: #fff; border-radius: var(--card-r); padding: 32px;
+  text-align: center; box-shadow: var(--shadow); display: none;
+}
+.score-final h3     { font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; }
+.score-num          { font-size: 4rem; font-weight: 900; color: var(--patrim); line-height: 1; }
+.score-num span     { font-size: 1.5rem; color: #9aa3ad; }
+.score-msg          { font-size: 1rem; color: #3d4a5c; margin: 10px 0 20px; }
+.score-detail       { display:flex; gap:16px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; }
+.score-detail-item  { background: var(--bg); border-radius: 12px; padding: 12px 20px; font-size: 0.9rem; }
+.score-detail-item strong { display:block; font-size: 1.3rem; font-weight:900; }
+.retry-btn {
+  padding: 14px 36px; background: var(--dark); color: #fff; border: none;
+  border-radius: 12px; font-family: 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.retry-btn:hover { background: #2a3a54; transform: scale(1.03); }
+
+/* history log */
+.history-log { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+.history-item {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border-radius: 10px; padding: 10px 14px;
+  font-size: 0.88rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  animation: slideIn .2s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(-6px);} to{opacity:1;transform:none;} }
+.history-item .hi-result { font-size: 1.1rem; }
+.history-item .hi-name   { font-weight: 700; flex: 1; }
+.history-item .hi-answer { font-size: 0.8rem; color: #6b7684; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 2</div>
+    <h1>Módulo 2: Dentro de la Ecuación Contable</h1>
+    <p>Activo · Pasivo · Patrimonio — subcategorías · terminología Libro de texto y NIIF</p>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('explorar', this)">🔍 Explorar</button>
+  <button class="tab-btn" onclick="showTab('juego', this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: EXPLORAR ══════════════ -->
+<div id="tab-explorar" class="section active">
+
+  <p class="explorer-hint">Toca cada bloque para ver sus subcategorías con ejemplos hondureños</p>
+
+  <div class="main-blocks">
+
+    <!-- ── ACTIVO ── -->
+    <div class="main-block" id="block-activo">
+      <div class="block-header activo" onclick="toggleBlock('activo')">
+        <span class="bh-icon">🏦</span>
+        <h2>ACTIVO</h2>
+        <div class="bh-sub">Lo que la empresa TIENE y CONTROLA</div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="sub-panel" id="panel-activo">
+
+        <!-- Activo Circulante / Corriente -->
+        <div class="sub-cat" id="sc-ac">
+          <div class="sub-cat-header" onclick="toggleSub('sc-ac')">
+            <span class="sc-dot" style="background:var(--ac-corriente)"></span>
+            ⚡ Activo Circulante / Corriente
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div style="background:#fffbe6;border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:10px;font-size:0.82rem;color:#6b3a00;line-height:1.5;">
+              📖 <strong>Nota terminológica:</strong> El libro de texto de la Contabilidad Interactiva usa <strong>"Activo Circulante"</strong> (término tradicional). Las <strong>NIIF para PYMES</strong> (adoptadas en Honduras) usan <strong>"Activo Corriente"</strong>. <em>Significan exactamente lo mismo</em> — activos convertibles en efectivo en menos de 12 meses.
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">💵</span>
+              <div class="si-text">
+                <span class="si-name">Caja y Bancos</span>
+                <span class="si-desc">Efectivo en caja chica y cuentas en Banco de Honduras, S.A., Banco de Honduras, S.A., Banco de Honduras, S.A..</span>
+              </div>
+              <span class="si-tag" style="background:var(--activo-lt);color:var(--ac-corriente)">Liquidez inmediata</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🧾</span>
+              <div class="si-text">
+                <span class="si-name">Cuentas por Cobrar</span>
+                <span class="si-desc">Facturas pendientes de clientes de Tegucigalpa o SPS a cobrar en menos de 12 meses.</span>
+              </div>
+              <span class="si-tag" style="background:var(--activo-lt);color:var(--ac-corriente)">&lt;12 meses</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📦</span>
+              <div class="si-text">
+                <span class="si-name">Inventarios</span>
+                <span class="si-desc">Mercadería para venta: electrodomésticos, granos básicos, repuestos, medicamentos.</span>
+              </div>
+              <span class="si-tag" style="background:var(--activo-lt);color:var(--ac-corriente)">Para venta</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📄</span>
+              <div class="si-text">
+                <span class="si-name">Documentos por Cobrar</span>
+                <span class="si-desc">Pagarés y letras de cambio a cobrar a corto plazo.</span>
+              </div>
+              <span class="si-tag" style="background:var(--activo-lt);color:var(--ac-corriente)">&lt;12 meses</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">💳</span>
+              <div class="si-text">
+                <span class="si-name">Pagos Anticipados</span>
+                <span class="si-desc">Seguros, alquileres o publicidad pagados por adelantado (ej. seguro Seguros Continental).</span>
+              </div>
+              <span class="si-tag" style="background:var(--activo-lt);color:var(--ac-corriente)">Prepagado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activo No Corriente / No Circulante -->
+        <div class="sub-cat" id="sc-anc">
+          <div class="sub-cat-header" onclick="toggleSub('sc-anc')">
+            <span class="sc-dot" style="background:var(--ac-nocorr)"></span>
+            🏗️ Activo No Corriente / No Circulante
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div style="background:#fffbe6;border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:10px;font-size:0.82rem;color:#6b3a00;line-height:1.5;">
+              📖 <strong>Nota terminológica:</strong> El libro de texto usa <strong>"Activo Fijo"</strong> o <strong>"No Circulante"</strong>. Las <strong>NIIF para PYMES</strong> lo denominan <strong>"Activo No Corriente"</strong>. Son el mismo concepto — activos con vida útil mayor a 12 meses que no se convierten en efectivo rápidamente. Los activos depreciables (edificios, vehículos, equipo) pierden valor con el uso — la depreciación se estudia en el <strong>Módulo 9</strong>.
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🌍</span>
+              <div class="si-text">
+                <span class="si-name">Terrenos</span>
+                <span class="si-desc">Lotes en Choloma, Valle de Sula o Tegucigalpa. No se deprecian.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">No deprecia</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🏪</span>
+              <div class="si-text">
+                <span class="si-name">Edificios e Instalaciones</span>
+                <span class="si-desc">Planta industrial en Villanueva, bodega en La Lima, oficinas en Boulevard Morazán.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">Deprecia</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🚛</span>
+              <div class="si-text">
+                <span class="si-name">Vehículos y Equipo de Reparto</span>
+                <span class="si-desc">Camiones de distribución, montacargas, pick-ups de servicio técnico.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">Deprecia</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">💻</span>
+              <div class="si-text">
+                <span class="si-name">Equipo de Cómputo</span>
+                <span class="si-desc">Servidores, laptops, impresoras de la empresa. Vida útil 3-5 años según SAR.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">Deprecia</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">⚙️</span>
+              <div class="si-text">
+                <span class="si-name">Maquinaria y Equipo</span>
+                <span class="si-desc">Maquinaria textil en maquiladoras de Choloma o equipo agroindustrial en el Aguan.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">Deprecia</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📱</span>
+              <div class="si-text">
+                <span class="si-name">Activos Intangibles</span>
+                <span class="si-desc">Licencias de software, marcas registradas ante la PI, franquicias comerciales.</span>
+              </div>
+              <span class="si-tag" style="background:#e8edf5;color:var(--ac-nocorr)">Amortiza</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sub-panel activo -->
+    </div><!-- /block activo -->
+
+    <!-- ── PASIVO ── -->
+    <div class="main-block" id="block-pasivo">
+      <div class="block-header pasivo" onclick="toggleBlock('pasivo')">
+        <span class="bh-icon">📋</span>
+        <h2>PASIVO</h2>
+        <div class="bh-sub">Lo que la empresa DEBE a terceros</div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="sub-panel" id="panel-pasivo">
+
+        <!-- Pasivo Corriente / Circulante -->
+        <div class="sub-cat" id="sc-pc">
+          <div class="sub-cat-header" onclick="toggleSub('sc-pc')">
+            <span class="sc-dot" style="background:var(--pa-corriente)"></span>
+            ⚡ Pasivo Corriente / Circulante
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div style="background:#fffbe6;border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 14px;margin-bottom:10px;font-size:0.82rem;color:#6b3a00;line-height:1.5;">
+              📖 <strong>Nota terminológica:</strong> El libro usa <strong>"Pasivo Circulante"</strong>; las NIIF usan <strong>"Pasivo Corriente"</strong>. Ambos términos se refieren a deudas a pagar en menos de 12 meses.
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🧾</span>
+              <div class="si-text">
+                <span class="si-name">Cuentas por Pagar</span>
+                <span class="si-desc">Facturas pendientes a proveedores como Cargill Honduras, Súper Selectos, distribuidoras.</span>
+              </div>
+              <span class="si-tag" style="background:var(--pasivo-lt);color:var(--pa-corriente)">&lt;12 meses</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">👷</span>
+              <div class="si-text">
+                <span class="si-name">Sueldos y Prestaciones por Pagar</span>
+                <span class="si-desc">Nómina quincenal pendiente, décimo cuarto mes, vacaciones devengadas (Código de Trabajo).</span>
+              </div>
+              <span class="si-tag" style="background:var(--pasivo-lt);color:var(--pa-corriente)">Laboral</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📊</span>
+              <div class="si-text">
+                <span class="si-name">Impuestos por Pagar</span>
+                <span class="si-desc">ISR, ISV (15%) y retenciones del mes pendientes de declarar ante el SAR.</span>
+              </div>
+              <span class="si-tag" style="background:var(--pasivo-lt);color:var(--pa-corriente)">SAR</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🏥</span>
+              <div class="si-text">
+                <span class="si-name">Cuotas IHSS / RAP</span>
+                <span class="si-desc">Aportaciones patronales y laborales al IHSS y al RAP pendientes de remesar.</span>
+              </div>
+              <span class="si-tag" style="background:var(--pasivo-lt);color:var(--pa-corriente)">Social</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🏦</span>
+              <div class="si-text">
+                <span class="si-name">Préstamos Bancarios C/P</span>
+                <span class="si-desc">Línea de crédito revolvente en Banco de Honduras, S.A. a vencer en menos de 1 año.</span>
+              </div>
+              <span class="si-tag" style="background:var(--pasivo-lt);color:var(--pa-corriente)">&lt;12 meses</span>
+            </div>
+            <div class="sc-item" style="border:2px solid var(--pa-corriente);border-radius:12px;">
+              <span class="si-emoji">🧾</span>
+              <div class="si-text">
+                <span class="si-name">ISV por Pagar — Impuesto Sobre Ventas</span>
+                <span class="si-desc">El 15% del ISV cobrado a clientes en cada venta debe remesarse mensualmente al SAR. <strong>Es un pasivo</strong> — la empresa lo recauda pero no le pertenece. Ej.: venta de L 1,000 → cobra L 1,150 al cliente → debe L 150 al SAR.</span>
+              </div>
+              <span class="si-tag" style="background:#fff0e0;color:#a05000;font-size:0.68rem;">⭐ ISV 15% · SAR</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pasivo No Corriente / No Circulante -->
+        <div class="sub-cat" id="sc-pnc">
+          <div class="sub-cat-header" onclick="toggleSub('sc-pnc')">
+            <span class="sc-dot" style="background:var(--pa-nocorr)"></span>
+            🏗️ Pasivo No Corriente / No Circulante
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div class="sc-item">
+              <span class="si-emoji">🏠</span>
+              <div class="si-text">
+                <span class="si-name">Hipotecas por Pagar</span>
+                <span class="si-desc">Préstamo hipotecario sobre el edificio de la empresa con Banco de Honduras, S.A. a 15 años.</span>
+              </div>
+              <span class="si-tag" style="background:#fde8e6;color:var(--pa-nocorr)">&gt;12 meses</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🏦</span>
+              <div class="si-text">
+                <span class="si-name">Préstamos L/P (Banco de Honduras, S.A.)</span>
+                <span class="si-desc">Crédito de fomento del Banco de Honduras, S.A. para inversión productiva a 5-10 años.</span>
+              </div>
+              <span class="si-tag" style="background:#fde8e6;color:var(--pa-nocorr)">&gt;12 meses</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📄</span>
+              <div class="si-text">
+                <span class="si-name">Bonos y Obligaciones</span>
+                <span class="si-desc">Emisión de bonos corporativos en la Bolsa Hondureña de Valores (BHV) a largo plazo.</span>
+              </div>
+              <span class="si-tag" style="background:#fde8e6;color:var(--pa-nocorr)">BHV</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🤝</span>
+              <div class="si-text">
+                <span class="si-name">Indemnizaciones por Pagar</span>
+                <span class="si-desc">Provisión para auxilio de cesantía estimada conforme al Código de Trabajo hondureño.</span>
+              </div>
+              <span class="si-tag" style="background:#fde8e6;color:var(--pa-nocorr)">Laboral</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sub-panel pasivo -->
+    </div><!-- /block pasivo -->
+
+    <!-- ── PATRIMONIO ── -->
+    <div class="main-block" id="block-patrim">
+      <div class="block-header patrim" onclick="toggleBlock('patrim')">
+        <span class="bh-icon">👤</span>
+        <h2>PATRIMONIO</h2>
+        <div class="bh-sub">El interés residual del propietario</div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="sub-panel" id="panel-patrim">
+
+        <!-- Capital Social -->
+        <div class="sub-cat" id="sc-cap">
+          <div class="sub-cat-header" onclick="toggleSub('sc-cap')">
+            <span class="sc-dot" style="background:var(--pt-capital)"></span>
+            💼 Capital Social
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div class="sc-item">
+              <span class="si-emoji">💼</span>
+              <div class="si-text">
+                <span class="si-name">Capital Autorizado</span>
+                <span class="si-desc">Monto máximo aprobado en escritura de constitución ante Registro Mercantil de Honduras.</span>
+              </div>
+              <span class="si-tag" style="background:var(--patrim-lt);color:var(--pt-capital)">Escritura</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">✅</span>
+              <div class="si-text">
+                <span class="si-name">Capital Suscrito y Pagado</span>
+                <span class="si-desc">Aportación real efectuada por los socios. Mínimo L 25,000 para S.A. según CCH.</span>
+              </div>
+              <span class="si-tag" style="background:var(--patrim-lt);color:var(--pt-capital)">CCH Art.6</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🤝</span>
+              <div class="si-text">
+                <span class="si-name">Aportaciones Adicionales</span>
+                <span class="si-desc">Nuevas aportaciones de socios para capitalizar la empresa sin nueva emisión de acciones.</span>
+              </div>
+              <span class="si-tag" style="background:var(--patrim-lt);color:var(--pt-capital)">Socios</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Utilidades Retenidas -->
+        <div class="sub-cat" id="sc-util">
+          <div class="sub-cat-header" onclick="toggleSub('sc-util')">
+            <span class="sc-dot" style="background:var(--pt-utilid)"></span>
+            📈 Utilidades Retenidas
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div class="sc-item">
+              <span class="si-emoji">📈</span>
+              <div class="si-text">
+                <span class="si-name">Utilidad del Ejercicio</span>
+                <span class="si-desc">Ganancia neta del período fiscal actual (después de ISR del 25% según Ley ISR Honduras).</span>
+              </div>
+              <span class="si-tag" style="background:#d9f4e6;color:var(--pt-utilid)">Período actual</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">💰</span>
+              <div class="si-text">
+                <span class="si-name">Utilidades Retenidas Acumuladas</span>
+                <span class="si-desc">Ganancias de ejercicios anteriores no distribuidas a los socios como dividendos.</span>
+              </div>
+              <span class="si-tag" style="background:#d9f4e6;color:var(--pt-utilid)">Acumulado</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">📉</span>
+              <div class="si-text">
+                <span class="si-name">Pérdida Acumulada</span>
+                <span class="si-desc">Pérdidas de períodos anteriores que reducen el patrimonio. Se presenta en rojo o entre paréntesis.</span>
+              </div>
+              <span class="si-tag" style="background:#fdecea;color:var(--pasivo)">Reduce Pat.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reservas -->
+        <div class="sub-cat" id="sc-res">
+          <div class="sub-cat-header" onclick="toggleSub('sc-res')">
+            <span class="sc-dot" style="background:var(--pt-reserva)"></span>
+            🏛️ Reservas
+            <span class="sc-chevron">▼</span>
+          </div>
+          <div class="sc-items">
+            <div class="sc-item">
+              <span class="si-emoji">🏛️</span>
+              <div class="si-text">
+                <span class="si-name">Reserva Legal</span>
+                <span class="si-desc">5% de las utilidades netas hasta alcanzar el 20% del capital social. Obligatoria (Código de Comercio Honduras, Art. 32).</span>
+              </div>
+              <span class="si-tag" style="background:#c9edd9;color:var(--pt-reserva)">Obligatoria</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🛡️</span>
+              <div class="si-text">
+                <span class="si-name">Reserva Estatutaria</span>
+                <span class="si-desc">Constituida por disposición de los estatutos o escritura de la empresa. Variable según acuerdos.</span>
+              </div>
+              <span class="si-tag" style="background:#c9edd9;color:var(--pt-reserva)">Voluntaria</span>
+            </div>
+            <div class="sc-item">
+              <span class="si-emoji">🔄</span>
+              <div class="si-text">
+                <span class="si-name">Superávit por Revaluación</span>
+                <span class="si-desc">Incremento en valor razonable de activos reconocido en ORI bajo NIIF para PYMES Sección 17.</span>
+              </div>
+              <span class="si-tag" style="background:#c9edd9;color:var(--pt-reserva)">NIIF PYMES</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sub-panel patrim -->
+    </div><!-- /block patrim -->
+
+  </div><!-- /main-blocks -->
+</div>
+
+<!-- ══════════════ TAB 2: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+
+  <div class="game-intro">
+    <div class="gi-icon">🎯</div>
+    <div>
+      <h3>Clasifica cada cuenta: componente → subcategoría</h3>
+      <p>Dos pasos por cuenta: primero el componente (Activo/Pasivo/Patrimonio), luego la subcategoría exacta.</p>
+    </div>
+  </div>
+
+  <div class="game-progress">
+    <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    <div class="prog-label" id="prog-label">0 / 12</div>
+  </div>
+
+  <div id="game-area">
+    <div class="game-card-area">
+      <div class="game-card" id="game-card">
+        <span class="gc-emoji" id="gc-emoji">❓</span>
+        <div class="gc-name" id="gc-name">Cargando...</div>
+        <div class="gc-hint" id="gc-hint"></div>
+      </div>
+    </div>
+
+    <div class="step-label" id="step-label">
+      Paso 1: Selecciona el <span>Componente</span>
+    </div>
+
+    <!-- Step 1: componente -->
+    <div id="step1">
+      <div class="choices-title">¿A qué componente pertenece?</div>
+      <div class="comp-choices">
+        <button class="comp-btn activo" onclick="selectComp('activo')">
+          <span class="cb-icon">🏦</span>
+          <span>ACTIVO</span>
+          <span class="cb-label">Lo que TIENE</span>
+        </button>
+        <button class="comp-btn pasivo" onclick="selectComp('pasivo')">
+          <span class="cb-icon">📋</span>
+          <span>PASIVO</span>
+          <span class="cb-label">Lo que DEBE</span>
+        </button>
+        <button class="comp-btn patrim" onclick="selectComp('patrim')">
+          <span class="cb-icon">👤</span>
+          <span>PATRIMONIO</span>
+          <span class="cb-label">Del DUEÑO</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: subcategoría -->
+    <div id="step2" style="display:none;">
+      <div class="choices-title" id="sub-choices-title">¿Cuál subcategoría?</div>
+      <div class="sub-choices" id="sub-choices"></div>
+    </div>
+
+    <div class="feedback-bubble" id="feedback"></div>
+  </div>
+
+  <div class="history-log" id="history-log"></div>
+
+  <!-- Score final -->
+  <div class="score-final" id="score-final">
+    <div style="font-size:2.5rem; margin-bottom:8px;">🏆</div>
+    <h3>¡Ejercicio completado!</h3>
+    <div class="score-num" id="final-num">0<span>/12</span></div>
+    <div class="score-msg" id="final-msg"></div>
+    <div class="score-detail" id="score-detail"></div>
+    <button class="retry-btn" onclick="startGame()">🔄 Intentar de nuevo</button>
+  </div>
+</div><!-- /tab-juego -->
+
+<script>
+// ─── TAB CONTROL ───
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── EXPLORER ───
+function toggleBlock(name) {
+  const block = document.getElementById('block-' + name);
+  const panel = document.getElementById('panel-' + name);
+  const isOpen = block.classList.contains('open');
+  // close all
+  ['activo','pasivo','patrim'].forEach(n => {
+    document.getElementById('block-' + n).classList.remove('open');
+  });
+  if (!isOpen) block.classList.add('open');
+}
+
+function toggleSub(id) {
+  const sc = document.getElementById(id);
+  sc.classList.toggle('open');
+}
+
+// ─── GAME DATA ───
+const questions = [
+  { emoji:'💵', name:'Efectivo en Caja',             hint:'Dinero físico en la empresa',                  comp:'activo', sub:'corriente' },
+  { emoji:'🧾', name:'Facturas de Clientes por Cobrar', hint:'Ventas al crédito pendientes de pago',       comp:'activo', sub:'corriente' },
+  { emoji:'📦', name:'Inventario de Mercadería',      hint:'Productos listos para la venta',              comp:'activo', sub:'corriente' },
+  { emoji:'🏪', name:'Edificio de la Empresa',        hint:'Inmueble donde opera el negocio',             comp:'activo', sub:'nocorriente' },
+  { emoji:'🚛', name:'Camión de Reparto',             hint:'Vehículo de distribución',                    comp:'activo', sub:'nocorriente' },
+  { emoji:'💻', name:'Equipo de Cómputo',             hint:'Laptops y servidores de la empresa',          comp:'activo', sub:'nocorriente' },
+  { emoji:'🧾', name:'Facturas a Proveedores por Pagar', hint:'Compras al crédito sin pagar aún',         comp:'pasivo', sub:'corriente' },
+  { emoji:'👷', name:'Sueldos por Pagar',             hint:'Nómina quincenal pendiente',                  comp:'pasivo', sub:'corriente' },
+  { emoji:'📊', name:'ISR por Pagar al SAR',          hint:'Impuesto sobre la renta del período',         comp:'pasivo', sub:'corriente' },
+  { emoji:'🧾', name:'ISV por Pagar al SAR (15%)',    hint:'ISV 15% recaudado de clientes pendiente de remesar al SAR', comp:'pasivo', sub:'corriente' },
+  { emoji:'🏠', name:'Préstamo Bancario a 5 Años',    hint:'Crédito Banco de Honduras, S.A. a largo plazo',             comp:'pasivo', sub:'nocorriente' },
+  { emoji:'💼', name:'Capital Social de los Socios',  hint:'Aportación inicial de los dueños',            comp:'patrim', sub:'capital' },
+  { emoji:'💰', name:'Utilidades Retenidas',          hint:'Ganancias de años anteriores no distribuidas', comp:'patrim', sub:'utilidades' },
+  { emoji:'🏛️', name:'Reserva Legal 5%',             hint:'Obligatoria según Código de Comercio Honduras', comp:'patrim', sub:'reservas' },
+  { emoji:'🏦', name:'Hipoteca sobre Bodega',         hint:'Préstamo garantizado con bien inmueble',      comp:'pasivo', sub:'nocorriente' },
+  { emoji:'🔄', name:'Superávit por Revaluación',     hint:'Aumento del valor de activos (NIIF Sec.17)',  comp:'patrim', sub:'reservas' },
+];
+
+const subOptions = {
+  activo:  [
+    { id:'corriente',   label:'⚡ Circulante / Corriente', color:'var(--ac-corriente)' },
+    { id:'nocorriente', label:'🏗️ No Corriente / No Circulante', color:'var(--ac-nocorr)' },
+  ],
+  pasivo:  [
+    { id:'corriente',   label:'⚡ Corriente / Circulante', color:'var(--pa-corriente)' },
+    { id:'nocorriente', label:'🏗️ No Corriente / No Circulante', color:'var(--pa-nocorr)' },
+  ],
+  patrim:  [
+    { id:'capital',     label:'💼 Capital Social', color:'var(--pt-capital)' },
+    { id:'utilidades',  label:'📈 Utilidades',     color:'var(--pt-utilid)' },
+    { id:'reservas',    label:'🏛️ Reservas',       color:'var(--pt-reserva)' },
+  ],
+};
+
+const subLabels = {
+  corriente:'Circulante / Corriente', nocorriente:'No Corriente / No Circulante',
+  capital:'Capital Social', utilidades:'Utilidades Retenidas', reservas:'Reservas',
+};
+
+let deck = [], idx = 0, step = 1, selComp = null;
+let scoreComp = 0, scoreSub = 0, totalQ = 0;
+let compRight = [], compWrong = [];
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+function startGame() {
+  deck = shuffle(questions).slice(0, 12);
+  idx = 0; step = 1; selComp = null;
+  scoreComp = 0; scoreSub = 0; totalQ = 0;
+  compRight = []; compWrong = [];
+  document.getElementById('history-log').innerHTML = '';
+  document.getElementById('score-final').style.display = 'none';
+  document.getElementById('game-area').style.display = 'block';
+  document.getElementById('feedback').style.display = 'none';
+  updateProgress();
+  loadCard();
+}
+
+function loadCard() {
+  if (idx >= deck.length) { endGame(); return; }
+  const q = deck[idx];
+  document.getElementById('gc-emoji').textContent = q.emoji;
+  document.getElementById('gc-name').textContent  = q.name;
+  document.getElementById('gc-hint').textContent  = q.hint;
+  document.getElementById('game-card').style.animation = 'none';
+  void document.getElementById('game-card').offsetWidth;
+  document.getElementById('game-card').style.animation = 'cardIn .3s ease';
+  setStep(1);
+}
+
+function setStep(n) {
+  step = n;
+  document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('step-label').innerHTML =
+    n === 1
+    ? 'Paso 1: Selecciona el <span>Componente</span>'
+    : 'Paso 2: Selecciona la <span>Subcategoría</span>';
+}
+
+function selectComp(comp) {
+  const q = deck[idx];
+  const correct = comp === q.comp;
+  selComp = comp;
+  if (correct) { scoreComp++; showFeedback(true, `✅ Correcto — pertenece al ${comp.toUpperCase()}`); }
+  else         { showFeedback(false, `❌ Incorrecto — pertenece al ${q.comp.toUpperCase()}`); selComp = q.comp; }
+  // Always proceed to sub with correct comp
+  setTimeout(() => {
+    buildSubChoices(selComp);
+    setStep(2);
+  }, correct ? 700 : 1200);
+}
+
+function buildSubChoices(comp) {
+  const opts = subOptions[comp];
+  const container = document.getElementById('sub-choices');
+  container.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-btn';
+    btn.textContent = opt.label;
+    btn.style.background = opt.color + '22';
+    btn.style.borderColor = opt.color;
+    btn.style.color = opt.color;
+    btn.onclick = () => selectSub(opt.id);
+    container.appendChild(btn);
+  });
+}
+
+function selectSub(sub) {
+  const q = deck[idx];
+  const correct = sub === q.sub;
+  totalQ++;
+  if (correct) scoreSub++;
+  const compCorrect = selComp === q.comp;
+  const fullCorrect = correct && compCorrect;
+  if (fullCorrect) compRight.push(q.name);
+  else             compWrong.push(q.name);
+
+  const msg = correct
+    ? `✅ Perfecto — ${q.name} → ${q.comp.toUpperCase()} › ${subLabels[q.sub]}`
+    : `❌ Era ${subLabels[q.sub]} — ${q.name} va en ${q.comp.toUpperCase()} › ${subLabels[q.sub]}`;
+  showFeedback(correct, msg);
+  addHistory(q, compCorrect, correct);
+  updateProgress();
+  idx++;
+  setTimeout(() => { loadCard(); }, correct ? 900 : 1500);
+}
+
+function showFeedback(ok, msg) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.className = 'feedback-bubble ' + (ok ? 'correct' : 'incorrect');
+  el.style.display = 'block';
+}
+
+function addHistory(q, compOk, subOk) {
+  const log = document.getElementById('history-log');
+  const item = document.createElement('div');
+  item.className = 'history-item';
+  const both = compOk && subOk;
+  item.innerHTML = `
+    <span class="hi-result">${both ? '✅' : subOk ? '⚠️' : '❌'}</span>
+    <span class="hi-name">${q.emoji} ${q.name}</span>
+    <span class="hi-answer">${q.comp.toUpperCase()} › ${subLabels[q.sub]}</span>`;
+  log.appendChild(item);
+}
+
+function updateProgress() {
+  const pct = deck.length > 0 ? (idx / deck.length * 100) : 0;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${idx} / ${deck.length}`;
+}
+
+function endGame() {
+  document.getElementById('game-area').style.display = 'none';
+  const sf = document.getElementById('score-final');
+  sf.style.display = 'block';
+  const pct = Math.round(scoreSub / deck.length * 100);
+  document.getElementById('final-num').innerHTML = `${scoreSub}<span>/${deck.length}</span>`;
+  document.getElementById('final-msg').textContent =
+    pct === 100 ? '🎉 ¡Perfecto! Dominas la clasificación completa.'
+    : pct >= 75  ? '💪 Muy bien. Repasa las que fallaste.'
+    : pct >= 50  ? '📚 Buen intento. Explora de nuevo la sección "Explorar".'
+    :              '🔄 Sigue practicando. La clasificación se aprende con repetición.';
+  document.getElementById('score-detail').innerHTML = `
+    <div class="score-detail-item"><strong>${scoreComp}/${deck.length}</strong>Componentes correctos</div>
+    <div class="score-detail-item"><strong>${scoreSub}/${deck.length}</strong>Subcategorías correctas</div>
+    <div class="score-detail-item"><strong>${pct}%</strong>Puntaje total</div>`;
+}
+
+// ─── INIT ───
+startGame();
+</script>
+</body>
+</html>

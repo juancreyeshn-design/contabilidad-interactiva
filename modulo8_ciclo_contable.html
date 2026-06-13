@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 8 — El Ciclo Contable Completo | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --gold:    #F4A811; --gold-lt: #FFF8E0;
+  --dark:    #1B2638; --dark2:   #243044;
+  --bg:      #F0F3F8;
+  --activo:  #0D6B8C; --activo-lt:#E0F4FA;
+  --pasivo:  #C0392B; --pasivo-lt:#FDECEA;
+  --patrim:  #1A8A4A; --patrim-lt:#E4F9ED;
+  --ingreso: #E67E22; --ingreso-lt:#FFF5E6;
+  --gasto:   #8E44AD; --gasto-lt: #F8F0FF;
+  --debe:    #0D6B8C; --debe-lt:  #E0F4FA;
+  --haber:   #1A8A4A; --haber-lt: #E4F9ED;
+  --cierre:  #6366F1; --cierre-lt:#EEF2FF;
+  --s1:#3B82F6; --s2:#0D6B8C; --s3:#8B5CF6;
+  --s4:#F59E0B; --s5:#10B981; --s6:#EC4899; --s7:#6366F1;
+  --card-r:  16px; --shadow: 0 6px 24px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--dark);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:14px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.72rem;padding:4px 12px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.3rem;font-weight:900;}
+header p{font-size:.82rem;color:#b0b8c4;margin-top:1px;}
+
+/* PROGRESS STRIP */
+.progress-strip{background:var(--dark2);padding:12px 20px;border-bottom:2px solid rgba(255,255,255,.08);}
+.progress-strip-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+.prog-bar-wrap{flex:1;background:rgba(255,255,255,.12);border-radius:99px;height:10px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#f97316);transition:width .6s cubic-bezier(.4,0,.2,1);width:0%;}
+.prog-text{font-size:.82rem;font-weight:700;color:#b0b8c4;white-space:nowrap;}
+.prog-station{font-size:.82rem;font-weight:900;color:var(--gold);}
+
+.main{max-width:900px;margin:0 auto;padding:20px 16px 80px;}
+
+/* ROUTE MAP */
+.route-map{display:flex;flex-direction:column;gap:0;position:relative;}
+.route-line{position:absolute;left:36px;top:48px;bottom:48px;width:4px;background:linear-gradient(180deg,var(--gold) 0%,rgba(244,168,17,.1) 100%);border-radius:2px;z-index:0;}
+.station-row{display:flex;align-items:center;gap:16px;position:relative;z-index:1;margin-bottom:10px;}
+.station-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;border:4px solid transparent;transition:all .35s;cursor:pointer;box-shadow:var(--shadow);}
+.station-icon.locked{background:#c0c8d4;border-color:#e0e4ea;cursor:not-allowed;filter:grayscale(1);}
+.station-icon.unlocked{cursor:pointer;}
+.station-icon.unlocked:hover{transform:scale(1.08);}
+.station-icon.active{animation:stationPulse 1.8s ease infinite;}
+@keyframes stationPulse{0%,100%{box-shadow:0 0 0 0 rgba(244,168,17,.5),var(--shadow);}50%{box-shadow:0 0 0 10px rgba(244,168,17,0),var(--shadow);}}
+.station-info{flex:1;}
+.station-info h3{font-size:1rem;font-weight:900;margin-bottom:2px;}
+.station-info p{font-size:.82rem;color:#6b7684;}
+.station-badge{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.badge-locked{background:#e0e4ea;color:#9aa3ad;}
+.badge-active{background:var(--gold);color:var(--dark);}
+.badge-done{background:var(--patrim-lt);color:var(--patrim);}
+
+/* STATION PANEL */
+.station-panel{background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.13);margin-bottom:14px;overflow:hidden;animation:panelIn .35s ease;}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.sp-header{padding:18px 22px;display:flex;align-items:center;gap:14px;}
+.sp-header .sph-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;flex-shrink:0;}
+.sp-header h2{font-size:1.1rem;font-weight:900;flex:1;}
+.sp-header p{font-size:.82rem;color:#6b7684;margin-top:2px;}
+.sp-body{padding:20px 22px 24px;}
+
+/* Shared */
+.mono{font-family:'Source Code Pro',monospace;font-weight:700;}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{background:var(--dark);color:#fff;padding:10px 13px;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;}
+.data-table th.right{text-align:right;}
+.data-table td{padding:10px 13px;border-bottom:1px solid #edf0f4;font-size:.9rem;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--bg);}
+.activo-c{color:var(--activo);}
+.pasivo-c{color:var(--pasivo);}
+.patrim-c{color:var(--patrim);}
+.ingreso-c{color:var(--ingreso);}
+.gasto-c{color:var(--gasto);}
+.debe-c{color:var(--debe);}
+.haber-c{color:var(--haber);}
+.gold-c{color:var(--gold);}
+
+/* Asiento cards */
+.asiento-item{border-radius:14px;overflow:hidden;border:2px solid #edf0f4;margin-bottom:10px;}
+.asiento-item.revealed{border-color:var(--haber);}
+.ai-header{padding:13px 16px;display:flex;align-items:center;gap:10px;background:var(--bg);}
+.aih-num{background:var(--dark);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0;}
+.aih-num.done{background:var(--haber);}
+.aih-title{font-weight:700;font-size:.92rem;flex:1;}
+.aih-amount{font-family:'Source Code Pro',monospace;font-size:.88rem;font-weight:700;color:var(--gold);}
+.ai-rows{padding:10px 14px;display:none;}
+.asiento-item.open .ai-rows{display:block;}
+.ai-row{display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:7px 0;border-bottom:1px solid #f0f3f7;font-size:.85rem;}
+.ai-row:last-child{border-bottom:none;}
+.air-cuenta{font-weight:700;}
+.air-cuenta.sub{padding-left:20px;font-weight:600;color:#6b7684;}
+.air-debe{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.air-haber{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.ai-confirm-btn{width:100%;padding:11px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.92rem;cursor:pointer;transition:all .18s;margin-top:10px;}
+.ai-confirm-btn.pending{background:var(--dark);color:#fff;}
+.ai-confirm-btn.done{background:var(--patrim-lt);color:var(--patrim);cursor:default;}
+
+/* Mayor mini */
+.mayor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:680px){.mayor-grid{grid-template-columns:1fr 1fr;}}
+.mt-card{border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.09);}
+.mt-header{padding:10px 12px;color:#fff;font-weight:900;font-size:.8rem;text-align:center;}
+.mt-body{display:grid;grid-template-columns:1fr 1fr;background:#fff;}
+.mt-side{padding:8px 8px 6px;}
+.mt-side.d{border-right:1px solid #edf0f4;background:var(--debe-lt);}
+.mt-side.h{background:var(--haber-lt);}
+.mt-side-lbl{font-size:.68rem;font-weight:900;text-align:center;padding-bottom:4px;border-bottom:1px solid currentColor;margin-bottom:5px;display:block;}
+.mt-side.d .mt-side-lbl{color:var(--debe);}
+.mt-side.h .mt-side-lbl{color:var(--haber);}
+.mt-entry{font-size:.75rem;padding:3px 4px;border-radius:4px;margin-bottom:2px;display:flex;justify-content:space-between;}
+.mt-entry.d-e{background:#fff;color:var(--debe);}
+.mt-entry.h-e{background:#fff;color:var(--haber);}
+.mt-entry span:last-child{font-family:'Source Code Pro',monospace;font-weight:700;}
+.mt-foot{padding:6px 10px;background:var(--bg);border-top:2px solid var(--dark);display:flex;justify-content:space-between;font-size:.75rem;}
+.mt-saldo{font-family:'Source Code Pro',monospace;font-weight:900;font-size:.82rem;}
+.mt-saldo.deudor{color:var(--debe);}
+.mt-saldo.acreedor{color:var(--haber);}
+
+/* BC */
+.bc-verify-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;margin-top:14px;}
+.bc-verify-btn:hover{background:#2a3a54;}
+.bc-result{text-align:center;padding:16px;border-radius:12px;font-size:1rem;font-weight:900;display:none;margin-top:12px;}
+.bc-result.ok{background:var(--patrim-lt);color:var(--patrim);display:block;}
+
+/* EDR */
+.edr-line{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;font-size:.95rem;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;}
+.edr-line.show{opacity:1;transform:none;}
+.edr-line.ing{background:var(--ingreso-lt);}
+.edr-line.gas{background:var(--gasto-lt);}
+.edr-line.total{background:var(--dark);color:#fff;font-weight:900;}
+
+/* Balance General */
+.bg-two-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.bg-two-cols{grid-template-columns:1fr;}}
+.bg-col{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.09);}
+.bg-col-header{padding:11px 14px;color:#fff;font-weight:900;font-size:.88rem;}
+.bg-row{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #edf0f4;font-size:.88rem;}
+.bg-row:last-child{border-bottom:none;}
+.bg-row .bgr-n{color:#6b7684;}
+.bg-row .bgr-v{font-family:'Source Code Pro',monospace;font-weight:700;}
+.bg-total{display:flex;justify-content:space-between;padding:11px 14px;font-weight:900;font-size:.92rem;border-top:2px solid currentColor;}
+
+/* CIERRE FORMAL */
+.cierre-note{background:var(--cierre-lt);border-left:4px solid var(--cierre);border-radius:0 12px 12px 0;padding:12px 16px;font-size:.85rem;color:#2d2f7a;line-height:1.6;margin-bottom:16px;}
+.cierre-step{border-radius:14px;overflow:hidden;border:2px solid #e0e4ea;margin-bottom:12px;}
+.cierre-step.done{border-color:var(--cierre);}
+.cs-header{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--bg);}
+.cs-header .csn{background:var(--cierre);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;flex-shrink:0;}
+.cs-header .csn.done{background:var(--patrim);}
+.cs-header .cst{font-weight:700;font-size:.92rem;flex:1;color:var(--cierre);}
+.cs-header .csa{font-family:'Source Code Pro',monospace;font-size:.85rem;font-weight:700;color:var(--gold);}
+.cs-body{padding:0 14px;display:none;}
+.cierre-step.open .cs-body{display:block;padding:10px 14px 14px;}
+.cs-row{display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:7px 0;border-bottom:1px solid #f0f3f7;font-size:.85rem;}
+.cs-row:last-child{border-bottom:none;}
+.cs-cuenta{font-weight:700;}
+.cs-cuenta.sub{padding-left:20px;font-weight:600;color:#6b7684;}
+.cs-cuenta.bridge{padding-left:20px;font-weight:900;color:var(--cierre);}
+.cs-debe{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.cs-haber{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.cs-exp{background:var(--cierre-lt);border-radius:8px;padding:10px 13px;font-size:.83rem;color:#2d2f7a;margin-top:8px;line-height:1.5;}
+.cs-confirm-btn{width:100%;padding:11px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;margin-top:10px;}
+.cs-confirm-btn.pending{background:var(--cierre);color:#fff;}
+.cs-confirm-btn.done{background:var(--patrim-lt);color:var(--patrim);cursor:default;}
+
+.cierre-flow{display:flex;flex-direction:column;gap:10px;}
+.cf-item{border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-8px);transition:opacity .45s,transform .45s;}
+.cf-item.show{opacity:1;transform:none;}
+.cf-item .cfi-icon{font-size:1.8rem;flex-shrink:0;}
+.cf-item .cfi-text strong{display:block;font-size:.92rem;}
+.cf-item .cfi-text span{font-size:.8rem;color:#6b7684;}
+.cf-item.cierre-style{background:var(--cierre-lt);}
+.cf-item.reset{background:var(--dark);color:#fff;}
+.cf-item.reset .cfi-text span{color:#b0b8c4;}
+.cf-badge{font-family:'Source Code Pro',monospace;font-size:.85rem;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;}
+
+/* Action */
+.action-btn{width:100%;padding:15px;border-radius:12px;border:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);margin-top:14px;}
+.action-btn.primary{background:var(--dark);color:#fff;}
+.action-btn.primary:hover{background:#2a3a54;}
+.action-btn.gold{background:var(--gold);color:var(--dark);}
+
+/* CELEBRATION */
+.celebration{display:none;position:fixed;inset:0;z-index:500;background:rgba(27,38,56,.92);align-items:center;justify-content:center;padding:20px;}
+.celebration.show{display:flex;}
+.cel-card{background:#fff;border-radius:24px;padding:40px 32px;max-width:560px;width:100%;text-align:center;position:relative;overflow:hidden;animation:panelIn .4s ease;}
+.cel-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(600px) rotate(720deg);opacity:0;}}
+.cel-trophy{font-size:5rem;display:block;margin-bottom:12px;animation:trophyBounce .6s .3s both;}
+@keyframes trophyBounce{0%{transform:scale(0);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
+.cel-title{font-size:2rem;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.cel-subtitle{font-size:1rem;color:#6b7684;margin-bottom:24px;line-height:1.5;}
+.cel-stages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px;}
+@media(max-width:440px){.cel-stages{grid-template-columns:repeat(3,1fr);}}
+.cel-stage{border-radius:10px;padding:10px 6px;text-align:center;font-size:.72rem;font-weight:700;}
+.cel-stage .cs-icon{font-size:1.4rem;display:block;margin-bottom:3px;}
+.cel-btn{padding:15px 40px;background:var(--gold);color:var(--dark);border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;}
+.note-box{background:var(--gold-lt);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:11px 15px;font-size:.84rem;color:#6b3a00;line-height:1.6;margin-top:10px;}
+
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 8 FINAL</div>
+    <h1>El Ciclo Contable Completo</h1>
+    <p>Ferretería "El Maestro" · San Pedro Sula · Julio 2025 · Con cierre formal</p>
+  </div>
+</header>
+
+<div class="progress-strip">
+  <div class="progress-strip-inner">
+    <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+    <div class="prog-text"><span class="prog-station" id="prog-station">Inicio</span> &nbsp;·&nbsp; <span id="prog-pct">0%</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="route-map" id="route-map"><div class="route-line"></div></div>
+  <div id="panels-container"></div>
+</div>
+
+<div class="celebration" id="celebration">
+  <div class="cel-card">
+    <div class="cel-confetti" id="cel-confetti"></div>
+    <span class="cel-trophy">🏆</span>
+    <div class="cel-title">¡Dominaste el Ciclo Contable!</div>
+    <div class="cel-subtitle">Completaste las 7 estaciones — incluyendo el cierre formal con la cuenta "Resumen de Rentas y Gastos". ¡Excelente trabajo!</div>
+    <div class="cel-stages" id="cel-stages"></div>
+    <button class="cel-btn" onclick="restartGame()">🔄 Recorrer de nuevo</button>
+  </div>
+</div>
+
+<script>
+const STATIONS=[
+  {id:1,icon:'🏪',emoji:'1️⃣',title:'Apertura',desc:'Balance inicial al 1 de julio 2025',color:'#3B82F6'},
+  {id:2,icon:'📒',emoji:'2️⃣',title:'Libro Diario',desc:'Registro de 5 operaciones del mes',color:'#0D6B8C'},
+  {id:3,icon:'📊',emoji:'3️⃣',title:'Mayorización',desc:'Traslado al Libro Mayor',color:'#8B5CF6'},
+  {id:4,icon:'⚖️',emoji:'4️⃣',title:'Balance de Comprobación',desc:'Verificación: Σ Debe = Σ Haber',color:'#F59E0B'},
+  {id:5,icon:'📈',emoji:'5️⃣',title:'Estado de Resultados',desc:'Ingresos − Gastos = Utilidad',color:'#10B981'},
+  {id:6,icon:'🏛️',emoji:'6️⃣',title:'Balance General',desc:'Fotografía financiera al 31 de julio',color:'#EC4899'},
+  {id:7,icon:'🔄',emoji:'7️⃣',title:'Cierre Formal del Período',desc:'Resumen de Rentas y Gastos → cuentas en cero',color:'#6366F1'},
+];
+
+const ASIENTOS=[
+  {id:1,fecha:'05/07/2025',emoji:'💵',titulo:'Cobro de cuentas pendientes',
+   movs:[{cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:6000,haber:0,sub:false},{cuenta:'Cuentas por Cobrar',grupo:'activo',icon:'🧾',debe:0,haber:6000,sub:true}]},
+  {id:2,fecha:'10/07/2025',emoji:'🛒',titulo:'Compra mercadería al crédito',
+   movs:[{cuenta:'Inventario Mercadería',grupo:'activo',icon:'📦',debe:12000,haber:0,sub:false},{cuenta:'Cuentas por Pagar',grupo:'pasivo',icon:'📋',debe:0,haber:12000,sub:true}]},
+  {id:3,fecha:'15/07/2025',emoji:'🔩',titulo:'Venta de materiales al contado',
+   movs:[{cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:18000,haber:0,sub:false},{cuenta:'Ingresos por Ventas',grupo:'ingreso',icon:'📈',debe:0,haber:18000,sub:true}]},
+  {id:4,fecha:'20/07/2025',emoji:'👷',titulo:'Pago de sueldos',
+   movs:[{cuenta:'Gasto de Sueldos',grupo:'gasto',icon:'👷',debe:5000,haber:0,sub:false},{cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:0,haber:5000,sub:true}]},
+  {id:5,fecha:'28/07/2025',emoji:'🏪',titulo:'Pago de alquiler mensual',
+   movs:[{cuenta:'Gasto de Alquiler',grupo:'gasto',icon:'🏪',debe:3500,haber:0,sub:false},{cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:0,haber:3500,sub:true}]},
+];
+
+const SALDOS_INI={
+  'Caja y Bancos':{grupo:'activo',icon:'💵',debe:44500,haber:0},
+  'Cuentas por Cobrar':{grupo:'activo',icon:'🧾',debe:6000,haber:0},
+  'Inventario Mercadería':{grupo:'activo',icon:'📦',debe:8000,haber:0},
+  'Equipo de Cómputo':{grupo:'activo',icon:'💻',debe:6000,haber:0},
+  'Capital Social':{grupo:'patrim',icon:'👤',debe:0,haber:50000},
+  'Utilidades Anteriores':{grupo:'patrim',icon:'💰',debe:0,haber:14500},
+};
+
+function buildMayor(){
+  const m={};
+  Object.entries(SALDOS_INI).forEach(([k,v])=>{
+    m[k]={grupo:v.grupo,icon:v.icon,movs:[]};
+    if(v.debe>0) m[k].movs.push({ref:'Ini.',debe:v.debe,haber:0});
+    if(v.haber>0)m[k].movs.push({ref:'Ini.',debe:0,haber:v.haber});
+  });
+  ASIENTOS.forEach(as=>{
+    as.movs.forEach(mov=>{
+      if(!m[mov.cuenta])m[mov.cuenta]={grupo:mov.grupo,icon:mov.icon,movs:[]};
+      m[mov.cuenta].movs.push({ref:`As.${as.id}`,debe:mov.debe,haber:mov.haber});
+    });
+  });
+  return m;
+}
+const MAYOR=buildMayor();
+function cuentaSaldo(movs){const td=movs.reduce((s,m)=>s+m.debe,0);const th=movs.reduce((s,m)=>s+m.haber,0);return{td,th,saldo:Math.abs(td-th),nat:td>=th?'deudor':'acreedor'};}
+
+const ING_TOTAL=18000,GAS_TOTAL=8500,UTILIDAD=9500;
+const BG_CAJA=44500+6000+18000-5000-3500;
+const BG_INV=8000+12000;const BG_EQUIP=6000;
+const BG_PAGAR=12000;const BG_CAP=50000;const BG_UTIL_ANT=14500;
+
+function fmt(n){return 'L '+Math.abs(n).toLocaleString('es-HN');}
+
+let currentStation=0,stationsDone=[],asientosConfirmed=[],cierresDone=[];
+
+function renderMap(){
+  const map=document.getElementById('route-map');
+  const line=map.querySelector('.route-line');
+  map.innerHTML='';map.appendChild(line);
+  STATIONS.forEach(st=>{
+    const done=stationsDone.includes(st.id);
+    const active=currentStation===st.id;
+    const unlocked=st.id===1||stationsDone.includes(st.id-1)||done;
+    const locked=!unlocked;
+    const row=document.createElement('div');row.className='station-row';
+    const iconDiv=document.createElement('div');
+    iconDiv.className=`station-icon ${locked?'locked':done?'done':active?'active unlocked':'unlocked'}`;
+    iconDiv.style.background=locked?'':(done?'#22c55e':st.color);
+    iconDiv.textContent=done?'✅':st.icon;
+    if(!locked)iconDiv.onclick=()=>openStation(st.id);
+    const info=document.createElement('div');info.className='station-info';
+    info.innerHTML=`<h3 style="color:${locked?'#9aa3ad':st.color}">${st.emoji} ${st.title}</h3><p>${st.desc}</p>`;
+    const badge=document.createElement('span');
+    badge.className=`station-badge ${locked?'badge-locked':done?'badge-done':'badge-active'}`;
+    badge.textContent=locked?'🔒 Bloqueada':done?'✅ Completada':'▶ Activa';
+    row.appendChild(iconDiv);row.appendChild(info);row.appendChild(badge);
+    map.appendChild(row);
+  });
+}
+
+function updateProgress(){
+  const pct=Math.round(stationsDone.length/STATIONS.length*100);
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  const active=STATIONS.find(s=>s.id===currentStation);
+  document.getElementById('prog-station').textContent=active?`${active.emoji} ${active.title}`:'Inicio';
+}
+
+function openStation(id){
+  currentStation=id;renderMap();updateProgress();
+  document.getElementById('panels-container').innerHTML='';
+  const st=STATIONS.find(s=>s.id===id);
+  const div=document.createElement('div');div.className='station-panel';div.id='panel-'+id;
+  div.innerHTML=buildPanelHTML(id,st);
+  document.getElementById('panels-container').appendChild(div);
+  setTimeout(()=>div.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  if(id===5)setTimeout(()=>animateEDR(),400);
+  if(id===7)setTimeout(()=>animateCierreItems(),400);
+}
+
+function buildPanelHeader(st,sub){
+  return `<div class="sp-header" style="background:${st.color}22;">
+    <div class="sph-num" style="background:${st.color};">${st.emoji}</div>
+    <div><h2 style="color:${st.color};">${st.title}</h2><p>${sub}</p></div>
+  </div>`;
+}
+
+function buildPanelHTML(id,st){
+  switch(id){case 1:return buildS1(st);case 2:return buildS2(st);case 3:return buildS3(st);case 4:return buildS4(st);case 5:return buildS5(st);case 6:return buildS6(st);case 7:return buildS7(st);}
+}
+
+// S1
+function buildS1(st){
+  const rows=Object.entries(SALDOS_INI).map(([k,v])=>{
+    const s=v.debe||v.haber;const nat=v.debe>0?'deudor':'acreedor';
+    const gc={activo:'activo-c',patrim:'patrim-c'}[v.grupo];
+    return `<tr><td><span class="${gc}" style="font-weight:700;">${v.icon} ${k}</span></td><td style="text-align:right;" class="mono ${gc}">${fmt(s)}</td><td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;background:${nat==='deudor'?'var(--debe-lt)':'var(--patrim-lt)'};color:${nat==='deudor'?'var(--debe)':'var(--patrim)'};">${nat==='deudor'?'Deudor':'Acreedor'}</span></td></tr>`;
+  }).join('');
+  const totA=Object.entries(SALDOS_INI).filter(([,v])=>v.grupo==='activo').reduce((s,[,v])=>s+(v.debe||v.haber),0);
+  const totP=Object.entries(SALDOS_INI).filter(([,v])=>v.grupo==='patrim').reduce((s,[,v])=>s+(v.debe||v.haber),0);
+  return buildPanelHeader(st,'Balance de apertura al 1 de julio de 2025')+`
+  <div class="sp-body">
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="activo-c" style="font-family:'Source Code Pro',monospace;font-size:1.1rem;display:block;">${fmt(totA)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Total Activo</span></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="patrim-c" style="font-family:'Source Code Pro',monospace;font-size:1.1rem;display:block;">${fmt(totP)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Total Patrimonio</span></div>
+    </div>
+    <table class="data-table"><thead><tr><th>Cuenta</th><th class="right">Saldo Inicial</th><th>Naturaleza</th></tr></thead><tbody>${rows}</tbody></table>
+    <button class="action-btn gold" onclick="completeStation(1)" style="margin-top:16px;">▶ Iniciar el ciclo — Ir al Libro Diario</button>
+  </div>`;
+}
+
+// S2
+function buildS2(st){
+  const cards=ASIENTOS.map(as=>{
+    const done=asientosConfirmed.includes(as.id);
+    const tot=as.movs.reduce((s,m)=>s+m.debe,0);
+    const rows=as.movs.map(m=>`<div class="ai-row"><span class="air-cuenta${m.sub?' sub':''}" style="color:var(--${m.grupo==='activo'?'activo':m.grupo==='pasivo'?'pasivo':m.grupo==='patrim'?'patrim':m.grupo==='ingreso'?'ingreso':'gasto'})">${m.icon} ${m.cuenta}</span><span class="air-debe">${m.debe>0?fmt(m.debe):''}</span><span class="air-haber">${m.haber>0?fmt(m.haber):''}</span></div>`).join('');
+    return `<div class="asiento-item${done?' revealed':''}" id="ai-${as.id}">
+      <div class="ai-header" onclick="toggleAi(${as.id})">
+        <div class="aih-num${done?' done':''}">${done?'✅':as.id}</div>
+        <div class="aih-title">${as.emoji} ${as.titulo}</div><div class="aih-amount">${fmt(tot)}</div>
+      </div>
+      <div class="ai-rows"><div style="display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:6px 0 8px;border-bottom:2px solid #e0e4ea;font-size:.72rem;color:#9aa3ad;font-weight:700;"><span>CUENTA</span><span style="text-align:right;">DEBE</span><span style="text-align:right;">HABER</span></div>${rows}
+        <button class="ai-confirm-btn ${done?'done':'pending'}" id="aibtn-${as.id}" onclick="confirmAsiento(${as.id})" ${done?'disabled':''}>${done?'✅ Confirmado':'✅ Confirmar este asiento'}</button>
+      </div>
+    </div>`;
+  }).join('');
+  const allDone=ASIENTOS.every(a=>asientosConfirmed.includes(a.id));
+  return buildPanelHeader(st,'Toca cada asiento, revísalo y confírmalo')+`
+  <div class="sp-body">
+    <div class="note-box" style="margin-bottom:14px;">📌 Toca cada operación para ver el asiento DEBE/HABER. Confirma los 5 asientos para continuar.</div>
+    <div style="margin-bottom:8px;font-size:.8rem;color:#9aa3ad;font-weight:700;">JULIO 2025 — ${asientosConfirmed.length}/5 confirmados</div>
+    ${cards}
+    <button class="action-btn primary" id="s2-next-btn" onclick="completeStation(2)" ${allDone?'':'disabled'}>▶ Ir a la Mayorización</button>
+  </div>`;
+}
+function toggleAi(id){const el=document.getElementById('ai-'+id);if(el)el.classList.toggle('open');}
+function confirmAsiento(id){if(!asientosConfirmed.includes(id))asientosConfirmed.push(id);const el=document.getElementById('panels-container');const panel=el.querySelector('#panel-2');if(panel){const st=STATIONS.find(s=>s.id===2);panel.innerHTML=buildS2(st);}}
+
+// S3
+function buildS3(st){
+  const cuentas=Object.keys(MAYOR);
+  const cards=cuentas.map(c=>{
+    const v=MAYOR[c];const{td,th,saldo,nat}=cuentaSaldo(v.movs);
+    const gc={activo:'var(--activo)',pasivo:'var(--pasivo)',patrim:'var(--patrim)',ingreso:'var(--ingreso)',gasto:'var(--gasto)'}[v.grupo];
+    const dE=v.movs.filter(m=>m.debe>0).map(m=>`<div class="mt-entry d-e"><span>${m.ref}</span><span>${fmt(m.debe)}</span></div>`).join('');
+    const hE=v.movs.filter(m=>m.haber>0).map(m=>`<div class="mt-entry h-e"><span>${m.ref}</span><span>${fmt(m.haber)}</span></div>`).join('');
+    return `<div class="mt-card"><div class="mt-header" style="background:${gc};">${v.icon} ${c}</div>
+      <div class="mt-body"><div class="mt-side d"><span class="mt-side-lbl">DEBE</span>${dE}</div><div class="mt-side h"><span class="mt-side-lbl">HABER</span>${hE}</div></div>
+      <div class="mt-foot"><span style="font-size:.7rem;color:#9aa3ad;">${nat==='deudor'?'Saldo Deudor':'Saldo Acreedor'}</span><span class="mt-saldo ${nat}">${fmt(saldo)}</span></div></div>`;
+  }).join('');
+  return buildPanelHeader(st,'Todas las cuentas del Mayor con saldos finales')+`
+  <div class="sp-body"><div class="mayor-grid">${cards}</div>
+    <button class="action-btn primary" onclick="completeStation(3)" style="margin-top:14px;">▶ Ir al Balance de Comprobación</button>
+  </div>`;
+}
+
+// S4
+function buildS4(st){
+  const bc=Object.entries(MAYOR).map(([k,v])=>{const{td,th,saldo,nat}=cuentaSaldo(v.movs);const gc={activo:'var(--activo)',pasivo:'var(--pasivo)',patrim:'var(--patrim)',ingreso:'var(--ingreso)',gasto:'var(--gasto)'}[v.grupo];
+  return `<tr><td><span class="mono" style="color:${gc}">${v.icon} ${k}</span></td><td style="text-align:right;" class="mono debe-c">${nat==='deudor'?fmt(saldo):''}</td><td style="text-align:right;" class="mono haber-c">${nat==='acreedor'?fmt(saldo):''}</td></tr>`;}).join('');
+  const totD=Object.values(MAYOR).reduce((s,v)=>{const{td,th,saldo,nat}=cuentaSaldo(v.movs);return nat==='deudor'?s+saldo:s;},0);
+  const totH=Object.values(MAYOR).reduce((s,v)=>{const{td,th,saldo,nat}=cuentaSaldo(v.movs);return nat==='acreedor'?s+saldo:s;},0);
+  return buildPanelHeader(st,'Verificación: Σ Saldos Deudores = Σ Saldos Acreedores')+`
+  <div class="sp-body">
+    <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="debe-c" style="font-family:'Source Code Pro',monospace;font-size:1.05rem;display:block;">${fmt(totD)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Σ Saldos Deudores</span></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="haber-c" style="font-family:'Source Code Pro',monospace;font-size:1.05rem;display:block;">${fmt(totH)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Σ Saldos Acreedores</span></div>
+    </div>
+    <table class="data-table"><thead><tr><th>Cuenta</th><th class="right">Saldo Deudor</th><th class="right">Saldo Acreedor</th></tr></thead><tbody>${bc}
+    <tr style="background:var(--dark);"><td style="color:#fff;font-weight:900;">TOTALES</td><td style="text-align:right;font-family:'Source Code Pro',monospace;font-weight:900;color:#93d8f0;">${fmt(totD)}</td><td style="text-align:right;font-family:'Source Code Pro',monospace;font-weight:900;color:#a8efc1;">${fmt(totH)}</td></tr>
+    </tbody></table>
+    <button class="bc-verify-btn" onclick="verifyBC()">⚖️ Verificar Balance de Comprobación</button>
+    <div class="bc-result" id="bc-result"></div>
+  </div>`;
+}
+function verifyBC(){const el=document.getElementById('bc-result');el.className='bc-result ok';el.innerHTML='✅ ¡Balance cuadrado! Σ Saldos Deudores = Σ Saldos Acreedores<br><span style="font-size:.85rem;font-weight:600;">Principio de Luca Pacioli verificado. Continuamos con el Estado de Resultados.</span>';setTimeout(()=>completeStation(4),1400);}
+
+// S5
+function buildS5(st){
+  return buildPanelHeader(st,'Período: 1 al 31 de julio 2025')+`
+  <div class="sp-body">
+    <div class="note-box" style="margin-bottom:14px;">📌 Solo cuentas <strong>temporales</strong> (Ingresos y Gastos). Su saldo determina la Utilidad o Pérdida del período.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;" id="edr-reveal">
+      <div class="edr-line ing" id="edrl-1"><span>📈 Ingresos por Ventas</span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--ingreso);">${fmt(ING_TOTAL)}</span></div>
+      <div class="edr-line gas" id="edrl-2"><span>📉 Gasto de Sueldos</span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--gasto);">(${fmt(5000)})</span></div>
+      <div class="edr-line gas" id="edrl-3"><span>📉 Gasto de Alquiler</span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--gasto);">(${fmt(3500)})</span></div>
+      <div class="edr-line" id="edrl-4" style="background:var(--bg);"><span style="font-style:italic;color:#9aa3ad;">Total Gastos</span><span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--gasto);">(${fmt(GAS_TOTAL)})</span></div>
+      <div class="edr-line total" id="edrl-5"><span>💰 UTILIDAD NETA DEL PERÍODO</span><span>${fmt(UTILIDAD)}</span></div>
+    </div>
+    <div id="edr-verdict" style="display:none;margin-top:14px;text-align:center;">
+      <div style="font-size:2rem;">🎉</div><div style="font-weight:900;font-size:1.1rem;color:var(--patrim);margin:6px 0;">¡Utilidad de ${fmt(UTILIDAD)}! → Pasa al Patrimonio en el Balance General</div>
+    </div>
+    <button class="action-btn primary" id="edr-btn" onclick="completeStation(5)" style="display:none;">▶ Ver Balance General</button>
+  </div>`;
+}
+function animateEDR(){[1,2,3,4,5].forEach((n,i)=>{setTimeout(()=>{const el=document.getElementById('edrl-'+n);if(el)el.classList.add('show');if(n===5)setTimeout(()=>{const v=document.getElementById('edr-verdict');const b=document.getElementById('edr-btn');if(v)v.style.display='block';if(b)b.style.display='block';},400);},i*500);});}
+
+// S6
+function buildS6(st){
+  const totA=BG_CAJA+BG_INV+BG_EQUIP;const totPP=BG_PAGAR+BG_CAP+BG_UTIL_ANT+UTILIDAD;
+  return buildPanelHeader(st,'Estado de Situación Financiera al 31 de julio 2025')+`
+  <div class="sp-body">
+    <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="activo-c mono" style="font-size:1.05rem;display:block;">${fmt(totA)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Total Activo</span></div>
+      <div style="background:var(--bg);border-radius:10px;padding:12px 16px;flex:1;"><strong class="patrim-c mono" style="font-size:1.05rem;display:block;">${fmt(totPP)}</strong><span style="font-size:.75rem;color:#9aa3ad;">Total Pas.+Pat.</span></div>
+    </div>
+    <div class="bg-two-cols">
+      <div class="bg-col">
+        <div class="bg-col-header" style="background:var(--activo);">🏦 ACTIVO</div>
+        <div style="padding:4px 0;font-size:.72rem;color:#9aa3ad;font-weight:700;padding:8px 14px 4px;">Corriente</div>
+        <div class="bg-row"><span class="bgr-n">💵 Caja y Bancos</span><span class="bgr-v activo-c">${fmt(BG_CAJA)}</span></div>
+        <div class="bg-row"><span class="bgr-n">📦 Inventario Mercadería</span><span class="bgr-v activo-c">${fmt(BG_INV)}</span></div>
+        <div style="font-size:.72rem;color:#9aa3ad;font-weight:700;padding:6px 14px 4px;">No Corriente</div>
+        <div class="bg-row"><span class="bgr-n">💻 Equipo de Cómputo</span><span class="bgr-v activo-c">${fmt(BG_EQUIP)}</span></div>
+        <div class="bg-total" style="color:var(--activo);border-color:var(--activo);"><span>TOTAL ACTIVO</span><span class="mono">${fmt(totA)}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="bg-col">
+          <div class="bg-col-header" style="background:var(--pasivo);">📋 PASIVO</div>
+          <div class="bg-row"><span class="bgr-n">📋 Cuentas por Pagar</span><span class="bgr-v pasivo-c">${fmt(BG_PAGAR)}</span></div>
+          <div class="bg-total" style="color:var(--pasivo);border-color:var(--pasivo);"><span>TOTAL PASIVO</span><span class="mono">${fmt(BG_PAGAR)}</span></div>
+        </div>
+        <div class="bg-col">
+          <div class="bg-col-header" style="background:var(--patrim);">👤 PATRIMONIO</div>
+          <div class="bg-row"><span class="bgr-n">💼 Capital Social</span><span class="bgr-v patrim-c">${fmt(BG_CAP)}</span></div>
+          <div class="bg-row"><span class="bgr-n">💰 Utilidades Anteriores</span><span class="bgr-v patrim-c">${fmt(BG_UTIL_ANT)}</span></div>
+          <div class="bg-row" style="background:var(--gold-lt);"><span class="bgr-n" style="font-weight:900;">💰 Utilidad Julio ← EDR</span><span class="bgr-v gold-c">${fmt(UTILIDAD)}</span></div>
+          <div class="bg-total" style="color:var(--patrim);border-color:var(--patrim);"><span>TOTAL PATRIMONIO</span><span class="mono">${fmt(BG_CAP+BG_UTIL_ANT+UTILIDAD)}</span></div>
+        </div>
+        <div style="background:var(--patrim);color:#fff;border-radius:10px;padding:11px 14px;display:flex;justify-content:space-between;font-weight:900;font-size:.88rem;">
+          <span>TOTAL PAS.+PAT.</span><span class="mono">${fmt(totPP)}</span>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--dark);color:#fff;border-radius:12px;padding:14px 18px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="font-size:.88rem;">Verificación: Activo = Pasivo + Patrimonio</span>
+      <span style="background:var(--patrim);color:#fff;border-radius:20px;padding:5px 14px;font-size:.82rem;font-weight:700;">✅ ${fmt(totA)} = ${fmt(totPP)}</span>
+    </div>
+    <button class="action-btn gold" onclick="completeStation(6)">▶ Proceder al Cierre Formal del Período</button>
+  </div>`;
+}
+
+// S7 — CIERRE FORMAL CON RESUMEN DE RENTAS Y GASTOS
+function buildS7(st){
+  const done1=cierresDone.includes(1),done2=cierresDone.includes(2),done3=cierresDone.includes(3);
+  return buildPanelHeader(st,'Cierre formal con cuenta "Resumen de Rentas y Gastos"')+`
+  <div class="sp-body">
+    <div class="cierre-note">
+      📖 <strong>Cuenta puente "Resumen de Rentas y Gastos"</strong> (también llamada "Pérdidas y Ganancias" en el libro de texto): Es una cuenta <em>transitoria de cierre</em> que acumula todos los ingresos y gastos del período antes de trasladar la utilidad o pérdida al Patrimonio. Al final del proceso, su saldo es <strong>cero</strong>. Esta es la técnica estándar del libro de texto de la Contabilidad Interactiva.
+    </div>
+
+    <!-- PASO 1: Cierre de Ingresos -->
+    <div class="cierre-step${done1?' done':''}" id="cs-1">
+      <div class="cs-header" onclick="toggleCS(1)">
+        <div class="csn${done1?' done':''}">${done1?'✅':'1'}</div>
+        <div class="cst">Paso 1: Cerrar cuentas de INGRESOS</div>
+        <div class="csa">${fmt(ING_TOTAL)}</div>
+      </div>
+      <div class="cs-body">
+        <div style="font-size:.8rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:6px 0 8px;border-bottom:2px solid #e0e4ea;font-weight:700;"><span>Cuenta</span><span style="text-align:right;">DEBE</span><span style="text-align:right;">HABER</span></div>
+        <div class="cs-row"><span class="cs-cuenta" style="color:var(--ingreso);">📈 Ingresos por Ventas</span><span class="cs-debe">${fmt(ING_TOTAL)}</span><span></span></div>
+        <div class="cs-row"><span class="cs-cuenta bridge">🔄 Resumen de Rentas y Gastos</span><span></span><span class="cs-haber" style="color:var(--cierre);">${fmt(ING_TOTAL)}</span></div>
+        <div class="cs-exp">Se DEBITA "Ingresos por Ventas" para llevar su saldo a CERO. Se ACREDITA "Resumen de Rentas y Gastos" → acumula ${fmt(ING_TOTAL)} a favor (los ingresos del período).</div>
+        <button class="cs-confirm-btn ${done1?'done':'pending'}" onclick="confirmCierre(1)" ${done1?'disabled':''}>${done1?'✅ Completado':'✅ Registrar Paso 1'}</button>
+      </div>
+    </div>
+
+    <!-- PASO 2: Cierre de Gastos -->
+    <div class="cierre-step${done2?' done':''}" id="cs-2">
+      <div class="cs-header" onclick="toggleCS(2)">
+        <div class="csn${done2?' done':''}">${done2?'✅':'2'}</div>
+        <div class="cst">Paso 2: Cerrar cuentas de GASTOS</div>
+        <div class="csa">${fmt(GAS_TOTAL)}</div>
+      </div>
+      <div class="cs-body">
+        <div style="font-size:.8rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:6px 0 8px;border-bottom:2px solid #e0e4ea;font-weight:700;"><span>Cuenta</span><span style="text-align:right;">DEBE</span><span style="text-align:right;">HABER</span></div>
+        <div class="cs-row"><span class="cs-cuenta bridge">🔄 Resumen de Rentas y Gastos</span><span class="cs-debe" style="color:var(--cierre);">${fmt(GAS_TOTAL)}</span><span></span></div>
+        <div class="cs-row"><span class="cs-cuenta sub" style="color:var(--gasto);">📉 Gasto de Sueldos</span><span></span><span class="cs-haber">${fmt(5000)}</span></div>
+        <div class="cs-row"><span class="cs-cuenta sub" style="color:var(--gasto);">📉 Gasto de Alquiler</span><span></span><span class="cs-haber">${fmt(3500)}</span></div>
+        <div class="cs-exp">Se DEBITA "Resumen de Rentas y Gastos" por el total de gastos. Se ACREDITAN "Gasto de Sueldos" y "Gasto de Alquiler" → ambos quedan en CERO. Saldo del Resumen: ${fmt(ING_TOTAL)} − ${fmt(GAS_TOTAL)} = <strong>${fmt(UTILIDAD)} (utilidad)</strong>.</div>
+        <button class="cs-confirm-btn ${done2?'done':'pending'}" onclick="confirmCierre(2)" ${done2?'disabled':(!done1?'disabled':'')}>${done2?'✅ Completado':'✅ Registrar Paso 2'}</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Cierre del Resumen → Capital/Utilidades -->
+    <div class="cierre-step${done3?' done':''}" id="cs-3">
+      <div class="cs-header" onclick="toggleCS(3)">
+        <div class="csn${done3?' done':''}">${done3?'✅':'3'}</div>
+        <div class="cst">Paso 3: Cerrar "Resumen de Rentas y Gastos" → Patrimonio</div>
+        <div class="csa">${fmt(UTILIDAD)}</div>
+      </div>
+      <div class="cs-body">
+        <div style="font-size:.8rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 100px 100px;gap:8px;padding:6px 0 8px;border-bottom:2px solid #e0e4ea;font-weight:700;"><span>Cuenta</span><span style="text-align:right;">DEBE</span><span style="text-align:right;">HABER</span></div>
+        <div class="cs-row"><span class="cs-cuenta bridge">🔄 Resumen de Rentas y Gastos</span><span class="cs-debe" style="color:var(--cierre);">${fmt(UTILIDAD)}</span><span></span></div>
+        <div class="cs-row"><span class="cs-cuenta sub" style="color:var(--patrim);">💰 Utilidades Retenidas</span><span></span><span class="cs-haber" style="color:var(--patrim);">${fmt(UTILIDAD)}</span></div>
+        <div class="cs-exp">Se DEBITA "Resumen de Rentas y Gastos" por su saldo acreedor (la utilidad). Queda en CERO. Se ACREDITA "Utilidades Retenidas" → la utilidad queda en el Patrimonio para el próximo período. <strong>El ciclo contable está completo.</strong></div>
+        <button class="cs-confirm-btn ${done3?'done':'pending'}" onclick="confirmCierre(3)" ${done3?'disabled':(!done2?'disabled':'')}>${done3?'✅ Completado':'✅ Registrar Paso 3'}</button>
+      </div>
+    </div>
+
+    <!-- Resumen final -->
+    <div id="cierre-summary" style="display:${done3?'block':'none'};margin-top:16px;">
+      <div style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:12px;">Resultado del cierre — Cuentas temporales</div>
+      <div class="cierre-flow" id="cierre-flow">
+        <div class="cf-item cierre-style" id="cf-1"><span class="cfi-icon">📈</span><div class="cfi-text"><strong>Ingresos por Ventas → CERO</strong><span>Saldo debitado y trasladado al Resumen de Rentas y Gastos</span></div><span class="cf-badge" style="background:var(--ingreso-lt);color:var(--ingreso);">L 0 ✅</span></div>
+        <div class="cf-item cierre-style" id="cf-2"><span class="cfi-icon">📉</span><div class="cfi-text"><strong>Gastos (Sueldos + Alquiler) → CERO</strong><span>Saldos acreditados y trasladados al Resumen</span></div><span class="cf-badge" style="background:var(--gasto-lt);color:var(--gasto);">L 0 ✅</span></div>
+        <div class="cf-item cierre-style" id="cf-3"><span class="cfi-icon">🔄</span><div class="cfi-text"><strong>Resumen de Rentas y Gastos → CERO</strong><span>Utilidad ${fmt(UTILIDAD)} trasladada a Utilidades Retenidas</span></div><span class="cf-badge" style="background:var(--cierre-lt);color:var(--cierre);">L 0 ✅</span></div>
+        <div class="cf-item reset" id="cf-4"><span class="cfi-icon">🔄</span><div class="cfi-text"><strong>Sistema listo para el nuevo ciclo — Agosto 2025</strong><span>Solo quedan cuentas permanentes (Activos, Pasivos, Patrimonio)</span></div><span class="cf-badge" style="background:rgba(255,255,255,.15);color:#fff;">Nuevo Ciclo ▶</span></div>
+      </div>
+      <button class="action-btn gold" onclick="showCelebration()">🏆 ¡Ver celebración final!</button>
+    </div>
+  </div>`;
+}
+
+function toggleCS(n){
+  const el=document.getElementById('cs-'+n);
+  if(el)el.classList.toggle('open');
+}
+
+function confirmCierre(n){
+  if(!cierresDone.includes(n))cierresDone.push(n);
+  // Rebuild S7
+  const cont=document.getElementById('panels-container');
+  const panel=cont.querySelector('#panel-7');
+  if(panel){const st=STATIONS.find(s=>s.id===7);panel.innerHTML=buildS7(st);
+    // Auto-open confirmed and next
+    const next=document.getElementById('cs-'+(n+1));if(next)next.classList.add('open');
+    if(n===3){const sum=document.getElementById('cierre-summary');if(sum){sum.style.display='block';setTimeout(()=>animateCierreItems(),300);}}
+  }
+}
+
+function animateCierreItems(){
+  [1,2,3,4].forEach((n,i)=>{
+    setTimeout(()=>{const el=document.getElementById('cf-'+n);if(el)el.classList.add('show');},i*500);
+  });
+}
+
+function completeStation(id){
+  if(!stationsDone.includes(id))stationsDone.push(id);
+  const next=id+1;
+  if(next<=STATIONS.length)openStation(next);
+  else{renderMap();updateProgress();}
+}
+
+function showCelebration(){
+  if(!stationsDone.includes(7))stationsDone.push(7);
+  updateProgress();renderMap();
+  const cel=document.getElementById('celebration');cel.classList.add('show');
+  document.getElementById('cel-stages').innerHTML=STATIONS.map(st=>`<div class="cel-stage" style="background:${st.color}22;color:${st.color};"><span class="cs-icon">✅</span>${st.title}</div>`).join('');
+  spawnConfetti();
+}
+
+function spawnConfetti(){
+  const bg=document.getElementById('cel-confetti');bg.innerHTML='';
+  const colors=['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#E67E22','#6366F1','#EC4899','#fff'];
+  for(let i=0;i<90;i++){
+    const el=document.createElement('div');el.className='confetti-piece';
+    const sz=6+Math.random()*9;
+    el.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.4?'50%':'2px'};animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*1.5}s;`;
+    bg.appendChild(el);
+  }
+}
+
+function restartGame(){
+  currentStation=0;stationsDone=[];asientosConfirmed=[];cierresDone=[];
+  document.getElementById('celebration').classList.remove('show');
+  document.getElementById('panels-container').innerHTML='';
+  renderMap();updateProgress();
+  setTimeout(()=>openStation(1),300);
+}
+
+renderMap();updateProgress();
+setTimeout(()=>openStation(1),400);
+</script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 6 — El Libro Mayor | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --debe:     #0D6B8C;
+  --debe-lt:  #E0F4FA;
+  --haber:    #1A8A4A;
+  --haber-lt: #E4F9ED;
+  --gold:     #F4A811;
+  --dark:     #1B2638;
+  --bg:       #F5F7FA;
+  --card-r:   16px;
+  --shadow:   0 6px 24px rgba(0,0,0,0.11);
+  --activo:   #0D6B8C;
+  --pasivo:   #C0392B;
+  --patrim:   #1A8A4A;
+  --ingreso:  #E67E22;
+  --gasto:    #8E44AD;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.75rem;padding:5px 13px;border-radius:30px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.4rem;font-weight:900;}
+header p{font-size:.85rem;color:#b0b8c4;margin-top:2px;}
+
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e4ea;padding:0 20px;gap:4px;overflow-x:auto;}
+.tab-btn{padding:16px 20px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;color:#6b7684;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold);}
+
+.section{display:none;padding:24px 18px 64px;max-width:1100px;margin:0 auto;}
+.section.active{display:block;}
+
+/* ══ CONCEPTO ══ */
+.intro-banner{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:22px 26px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;}
+.intro-banner .ib-icon{font-size:2.4rem;flex-shrink:0;}
+.intro-banner h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+.intro-banner p{font-size:.88rem;color:#b0b8c4;line-height:1.6;}
+
+.flow-diagram{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:24px;}
+.flow-box{background:#fff;border-radius:var(--card-r);padding:20px 24px;box-shadow:var(--shadow);text-align:center;min-width:160px;}
+.flow-box .fb-icon{font-size:2rem;display:block;margin-bottom:8px;}
+.flow-box h4{font-size:1rem;font-weight:900;margin-bottom:4px;}
+.flow-box p{font-size:.8rem;color:#6b7684;line-height:1.4;}
+.flow-arrow{font-size:2rem;color:#c0c8d4;padding:0 12px;}
+
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:600px){.diff-grid{grid-template-columns:1fr;}}
+.diff-card{border-radius:var(--card-r);padding:20px;box-shadow:var(--shadow);}
+.diff-card.diario{background:var(--debe-lt);}
+.diff-card.mayor{background:var(--haber-lt);}
+.diff-card h4{font-size:1rem;font-weight:900;margin-bottom:10px;}
+.diff-card.diario h4{color:var(--debe);}
+.diff-card.mayor h4{color:var(--haber);}
+.diff-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.diff-card li{font-size:.88rem;display:flex;gap:8px;align-items:flex-start;}
+.diff-card li::before{content:'▸';font-size:.7rem;margin-top:3px;flex-shrink:0;}
+.diff-card.diario li::before{color:var(--debe);}
+.diff-card.mayor li::before{color:var(--haber);}
+
+/* T account anatomy */
+.t-anatomy{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;}
+.t-anatomy-title{background:var(--dark);color:#fff;padding:14px;text-align:center;font-weight:900;font-size:1rem;}
+.t-anatomy-body{display:grid;grid-template-columns:1fr 1fr;min-height:140px;}
+.ta-side{padding:16px;}
+.ta-side.d{border-right:3px solid var(--dark);background:var(--debe-lt);}
+.ta-side.h{background:var(--haber-lt);}
+.ta-side-lbl{font-weight:900;text-align:center;padding-bottom:8px;border-bottom:2px solid currentColor;margin-bottom:10px;font-size:1rem;}
+.ta-side.d .ta-side-lbl{color:var(--debe);}
+.ta-side.h .ta-side-lbl{color:var(--haber);}
+.ta-entry{display:flex;justify-content:space-between;padding:6px 8px;border-radius:6px;font-size:.85rem;margin-bottom:4px;}
+.ta-entry.d{background:#fff;color:var(--debe);}
+.ta-entry.h{background:#fff;color:var(--haber);}
+.ta-entry span:last-child{font-family:'Source Code Pro',monospace;font-weight:700;}
+.ta-foot{padding:10px 14px;background:var(--bg);border-top:2px solid var(--dark);display:flex;justify-content:space-between;font-size:.85rem;}
+.ta-foot .tf-saldo{font-family:'Source Code Pro',monospace;font-weight:900;}
+.ta-foot .tf-saldo.deudor{color:var(--debe);}
+.ta-foot .tf-saldo.acreedor{color:var(--haber);}
+
+/* ══ MAYORIZACIÓN ANIMADA ══ */
+.mayor-layout{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start;}
+@media(max-width:900px){.mayor-layout{grid-template-columns:1fr;}}
+
+/* Libro Diario panel */
+.diario-panel{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:16px;}
+.dp-header{background:var(--dark);color:#fff;padding:14px 16px;font-weight:900;font-size:.95rem;display:flex;align-items:center;gap:8px;}
+.asiento-card{border-bottom:1px solid #edf0f4;cursor:pointer;transition:background .18s;position:relative;}
+.asiento-card:last-child{border-bottom:none;}
+.asiento-card:hover{background:var(--bg);}
+.asiento-card.active-asiento{background:#fffbe6;border-left:4px solid var(--gold);}
+.asiento-card.mayorizado{background:#f0fff5;border-left:4px solid var(--haber);}
+.ac-header{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.ac-num{background:var(--dark);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0;}
+.ac-num.done{background:var(--haber);}
+.ac-title{font-size:.9rem;font-weight:700;flex:1;}
+.ac-amount{font-family:'Source Code Pro',monospace;font-size:.88rem;font-weight:700;color:var(--gold);}
+.ac-check{font-size:1rem;opacity:0;transition:opacity .3s;}
+.ac-check.show{opacity:1;}
+.ac-rows{padding:0 14px 12px 52px;display:none;}
+.asiento-card.expanded .ac-rows{display:block;}
+.ac-row{display:grid;grid-template-columns:1fr 80px 80px;gap:6px;padding:5px 0;font-size:.82rem;border-bottom:1px solid #f0f3f7;}
+.ac-row:last-child{border-bottom:none;}
+.ac-row .ar-cuenta{font-weight:700;}
+.ac-row .ar-cuenta.sub{padding-left:16px;font-weight:600;color:#6b7684;}
+.ac-row .ar-debe{font-family:'Source Code Pro',monospace;color:var(--debe);font-weight:700;text-align:right;}
+.ac-row .ar-haber{font-family:'Source Code Pro',monospace;color:var(--haber);font-weight:700;text-align:right;}
+
+/* Mayor panel */
+.mayor-panel{display:flex;flex-direction:column;gap:14px;}
+.mayor-ctrl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.ctrl-btn{padding:12px 22px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);}
+.ctrl-btn.primary{background:var(--dark);color:#fff;}
+.ctrl-btn.primary:hover{background:#2a3a54;transform:scale(1.02);}
+.ctrl-btn.secondary{background:#fff;color:var(--dark);border:2px solid #dce0e8;}
+.ctrl-btn.secondary:hover{background:var(--bg);}
+.ctrl-btn:disabled{opacity:.38;cursor:not-allowed;transform:none!important;}
+
+/* Cuenta T en Mayor */
+.cuenta-t{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s;}
+.cuenta-t:hover{box-shadow:0 10px 32px rgba(0,0,0,.15);}
+.ct-header{padding:13px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.ct-header .cth-icon{font-size:1.5rem;}
+.ct-header .cth-name{font-size:1rem;font-weight:900;flex:1;}
+.ct-header .cth-badge{font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:20px;}
+.ct-body{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #edf0f4;overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1);}
+.cuenta-t.open .ct-body{max-height:400px;}
+.ct-side{padding:12px;}
+.ct-side.d{border-right:2px solid #edf0f4;background:var(--debe-lt);}
+.ct-side.h{background:var(--haber-lt);}
+.ct-side-lbl{font-weight:900;font-size:.82rem;text-align:center;padding-bottom:6px;border-bottom:1px solid currentColor;margin-bottom:8px;}
+.ct-side.d .ct-side-lbl{color:var(--debe);}
+.ct-side.h .ct-side-lbl{color:var(--haber);}
+.ct-entry{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;margin-bottom:4px;font-size:.82rem;opacity:0;transform:translateY(4px);transition:opacity .35s,transform .35s;}
+.ct-entry.show{opacity:1;transform:none;}
+.ct-entry.d-entry{background:#fff;border-left:3px solid var(--debe);}
+.ct-entry.h-entry{background:#fff;border-left:3px solid var(--haber);}
+.ct-entry .ce-ref{color:#9aa3ad;font-size:.72rem;}
+.ct-entry .ce-amt{font-family:'Source Code Pro',monospace;font-weight:700;}
+.ct-entry.d-entry .ce-amt{color:var(--debe);}
+.ct-entry.h-entry .ce-amt{color:var(--haber);}
+.ct-footer{border-top:2px solid var(--dark);padding:10px 14px;background:var(--bg);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:.82rem;}
+.ctf-item{text-align:center;}
+.ctf-item strong{display:block;font-family:'Source Code Pro',monospace;font-weight:700;font-size:.9rem;}
+.ctf-item span{color:#9aa3ad;font-size:.72rem;}
+.ctf-item.total-d strong{color:var(--debe);}
+.ctf-item.total-h strong{color:var(--haber);}
+.ctf-item.saldo strong{font-size:1rem;}
+.ctf-item.saldo.deudor strong{color:var(--debe);}
+.ctf-item.saldo.acreedor strong{color:var(--haber);}
+
+/* Highlight pulse */
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(244,168,17,.6);}70%{box-shadow:0 0 0 14px rgba(244,168,17,0);}100%{box-shadow:0 0 0 0 rgba(244,168,17,0);}}
+.ct-entry.highlight{animation:pulse 1s ease 1,show .35s ease forwards;}
+@keyframes show{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ══ MAYOR COMPLETO ══ */
+.mayor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:860px){.mayor-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:540px){.mayor-grid{grid-template-columns:1fr;}}
+
+.mc-card{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s;}
+.mc-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.15);}
+.mc-header{padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.mc-header .mch-icon{font-size:1.5rem;}
+.mc-header .mch-name{font-size:.95rem;font-weight:900;flex:1;}
+.mc-body{border-top:1px solid #edf0f4;display:grid;grid-template-columns:1fr 1fr;min-height:90px;}
+.mc-side{padding:10px;}
+.mc-side.d{border-right:1px solid #edf0f4;background:var(--debe-lt);}
+.mc-side.h{background:var(--haber-lt);}
+.mc-side-lbl{font-size:.72rem;font-weight:900;text-align:center;padding-bottom:6px;border-bottom:1px solid currentColor;margin-bottom:6px;}
+.mc-side.d .mc-side-lbl{color:var(--debe);}
+.mc-side.h .mc-side-lbl{color:var(--haber);}
+.mc-entry{display:flex;justify-content:space-between;padding:4px 6px;border-radius:4px;font-size:.78rem;margin-bottom:3px;}
+.mc-entry.d-e{background:#fff;color:var(--debe);}
+.mc-entry.h-e{background:#fff;color:var(--haber);}
+.mc-entry span:last-child{font-family:'Source Code Pro',monospace;font-weight:700;}
+.mc-foot{padding:8px 12px;background:var(--bg);border-top:2px solid var(--dark);display:flex;justify-content:space-between;align-items:center;font-size:.82rem;}
+.mc-saldo{font-family:'Source Code Pro',monospace;font-weight:900;}
+.mc-saldo.deudor{color:var(--debe);}
+.mc-saldo.acreedor{color:var(--haber);}
+
+/* Saldo detail modal */
+.saldo-modal-overlay{display:none;position:fixed;inset:0;background:rgba(27,38,56,.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.saldo-modal-overlay.open{display:flex;}
+.saldo-modal{background:#fff;border-radius:20px;padding:28px 32px;max-width:480px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.22);animation:popIn .3s ease;position:relative;}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.sm-close{position:absolute;top:14px;right:14px;background:var(--bg);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:#6b7684;}
+.sm-close:hover{background:#e0e4ea;}
+.sm-icon{font-size:2.5rem;margin-bottom:8px;}
+.sm-name{font-size:1.3rem;font-weight:900;margin-bottom:16px;}
+.sm-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.sm-stat{background:var(--bg);border-radius:10px;padding:12px;text-align:center;}
+.sm-stat strong{display:block;font-family:'Source Code Pro',monospace;font-weight:700;font-size:1rem;}
+.sm-stat span{font-size:.72rem;color:#6b7684;}
+.sm-stat.d strong{color:var(--debe);}
+.sm-stat.h strong{color:var(--haber);}
+.sm-saldo-box{border-radius:12px;padding:14px 18px;text-align:center;margin-bottom:14px;}
+.sm-saldo-box.deudor{background:var(--debe-lt);}
+.sm-saldo-box.acreedor{background:var(--haber-lt);}
+.sm-saldo-val{font-family:'Source Code Pro',monospace;font-size:1.6rem;font-weight:900;}
+.sm-saldo-box.deudor .sm-saldo-val{color:var(--debe);}
+.sm-saldo-box.acreedor .sm-saldo-val{color:var(--haber);}
+.sm-saldo-lbl{font-size:.82rem;margin-top:4px;font-weight:700;}
+.sm-movs{font-size:.82rem;color:#6b7684;}
+.sm-movs strong{color:var(--dark);}
+
+/* Balance de comprobación */
+.bc-table{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;}
+.bc-head{display:grid;grid-template-columns:1fr 120px 120px;padding:12px 16px;background:var(--dark);color:#fff;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.bc-row{display:grid;grid-template-columns:1fr 120px 120px;padding:11px 16px;border-bottom:1px solid #edf0f4;font-size:.9rem;align-items:center;transition:background .15s;}
+.bc-row:hover{background:var(--bg);}
+.bc-row:last-child{border-bottom:none;}
+.bc-row .br-cuenta{font-weight:700;display:flex;align-items:center;gap:8px;}
+.bc-row .br-debe{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.bc-row .br-haber{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.bc-total{display:grid;grid-template-columns:1fr 120px 120px;padding:12px 16px;background:var(--dark);color:#fff;font-weight:900;}
+.bc-total .bt-val{font-family:'Source Code Pro',monospace;text-align:right;font-size:1rem;}
+.bc-total .bt-val.debe{color:#93d8f0;}
+.bc-total .bt-val.haber{color:#a8efc1;}
+.bc-eq-badge{text-align:center;margin-top:12px;font-size:1rem;font-weight:900;padding:12px;border-radius:12px;}
+.bc-eq-badge.ok{background:var(--haber-lt);color:var(--haber);}
+
+/* ══ MINI-JUEGO ══ */
+.gj-intro{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;box-shadow:var(--shadow);}
+.gj-intro .gi-icon{font-size:2.2rem;}
+.gj-intro h3{font-size:1.05rem;font-weight:900;}
+.gj-intro p{font-size:.87rem;color:#b0b8c4;margin-top:3px;}
+
+.gj-prog{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.prog-wrap{flex:1;background:#e0e4ea;border-radius:99px;height:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--debe),var(--haber));transition:width .4s ease;width:0%;}
+.prog-lbl{font-size:.9rem;font-weight:700;color:#6b7684;white-space:nowrap;}
+
+.gj-asiento{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 22px;margin-bottom:20px;animation:cardIn .3s ease;box-shadow:var(--shadow);}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.gja-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px;}
+.gja-title{font-size:1.05rem;font-weight:900;margin-bottom:10px;}
+.gja-rows{display:flex;flex-direction:column;gap:6px;}
+.gja-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.88rem;}
+.gja-row .gjr-cuenta{flex:1;font-weight:700;}
+.gjr-debe{font-family:'Source Code Pro',monospace;font-size:.9rem;color:#93d8f0;min-width:80px;text-align:right;}
+.gjr-haber{font-family:'Source Code Pro',monospace;font-size:.9rem;color:#a8efc1;min-width:80px;text-align:right;}
+
+/* Pool & drop zones */
+.gj-pool-label{font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:8px;}
+.gj-pool{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border-radius:var(--card-r);padding:16px;border:2px dashed #dce0e8;min-height:60px;margin-bottom:18px;}
+.gj-chip{background:var(--dark);color:#fff;border-radius:10px;padding:10px 16px;font-size:.88rem;font-weight:700;cursor:grab;user-select:none;touch-action:none;box-shadow:0 3px 10px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s,opacity .25s;display:flex;align-items:center;gap:6px;}
+.gj-chip:active{cursor:grabbing;transform:scale(1.05);}
+.gj-chip.dragging{opacity:.4;}
+
+.gj-t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:640px){.gj-t-grid{grid-template-columns:1fr 1fr;}}
+
+.gj-t-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
+.gj-t-name{padding:10px;text-align:center;font-weight:900;font-size:.82rem;color:#fff;}
+.gj-t-sides{display:grid;grid-template-columns:1fr 1fr;}
+.gj-t-side{padding:8px 6px;min-height:70px;transition:background .2s;}
+.gj-t-side.d{background:var(--debe-lt);border-right:1px solid #e0e4ea;}
+.gj-t-side.h{background:var(--haber-lt);}
+.gj-t-side.drag-over{filter:brightness(.9);outline:2px dashed var(--gold);}
+.gj-t-lbl{font-size:.68rem;font-weight:900;text-align:center;padding-bottom:4px;border-bottom:1px solid currentColor;margin-bottom:4px;display:block;}
+.gj-t-side.d .gj-t-lbl{color:var(--debe);}
+.gj-t-side.h .gj-t-lbl{color:var(--haber);}
+.gj-placed{border-radius:6px;padding:5px 8px;font-size:.75rem;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:4px;animation:slideIn .2s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+.gj-placed.correct{background:#d4edda;color:#155724;}
+.gj-placed.wrong{background:#f8d7da;color:#721c24;}
+
+.gj-check-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);margin-bottom:12px;}
+.gj-check-btn:hover{background:#2a3a54;transform:scale(1.02);}
+.gj-check-btn:disabled{opacity:.38;cursor:not-allowed;transform:none;}
+
+.gj-feedback{border-radius:12px;padding:14px 18px;font-size:.95rem;font-weight:700;display:none;animation:popIn .25s ease;margin-bottom:12px;line-height:1.5;}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gj-feedback.ok{background:var(--haber-lt);color:var(--haber);display:block;}
+.gj-feedback.bad{background:#FDECEA;color:#C0392B;display:block;}
+.gj-next-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--debe);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;display:none;}
+.gj-next-btn.show{display:block;}
+.gj-next-btn:hover{background:#1A9BBF;}
+
+/* Result */
+.gj-result{display:none;background:#fff;border-radius:var(--card-r);padding:36px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.confetti-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(450px) rotate(720deg);opacity:0;}}
+.r-emoji{font-size:3.5rem;margin-bottom:8px;}
+.r-title{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+.r-score{font-size:3.8rem;font-weight:900;color:var(--debe);line-height:1;margin-bottom:6px;}
+.r-msg{font-size:1rem;color:#3d4a5c;margin-bottom:20px;}
+.r-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.r-stat{background:var(--bg);border-radius:12px;padding:12px 20px;}
+.r-stat strong{display:block;font-size:1.4rem;font-weight:900;}
+.r-stat span{font-size:.8rem;color:#6b7684;}
+.retry-btn{padding:14px 40px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.retry-btn:hover{background:#2a3a54;transform:scale(1.03);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 6</div>
+    <h1>Módulo 6: El Libro Mayor</h1>
+    <p>Mayorización — Cuentas T — Saldos — Balance de Comprobación</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">📖 Concepto</button>
+  <button class="tab-btn" onclick="showTab('mayorizar',this)">⚡ Mayorización</button>
+  <button class="tab-btn" onclick="showTab('mayor',this)">📊 Mayor Completo</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: CONCEPTO ══════════════ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="intro-banner">
+    <span class="ib-icon">📒</span>
+    <div>
+      <h3>El Libro Mayor: el resumen por cuenta</h3>
+      <p>Después de registrar las operaciones en el Libro Diario, cada movimiento se traslada a su cuenta individual en el Libro Mayor. Ahí podemos ver cuánto tenemos en Caja, cuánto debemos a proveedores, o cuál es el saldo del Capital — todo en formato de Cuenta T.</p>
+    </div>
+  </div>
+
+  <div class="flow-diagram">
+    <div class="flow-box">
+      <span class="fb-icon">📋</span>
+      <h4>Operación</h4>
+      <p>Hecho económico que afecta a la empresa</p>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box">
+      <span class="fb-icon">📒</span>
+      <h4>Libro Diario</h4>
+      <p>Registro cronológico con Debe y Haber</p>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="border:3px solid var(--haber);">
+      <span class="fb-icon">📊</span>
+      <h4 style="color:var(--haber);">Libro Mayor</h4>
+      <p>Agrupación por cuenta individual en T</p>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box">
+      <span class="fb-icon">⚖️</span>
+      <h4>Balance</h4>
+      <p>Verificación de saldos deudores = acreedores</p>
+    </div>
+  </div>
+
+  <div class="diff-grid">
+    <div class="diff-card diario">
+      <h4>📒 Libro Diario</h4>
+      <ul>
+        <li>Registra operaciones en orden cronológico</li>
+        <li>Muestra el asiento completo (todas las cuentas juntas)</li>
+        <li>Responde la pregunta: ¿qué pasó y cuándo?</li>
+        <li>Base para trasladar al Mayor</li>
+      </ul>
+    </div>
+    <div class="diff-card mayor">
+      <h4>📊 Libro Mayor</h4>
+      <ul>
+        <li>Agrupa movimientos por cuenta individual</li>
+        <li>Muestra la Cuenta T con Debe, Haber y Saldo</li>
+        <li>Responde: ¿cuánto hay en cada cuenta?</li>
+        <li>Base para elaborar los Estados Financieros</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="font-size:1rem;font-weight:900;margin-bottom:12px;text-align:center;">Anatomía de una Cuenta T en el Mayor</div>
+  <div class="t-anatomy">
+    <div class="t-anatomy-title">🏦 CAJA Y BANCOS — Cuenta del Mayor</div>
+    <div class="t-anatomy-body">
+      <div class="ta-side d">
+        <div class="ta-side-lbl">DEBE</div>
+        <div class="ta-entry d"><span>As.1 — Capital</span><span>L 50,000</span></div>
+        <div class="ta-entry d"><span>As.5 — Cobro cliente</span><span>L 6,000</span></div>
+        <div style="margin-top:8px;font-size:.75rem;color:var(--debe);font-weight:700;">Total Debe: L 56,000</div>
+      </div>
+      <div class="ta-side h">
+        <div class="ta-side-lbl">HABER</div>
+        <div class="ta-entry h"><span>As.2 — Mercadería</span><span>L 8,000</span></div>
+        <div class="ta-entry h"><span>As.3 — Alquiler</span><span>L 3,500</span></div>
+        <div style="margin-top:8px;font-size:.75rem;color:var(--haber);font-weight:700;">Total Haber: L 11,500</div>
+      </div>
+    </div>
+    <div class="ta-foot">
+      <span>Naturaleza: <strong>Deudora (Activo)</strong></span>
+      <span class="tf-saldo deudor">Saldo Deudor: L 44,500</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2: MAYORIZACIÓN ANIMADA ══════════════ -->
+<div id="tab-mayorizar" class="section">
+
+  <div class="mayor-layout">
+    <!-- Diario -->
+    <div class="diario-panel">
+      <div class="dp-header">📒 Libro Diario — Ferretería "El Maestro"</div>
+      <div id="diario-list"></div>
+    </div>
+
+    <!-- Mayor -->
+    <div>
+      <div class="mayor-ctrl">
+        <button class="ctrl-btn primary" id="btn-next-asiento" onclick="mayorizarNext()">▶ Mayorizar siguiente</button>
+        <button class="ctrl-btn secondary" onclick="mayorizarAll()">⏩ Mayorizar todos</button>
+        <button class="ctrl-btn secondary" onclick="resetMayorizacion()">🔄 Reiniciar</button>
+      </div>
+      <div id="step-msg" style="background:var(--gold);color:var(--dark);border-radius:10px;padding:10px 14px;font-size:.88rem;font-weight:700;margin-bottom:14px;display:none;"></div>
+      <div class="mayor-panel" id="mayor-t-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3: MAYOR COMPLETO ══════════════ -->
+<div id="tab-mayor" class="section">
+
+  <div style="background:var(--dark);color:#fff;border-radius:var(--card-r);padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);">
+    <span style="font-size:2rem;">📊</span>
+    <div>
+      <h3 style="font-size:1.05rem;font-weight:900;">Mayor completo — Ferretería "El Maestro", SPS</h3>
+      <p style="font-size:.87rem;color:#b0b8c4;margin-top:3px;">Toca cada cuenta T para ver el detalle de movimientos, totales y saldo final.</p>
+    </div>
+  </div>
+
+  <div class="mayor-grid" id="mayor-completo-grid"></div>
+
+  <div style="margin-top:28px;font-size:1rem;font-weight:900;margin-bottom:14px;">⚖️ Balance de Comprobación</div>
+  <div class="bc-table" id="bc-table"></div>
+  <div class="bc-eq-badge ok" id="bc-eq-badge" style="display:none;"></div>
+</div>
+
+<!-- ══════════════ TAB 4: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+  <div class="gj-intro">
+    <span class="gi-icon">🎯</span>
+    <div>
+      <h3>Arrastra cada monto a la cuenta T correcta</h3>
+      <p>Se muestra un asiento del Diario. Arrastra cada movimiento a la cuenta T y al lado (Debe o Haber) que corresponde.</p>
+    </div>
+  </div>
+  <div class="gj-prog"><div class="prog-wrap"><div class="prog-fill" id="gj-prog-fill"></div></div><div class="prog-lbl" id="gj-prog-lbl">0 / 5</div></div>
+
+  <div id="gj-area">
+    <div class="gj-asiento" id="gj-asiento-card">
+      <div class="gja-label" id="gja-label"></div>
+      <div class="gja-title" id="gja-title"></div>
+      <div class="gja-rows" id="gja-rows"></div>
+    </div>
+    <div class="gj-pool-label">🃏 Chips para arrastrar — colócalos en la cuenta T y lado correcto</div>
+    <div class="gj-pool" id="gj-pool"></div>
+    <div class="gj-t-grid" id="gj-t-grid"></div>
+    <button class="gj-check-btn" id="gj-check-btn" onclick="gjCheck()" disabled>✅ Verificar colocación</button>
+    <div class="gj-feedback" id="gj-feedback"></div>
+    <button class="gj-next-btn" id="gj-next-btn" onclick="gjNext()">▶ Siguiente asiento</button>
+  </div>
+
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-emoji" id="r-emoji">🏆</div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div>
+    <div class="r-msg"   id="r-msg"></div>
+    <div class="r-stats" id="r-stats"></div>
+    <button class="retry-btn" onclick="gjInit()">🔄 Volver a intentar</button>
+  </div>
+</div>
+
+<!-- SALDO MODAL -->
+<div class="saldo-modal-overlay" id="saldo-modal" onclick="closeSaldoModal(event)">
+  <div class="saldo-modal">
+    <button class="sm-close" onclick="closeSaldoModalDirect()">✕</button>
+    <div class="sm-icon" id="sm-icon"></div>
+    <div class="sm-name" id="sm-name"></div>
+    <div class="sm-stats" id="sm-stats"></div>
+    <div class="sm-saldo-box" id="sm-saldo-box">
+      <div class="sm-saldo-val" id="sm-saldo-val"></div>
+      <div class="sm-saldo-lbl" id="sm-saldo-lbl"></div>
+    </div>
+    <div class="sm-movs" id="sm-movs"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const grupoColor={activo:'var(--activo)',pasivo:'var(--pasivo)',patrim:'var(--patrim)',ingreso:'var(--ingreso)',gasto:'var(--gasto)'};
+const grupoBg={activo:'#0D6B8C',pasivo:'#C0392B',patrim:'#1A8A4A',ingreso:'#E67E22',gasto:'#8E44AD'};
+
+const asientos=[
+  {id:1,fecha:'01/06/2025',titulo:'Aportación inicial de capital',emoji:'💼',
+   movs:[
+     {cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:50000,haber:0},
+     {cuenta:'Capital Social',grupo:'patrim',icon:'👤',debe:0,haber:50000},
+   ]},
+  {id:2,fecha:'05/06/2025',titulo:'Compra de mercadería al contado — Dist. La Colonia',emoji:'🛒',
+   movs:[
+     {cuenta:'Inventario de Mercadería',grupo:'activo',icon:'📦',debe:8000,haber:0},
+     {cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:0,haber:8000},
+   ]},
+  {id:3,fecha:'10/06/2025',titulo:'Pago de alquiler del local — Barrio Guamilito',emoji:'🏪',
+   movs:[
+     {cuenta:'Gasto de Alquiler',grupo:'gasto',icon:'🏪',debe:3500,haber:0},
+     {cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:0,haber:3500},
+   ]},
+  {id:4,fecha:'15/06/2025',titulo:'Venta de productos al crédito a contratista',emoji:'📈',
+   movs:[
+     {cuenta:'Cuentas por Cobrar',grupo:'activo',icon:'🧾',debe:12000,haber:0},
+     {cuenta:'Ingresos por Ventas',grupo:'ingreso',icon:'📈',debe:0,haber:12000},
+   ]},
+  {id:5,fecha:'20/06/2025',titulo:'Cobro de factura pendiente del cliente',emoji:'💵',
+   movs:[
+     {cuenta:'Caja y Bancos',grupo:'activo',icon:'💵',debe:6000,haber:0},
+     {cuenta:'Cuentas por Cobrar',grupo:'activo',icon:'🧾',debe:0,haber:6000},
+   ]},
+];
+
+// Build mayor data from asientos
+const cuentasMap={};
+function buildMayor(){
+  Object.keys(cuentasMap).forEach(k=>delete cuentasMap[k]);
+  asientos.forEach(as=>{
+    as.movs.forEach(m=>{
+      if(!cuentasMap[m.cuenta]) cuentasMap[m.cuenta]={cuenta:m.cuenta,grupo:m.grupo,icon:m.icon,movs:[]};
+      cuentasMap[m.cuenta].movs.push({asiento:as.id,fecha:as.fecha,debe:m.debe,haber:m.haber});
+    });
+  });
+}
+buildMayor();
+
+function cuentaSaldos(c){
+  const movs=cuentasMap[c].movs;
+  const td=movs.reduce((s,m)=>s+m.debe,0);
+  const th=movs.reduce((s,m)=>s+m.haber,0);
+  const saldo=Math.abs(td-th);
+  const nat=td>=th?'deudor':'acreedor';
+  return{td,th,saldo,nat,movs};
+}
+
+function fmt(n){return 'L '+n.toLocaleString('es-HN');}
+
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+function showTab(n,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// TAB 2: MAYORIZACIÓN ANIMADA
+// ═══════════════════════════════════════
+let mayorIdx=0; // next asiento to mayorizar
+const mayorState={}; // cuenta -> entries shown
+
+function buildDiarioList(){
+  const list=document.getElementById('diario-list');
+  list.innerHTML=asientos.map(as=>`
+    <div class="asiento-card" id="ac-${as.id}" onclick="toggleAcCard(${as.id})">
+      <div class="ac-header">
+        <div class="ac-num" id="acnum-${as.id}">${as.id}</div>
+        <div class="ac-title">${as.emoji} ${as.titulo}</div>
+        <div class="ac-amount">${fmt(as.movs.reduce((s,m)=>s+m.debe,0))}</div>
+        <div class="ac-check" id="accheck-${as.id}">✅</div>
+      </div>
+      <div class="ac-rows" id="acrows-${as.id}">
+        ${as.movs.map(m=>`
+          <div class="ac-row">
+            <span class="ar-cuenta${m.haber>0?' sub':''}" style="color:${grupoColor[m.grupo]}">${m.icon} ${m.cuenta}</span>
+            <span class="ar-debe">${m.debe>0?fmt(m.debe):''}</span>
+            <span class="ar-haber">${m.haber>0?fmt(m.haber):''}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleAcCard(id){
+  const card=document.getElementById('ac-'+id);
+  card.classList.toggle('expanded');
+}
+
+function buildMayorTPanel(){
+  const panel=document.getElementById('mayor-t-panel');
+  const cuentas=Object.keys(cuentasMap);
+  panel.innerHTML=cuentas.map(c=>{
+    const data=cuentasMap[c];
+    const {nat}=cuentaSaldos(c);
+    return`<div class="cuenta-t" id="ct-${c.replace(/\s/g,'_')}" onclick="toggleCuentaT('${c.replace(/\s/g,'_')}')">
+      <div class="ct-header">
+        <span class="cth-icon">${data.icon}</span>
+        <span class="cth-name">${c}</span>
+        <span class="cth-badge" style="background:${nat==='deudor'?'var(--debe-lt)':'var(--haber-lt)'};color:${nat==='deudor'?'var(--debe)':'var(--haber)'};">${nat==='deudor'?'Deudora':'Acreedora'}</span>
+      </div>
+      <div class="ct-body">
+        <div class="ct-side d">
+          <div class="ct-side-lbl">DEBE</div>
+          <div id="ct-debe-${c.replace(/\s/g,'_')}"></div>
+        </div>
+        <div class="ct-side h">
+          <div class="ct-side-lbl">HABER</div>
+          <div id="ct-haber-${c.replace(/\s/g,'_')}"></div>
+        </div>
+      </div>
+      <div class="ct-footer" id="ct-foot-${c.replace(/\s/g,'_')}">
+        <div class="ctf-item total-d"><strong id="ctf-td-${c.replace(/\s/g,'_')}">L 0</strong><span>Total Debe</span></div>
+        <div class="ctf-item total-h"><strong id="ctf-th-${c.replace(/\s/g,'_')}">L 0</strong><span>Total Haber</span></div>
+        <div class="ctf-item saldo" id="ctf-sal-${c.replace(/\s/g,'_')}"><strong>—</strong><span>Saldo</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCuentaT(key){
+  document.getElementById('ct-'+key).classList.toggle('open');
+}
+
+function updateCuentaFooter(cuenta){
+  const key=cuenta.replace(/\s/g,'_');
+  const {td,th,saldo,nat}=cuentaSaldos(cuenta);
+  document.getElementById('ctf-td-'+key).textContent=fmt(td);
+  document.getElementById('ctf-th-'+key).textContent=fmt(th);
+  const salEl=document.getElementById('ctf-sal-'+key);
+  salEl.className='ctf-item saldo '+nat;
+  salEl.innerHTML=`<strong>${fmt(saldo)}</strong><span>Saldo ${nat==='deudor'?'Deudor':'Acreedor'}</span>`;
+}
+
+function addEntryToT(cuenta,movData,highlight){
+  const key=cuenta.replace(/\s/g,'_');
+  const side=movData.debe>0?'d':'h';
+  const amt=movData.debe>0?movData.debe:movData.haber;
+  const container=document.getElementById('ct-'+side+'be-'+key) || document.getElementById('ct-haber-'+key);
+  const useEl=document.getElementById(`ct-${side==='d'?'debe':'haber'}-${key}`);
+  const entry=document.createElement('div');
+  entry.className=`ct-entry ${side}-entry${highlight?' highlight':''}`;
+  entry.innerHTML=`<span class="ce-ref">As.${movData.asiento} — ${movData.fecha}</span><span class="ce-amt">${fmt(amt)}</span>`;
+  useEl.appendChild(entry);
+  setTimeout(()=>entry.classList.add('show'),50);
+  updateCuentaFooter(cuenta);
+}
+
+function showStepMsg(msg){
+  const el=document.getElementById('step-msg');
+  el.textContent=msg; el.style.display='block';
+  setTimeout(()=>el.style.display='none',2500);
+}
+
+function mayorizarNext(){
+  if(mayorIdx>=asientos.length){
+    document.getElementById('btn-next-asiento').disabled=true;
+    showStepMsg('✅ Todos los asientos han sido mayorizados.');
+    return;
+  }
+  const as=asientos[mayorIdx];
+  // expand asiento card
+  document.getElementById('ac-'+as.id).classList.add('expanded','active-asiento');
+  // open each cuenta T
+  as.movs.forEach((m,i)=>{
+    setTimeout(()=>{
+      const key=m.cuenta.replace(/\s/g,'_');
+      const ct=document.getElementById('ct-'+key);
+      if(ct&&!ct.classList.contains('open')) ct.classList.add('open');
+      addEntryToT(m.cuenta,{asiento:as.id,fecha:as.fecha,debe:m.debe,haber:m.haber},true);
+    },i*600);
+  });
+  setTimeout(()=>{
+    document.getElementById('ac-'+as.id).classList.remove('active-asiento');
+    document.getElementById('ac-'+as.id).classList.add('mayorizado');
+    document.getElementById('acnum-'+as.id).classList.add('done');
+    document.getElementById('accheck-'+as.id).classList.add('show');
+    showStepMsg(`✅ Asiento ${as.id} mayorizado — ${as.emoji} ${as.titulo}`);
+  },as.movs.length*600+200);
+  mayorIdx++;
+  if(mayorIdx>=asientos.length) setTimeout(()=>{document.getElementById('btn-next-asiento').disabled=true;},as.movs.length*600+400);
+}
+
+function mayorizarAll(){
+  const remaining=asientos.length-mayorIdx;
+  for(let i=0;i<remaining;i++) setTimeout(()=>mayorizarNext(),i*900);
+}
+
+function resetMayorizacion(){
+  mayorIdx=0;
+  document.getElementById('btn-next-asiento').disabled=false;
+  buildDiarioList();
+  buildMayorTPanel();
+}
+
+// ═══════════════════════════════════════
+// TAB 3: MAYOR COMPLETO
+// ═══════════════════════════════════════
+function buildMayorCompleto(){
+  const grid=document.getElementById('mayor-completo-grid');
+  grid.innerHTML=Object.keys(cuentasMap).map(c=>{
+    const data=cuentasMap[c];
+    const {td,th,saldo,nat,movs}=cuentaSaldos(c);
+    const dEntries=movs.filter(m=>m.debe>0).map(m=>`<div class="mc-entry d-e"><span>As.${m.asiento}</span><span>${fmt(m.debe)}</span></div>`).join('');
+    const hEntries=movs.filter(m=>m.haber>0).map(m=>`<div class="mc-entry h-e"><span>As.${m.asiento}</span><span>${fmt(m.haber)}</span></div>`).join('');
+    return`<div class="mc-card" onclick="openSaldoModal('${c}')">
+      <div class="mc-header">
+        <span class="mch-icon">${data.icon}</span>
+        <span class="mch-name">${c}</span>
+        <span style="font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:16px;background:${nat==='deudor'?'var(--debe-lt)':'var(--haber-lt)'};color:${nat==='deudor'?'var(--debe)':'var(--haber)'};">${nat==='deudor'?'Deudora':'Acreedora'}</span>
+      </div>
+      <div class="mc-body">
+        <div class="mc-side d"><span class="mc-side-lbl">DEBE</span>${dEntries||'<div style="font-size:.72rem;color:#c0c8d4;text-align:center;padding-top:8px;">—</div>'}</div>
+        <div class="mc-side h"><span class="mc-side-lbl">HABER</span>${hEntries||'<div style="font-size:.72rem;color:#c0c8d4;text-align:center;padding-top:8px;">—</div>'}</div>
+      </div>
+      <div class="mc-foot">
+        <span style="font-size:.78rem;color:#9aa3ad;">${movs.length} movimiento${movs.length>1?'s':''} · Toca para detalle</span>
+        <span class="mc-saldo ${nat}">${fmt(saldo)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Balance de comprobación
+  const cuentas=Object.keys(cuentasMap);
+  let totalD=0,totalH=0;
+  const rows=cuentas.map(c=>{
+    const data=cuentasMap[c];
+    const {td,th,saldo,nat}=cuentaSaldos(c);
+    const isDeudor=nat==='deudor';
+    if(isDeudor) totalD+=saldo; else totalH+=saldo;
+    return`<div class="bc-row">
+      <span class="br-cuenta"><span style="font-size:1.1rem;">${data.icon}</span>${c}</span>
+      <span class="br-debe">${isDeudor?fmt(saldo):''}</span>
+      <span class="br-haber">${!isDeudor?fmt(saldo):''}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('bc-table').innerHTML=`
+    <div class="bc-head"><span>Cuenta</span><span style="text-align:right;">Saldo Deudor</span><span style="text-align:right;">Saldo Acreedor</span></div>
+    ${rows}
+    <div class="bc-total"><span style="font-size:.78rem;color:#b0b8c4;">TOTALES</span><span class="bt-val debe">${fmt(totalD)}</span><span class="bt-val haber">${fmt(totalH)}</span></div>`;
+  const badge=document.getElementById('bc-eq-badge');
+  badge.style.display='block';
+  badge.textContent=totalD===totalH?`✅ Balance cuadrado: Σ Saldos Deudores = Σ Saldos Acreedores = ${fmt(totalD)}`:'⚠️ No cuadra — revisar mayorización';
+}
+
+function openSaldoModal(cuenta){
+  const data=cuentasMap[cuenta];
+  const {td,th,saldo,nat,movs}=cuentaSaldos(cuenta);
+  document.getElementById('sm-icon').textContent=data.icon;
+  document.getElementById('sm-name').textContent=cuenta;
+  document.getElementById('sm-stats').innerHTML=`
+    <div class="sm-stat d"><strong>${fmt(td)}</strong><span>Total Debe</span></div>
+    <div class="sm-stat h"><strong>${fmt(th)}</strong><span>Total Haber</span></div>
+    <div class="sm-stat"><strong>${movs.length}</strong><span>Movimientos</span></div>`;
+  const box=document.getElementById('sm-saldo-box');
+  box.className='sm-saldo-box '+nat;
+  document.getElementById('sm-saldo-val').textContent=fmt(saldo);
+  document.getElementById('sm-saldo-lbl').textContent='Saldo '+(nat==='deudor'?'Deudor':'Acreedor');
+  document.getElementById('sm-movs').innerHTML='<strong>Origen de movimientos:</strong> '+movs.map(m=>`As.${m.asiento} (${m.fecha})`).join(', ');
+  document.getElementById('saldo-modal').classList.add('open');
+}
+function closeSaldoModal(e){if(e.target===document.getElementById('saldo-modal'))closeSaldoModalDirect();}
+function closeSaldoModalDirect(){document.getElementById('saldo-modal').classList.remove('open');}
+
+// ═══════════════════════════════════════
+// TAB 4: MINI-JUEGO
+// ═══════════════════════════════════════
+const gjAsientos=[
+  {id:1,titulo:'Aportación inicial de capital — L 50,000',emoji:'💼',
+   movs:[
+     {label:'💵 Caja +50,000',cuenta:'Caja y Bancos',side:'debe',grupo:'activo'},
+     {label:'👤 Capital +50,000',cuenta:'Capital Social',side:'haber',grupo:'patrim'},
+   ],
+   t_cuentas:['Caja y Bancos','Capital Social'],
+   rows:[{cuenta:'Caja y Bancos',debe:50000,haber:0},{cuenta:'Capital Social',debe:0,haber:50000}]},
+  {id:2,titulo:'Compra de mercadería al contado — L 8,000',emoji:'🛒',
+   movs:[
+     {label:'📦 Mercadería +8,000',cuenta:'Inventario de Mercadería',side:'debe',grupo:'activo'},
+     {label:'💵 Caja -8,000',cuenta:'Caja y Bancos',side:'haber',grupo:'activo'},
+   ],
+   t_cuentas:['Inventario de Mercadería','Caja y Bancos'],
+   rows:[{cuenta:'Inventario de Mercadería',debe:8000,haber:0},{cuenta:'Caja y Bancos',debe:0,haber:8000}]},
+  {id:3,titulo:'Pago de alquiler del local — L 3,500',emoji:'🏪',
+   movs:[
+     {label:'🏪 Gasto Alquiler +3,500',cuenta:'Gasto de Alquiler',side:'debe',grupo:'gasto'},
+     {label:'💵 Caja -3,500',cuenta:'Caja y Bancos',side:'haber',grupo:'activo'},
+   ],
+   t_cuentas:['Gasto de Alquiler','Caja y Bancos'],
+   rows:[{cuenta:'Gasto de Alquiler',debe:3500,haber:0},{cuenta:'Caja y Bancos',debe:0,haber:3500}]},
+  {id:4,titulo:'Venta de productos al crédito — L 12,000',emoji:'📈',
+   movs:[
+     {label:'🧾 Ctas. Cobrar +12,000',cuenta:'Cuentas por Cobrar',side:'debe',grupo:'activo'},
+     {label:'📈 Ventas +12,000',cuenta:'Ingresos por Ventas',side:'haber',grupo:'ingreso'},
+   ],
+   t_cuentas:['Cuentas por Cobrar','Ingresos por Ventas'],
+   rows:[{cuenta:'Cuentas por Cobrar',debe:12000,haber:0},{cuenta:'Ingresos por Ventas',debe:0,haber:12000}]},
+  {id:5,titulo:'Cobro de factura pendiente del cliente — L 6,000',emoji:'💵',
+   movs:[
+     {label:'💵 Caja +6,000',cuenta:'Caja y Bancos',side:'debe',grupo:'activo'},
+     {label:'🧾 Ctas. Cobrar -6,000',cuenta:'Cuentas por Cobrar',side:'haber',grupo:'activo'},
+   ],
+   t_cuentas:['Caja y Bancos','Cuentas por Cobrar'],
+   rows:[{cuenta:'Caja y Bancos',debe:6000,haber:0},{cuenta:'Cuentas por Cobrar',debe:0,haber:6000}]},
+];
+
+let gjIdx=0,gjScore=0;
+let gjPlaced={};  // chipId -> {cuenta, side}
+let gjDragId=null,gjTouchGhost=null,gjTouchChipId=null;
+
+function gjInit(){
+  gjIdx=0;gjScore=0;
+  document.getElementById('gj-result').style.display='none';
+  document.getElementById('gj-area').style.display='block';
+  gjLoadQ();
+}
+
+function gjLoadQ(){
+  if(gjIdx>=gjAsientos.length){gjEnd();return;}
+  const as=gjAsientos[gjIdx];
+  gjPlaced={};
+  // Header
+  document.getElementById('gja-label').textContent=`Asiento ${gjIdx+1} de ${gjAsientos.length}`;
+  document.getElementById('gja-title').textContent=`${as.emoji} ${as.titulo}`;
+  document.getElementById('gja-rows').innerHTML=as.rows.map(r=>`
+    <div class="gja-row">
+      <span class="gjr-cuenta" style="color:${grupoColor[cuentasMap[r.cuenta]?.grupo||'activo']}">${r.cuenta}</span>
+      <span class="gjr-debe">${r.debe>0?fmt(r.debe):''}</span>
+      <span class="gjr-haber">${r.haber>0?fmt(r.haber):''}</span>
+    </div>`).join('');
+  // Animation reset
+  document.getElementById('gj-asiento-card').style.animation='none';
+  void document.getElementById('gj-asiento-card').offsetWidth;
+  document.getElementById('gj-asiento-card').style.animation='cardIn .3s ease';
+  // Pool
+  const pool=document.getElementById('gj-pool');
+  pool.innerHTML=as.movs.map((m,i)=>`
+    <div class="gj-chip" id="chip-${i}" draggable="true"
+      ondragstart="gjDragStart(${i})"
+      ontouchstart="gjTouchStart(event,${i})" ontouchmove="gjTouchMove(event)" ontouchend="gjTouchEnd(event)">
+      ${m.label}
+    </div>`).join('');
+  // T cards
+  const tg=document.getElementById('gj-t-grid');
+  tg.innerHTML=as.t_cuentas.map(c=>{
+    const data=cuentasMap[c];
+    return`<div class="gj-t-card">
+      <div class="gj-t-name" style="background:${grupoBg[data?.grupo||'activo']}">${data?.icon||'📋'} ${c}</div>
+      <div class="gj-t-sides">
+        <div class="gj-t-side d" id="tz-${c.replace(/\s/g,'_')}-debe"
+          ondragover="gjTzOver(event)" ondrop="gjTzDrop(event,'${c}','debe')" ondragleave="gjTzLeave(event)">
+          <span class="gj-t-lbl">DEBE</span>
+        </div>
+        <div class="gj-t-side h" id="tz-${c.replace(/\s/g,'_')}-haber"
+          ondragover="gjTzOver(event)" ondrop="gjTzDrop(event,'${c}','haber')" ondragleave="gjTzLeave(event)">
+          <span class="gj-t-lbl">HABER</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Reset controls
+  document.getElementById('gj-feedback').className='gj-feedback';
+  document.getElementById('gj-next-btn').className='gj-next-btn';
+  document.getElementById('gj-check-btn').disabled=true;
+  // Progress
+  document.getElementById('gj-prog-fill').style.width=(gjIdx/gjAsientos.length*100)+'%';
+  document.getElementById('gj-prog-lbl').textContent=`${gjIdx} / ${gjAsientos.length}`;
+}
+
+// Drag desktop
+function gjDragStart(id){gjDragId=id;}
+function gjTzOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function gjTzLeave(e){e.currentTarget.classList.remove('drag-over');}
+function gjTzDrop(e,cuenta,side){
+  e.currentTarget.classList.remove('drag-over');
+  if(gjDragId===null) return;
+  placeChip(gjDragId,cuenta,side,false);
+  gjDragId=null;
+}
+
+// Touch drag
+function gjTouchStart(e,id){
+  gjTouchChipId=id;
+  const el=document.getElementById('chip-'+id);
+  gjTouchGhost=el.cloneNode(true);
+  gjTouchGhost.style.cssText=`position:fixed;opacity:.8;pointer-events:none;z-index:9999;width:${el.offsetWidth}px;left:${el.getBoundingClientRect().left}px;top:${el.getBoundingClientRect().top}px;transform:scale(1.05);`;
+  document.body.appendChild(gjTouchGhost);
+}
+function gjTouchMove(e){
+  e.preventDefault();
+  const t=e.touches[0];
+  if(gjTouchGhost){gjTouchGhost.style.left=(t.clientX-80)+'px';gjTouchGhost.style.top=(t.clientY-20)+'px';}
+  document.querySelectorAll('.gj-t-side').forEach(z=>z.classList.remove('drag-over'));
+  const under=document.elementFromPoint(t.clientX,t.clientY);
+  if(under){const tz=under.closest('.gj-t-side');if(tz)tz.classList.add('drag-over');}
+}
+function gjTouchEnd(e){
+  document.querySelectorAll('.gj-t-side').forEach(z=>z.classList.remove('drag-over'));
+  if(gjTouchGhost){gjTouchGhost.remove();gjTouchGhost=null;}
+  const t=e.changedTouches[0];
+  const under=document.elementFromPoint(t.clientX,t.clientY);
+  if(!under||gjTouchChipId===null) return;
+  const tz=under.closest('.gj-t-side');
+  if(tz){
+    const id=tz.id; // tz-CuentaKey-side
+    const parts=id.split('-');
+    const side=parts[parts.length-1];
+    const cuentaKey=parts.slice(1,parts.length-1).join('-');
+    const cuenta=gjAsientos[gjIdx].t_cuentas.find(c=>c.replace(/\s/g,'_')===cuentaKey)||gjAsientos[gjIdx].t_cuentas[0];
+    placeChip(gjTouchChipId,cuenta,side,false);
+  }
+  gjTouchChipId=null;
+}
+
+function placeChip(chipId,cuenta,side,revealed){
+  const as=gjAsientos[gjIdx];
+  const mov=as.movs[chipId];
+  // Remove chip from pool
+  const chip=document.getElementById('chip-'+chipId);
+  if(!chip) return;
+  chip.remove();
+  gjPlaced[chipId]={cuenta,side};
+  // Place in T zone
+  const key=cuenta.replace(/\s/g,'_');
+  const zone=document.getElementById(`tz-${key}-${side}`);
+  if(!zone) return;
+  const placed=document.createElement('div');
+  placed.className='gj-placed';
+  placed.id='placed-'+chipId;
+  placed.textContent=mov.label;
+  if(revealed){
+    const ok=mov.cuenta===cuenta&&mov.side===side;
+    placed.classList.add(ok?'correct':'wrong');
+    placed.textContent=(ok?'✅ ':'❌ ')+mov.label;
+  }
+  zone.appendChild(placed);
+  // Enable check if all chips placed
+  const allPlaced=Object.keys(gjPlaced).length===as.movs.length;
+  document.getElementById('gj-check-btn').disabled=!allPlaced;
+}
+
+function gjCheck(){
+  const as=gjAsientos[gjIdx];
+  let allCorrect=true;
+  as.movs.forEach((_,i)=>{
+    const p=gjPlaced[i];
+    const mov=as.movs[i];
+    const ok=p&&p.cuenta===mov.cuenta&&p.side===mov.side;
+    if(!ok) allCorrect=false;
+    // Update placed item style
+    const placed=document.getElementById('placed-'+i);
+    if(placed){
+      placed.className='gj-placed '+(ok?'correct':'wrong');
+      placed.textContent=(ok?'✅ ':'❌ ')+mov.label;
+    }
+  });
+  if(allCorrect) gjScore++;
+  const fb=document.getElementById('gj-feedback');
+  fb.className='gj-feedback '+(allCorrect?'ok':'bad');
+  fb.innerHTML=allCorrect
+    ?'✅ ¡Mayorización perfecta! Cada monto fue al Mayor correcto y al lado correcto.'
+    :`❌ Algunos movimientos no fueron al lugar correcto. Los marcados en rojo debían ir a:<br>${as.movs.map((m,i)=>{const p=gjPlaced[i];const ok=p&&p.cuenta===m.cuenta&&p.side===m.side;return ok?'':`<strong>${m.label}</strong> → ${m.cuenta} al ${m.side.toUpperCase()}`;}).filter(Boolean).join(' · ')}`;
+  document.getElementById('gj-check-btn').disabled=true;
+  document.getElementById('gj-next-btn').className='gj-next-btn show';
+  gjIdx++;
+  document.getElementById('gj-prog-fill').style.width=(gjIdx/gjAsientos.length*100)+'%';
+  document.getElementById('gj-prog-lbl').textContent=`${gjIdx} / ${gjAsientos.length}`;
+}
+
+function gjNext(){
+  if(gjIdx>=gjAsientos.length){gjEnd();return;}
+  gjLoadQ();
+}
+
+function gjEnd(){
+  document.getElementById('gj-area').style.display='none';
+  const res=document.getElementById('gj-result');
+  res.style.display='block';
+  const pct=Math.round(gjScore/gjAsientos.length*100);
+  document.getElementById('r-emoji').textContent=pct===100?'🏆':pct>=60?'🎉':'📚';
+  document.getElementById('r-title').textContent=pct>=60?'¡Mayorización exitosa!':'Sigue practicando el traslado al Mayor';
+  document.getElementById('r-score').textContent=`${gjScore}/${gjAsientos.length}`;
+  document.getElementById('r-msg').textContent=
+    pct===100?'¡Perfecto! Trasladaste todos los asientos al Mayor correctamente.'
+    :pct>=60?`${pct}% de aciertos. Revisa la tab de Mayorización para ver los pasos animados.`
+    :`${pct}% de aciertos. Observa cómo cada asiento vuela al Mayor en la tab de Mayorización.`;
+  document.getElementById('r-stats').innerHTML=`
+    <div class="r-stat"><strong style="color:var(--haber);">${gjScore}</strong><span>✅ Correctos</span></div>
+    <div class="r-stat"><strong style="color:#C0392B;">${gjAsientos.length-gjScore}</strong><span>❌ Incorrectos</span></div>
+    <div class="r-stat"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  if(pct>=60) spawnConfetti();
+}
+
+function spawnConfetti(){
+  const bg=document.getElementById('confetti-bg');
+  bg.innerHTML='';
+  const colors=['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#fff','#a8efc1','#93d8f0'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    const sz=6+Math.random()*8;
+    el.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    bg.appendChild(el);
+  }
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+buildDiarioList();
+buildMayorTPanel();
+buildMayorCompleto();
+gjInit();
+</script>
+</body>
+</html>

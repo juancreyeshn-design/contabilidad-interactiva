@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contabilidad Interactiva | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap');
+
+:root {
+  --gold:      #F4A811;
+  --gold-lt:   #FFF8E0;
+  --dark:      #1B2638;
+  --dark2:     #243044;
+  --bg:        #EEF2F8;
+  --shadow:    0 8px 32px rgba(0,0,0,0.13);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.18);
+  --card-r:    20px;
+
+  /* Módulo colors */
+  --m1:  #0D6B8C; --m1-lt:  #E0F4FA;
+  --m2:  #1565C0; --m2-lt:  #E3F2FD;
+  --m3:  #2E7D32; --m3-lt:  #E8F5E9;
+  --m4:  #6A1B9A; --m4-lt:  #F3E5F5;
+  --m5:  #0D6B8C; --m5-lt:  #E0F4FA;
+  --m6:  #00695C; --m6-lt:  #E0F2F1;
+  --m7:  #C62828; --m7-lt:  #FFEBEE;
+  --m8:  #E65100; --m8-lt:  #FFF3E0;
+  --m9:  #4527A0; --m9-lt:  #EDE7F6;
+  --m10: #00838F; --m10-lt: #E0F7FA;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ═══════════════════════════════
+   HERO HEADER
+═══════════════════════════════ */
+.hero{
+  background:linear-gradient(135deg,var(--dark) 0%, var(--dark2) 60%, #1a3a5c 100%);
+  color:#fff;
+  padding:36px 24px 32px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  border-bottom:5px solid var(--gold);
+}
+
+/* subtle grid pattern */
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+
+.app-logo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:80px;height:80px;border-radius:50%;
+  background:var(--gold);
+  margin-bottom:16px;
+  box-shadow:0 4px 24px rgba(244,168,17,.45);
+  position:relative;z-index:1;
+}
+.app-logo span{font-size:2.4rem;}
+
+.hero h1{
+  font-size:clamp(1.6rem,4vw,2.4rem);
+  font-weight:900;
+  line-height:1.2;
+  margin-bottom:6px;
+  position:relative;z-index:1;
+}
+.hero h1 em{color:var(--gold);font-style:normal;}
+
+.hero p{
+  font-size:clamp(.9rem,2vw,1.05rem);
+  color:#b0c4de;
+  margin-bottom:20px;
+  position:relative;z-index:1;
+}
+
+.hero-badges{
+  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+  position:relative;z-index:1;
+}
+.hero-badge{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:30px;
+  padding:6px 16px;
+  font-size:.78rem;
+  font-weight:700;
+  color:#d0dce8;
+  letter-spacing:.04em;
+}
+.hero-badge.gold{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+
+/* ═══════════════════════════════
+   PROGRESS STRIP
+═══════════════════════════════ */
+.progress-strip{
+  background:#fff;
+  border-bottom:2px solid #e8edf4;
+  padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.ps-label{font-size:.82rem;font-weight:700;color:#6b7684;}
+.ps-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.ps-chip{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:900;
+  background:#e8edf4;color:#9aa3ad;
+  transition:all .3s;cursor:default;
+}
+.ps-chip.done{background:var(--gold);color:var(--dark);}
+.ps-tip{font-size:.78rem;color:#9aa3ad;font-style:italic;}
+
+/* ═══════════════════════════════
+   MAIN GRID
+═══════════════════════════════ */
+.main{
+  flex:1;
+  padding:28px 20px 20px;
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
+}
+
+.section-label{
+  font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:#9aa3ad;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:#dce0e8;
+}
+
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:28px;
+}
+@media(max-width:860px){.modules-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.modules-grid{grid-template-columns:1fr;}}
+
+/* ═══════════════════════════════
+   MODULE CARDS
+═══════════════════════════════ */
+.mod-card{
+  border-radius:var(--card-r);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  text-decoration:none;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  min-height:160px;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),box-shadow .22s;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.mod-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  box-shadow:var(--shadow-lg);
+}
+.mod-card:active{transform:scale(.97);}
+
+/* Color strip top */
+.mc-stripe{
+  height:6px;
+  width:100%;
+  flex-shrink:0;
+}
+
+/* Card body */
+.mc-body{
+  background:#fff;
+  flex:1;
+  padding:20px 18px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* Number badge */
+.mc-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;
+  font-size:.8rem;font-weight:900;color:#fff;
+  flex-shrink:0;margin-bottom:2px;
+}
+
+/* Icon */
+.mc-icon{
+  font-size:2.6rem;
+  line-height:1;
+  margin-bottom:4px;
+  display:block;
+}
+
+/* Text */
+.mc-name{
+  font-size:1.05rem;font-weight:900;
+  line-height:1.25;
+}
+.mc-desc{
+  font-size:.78rem;color:#6b7684;
+  line-height:1.45;flex:1;
+}
+
+/* Card footer */
+.mc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:10px;
+  border-top:1px solid #edf0f4;
+  margin-top:auto;
+}
+.mc-tag{
+  font-size:.7rem;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+}
+.mc-arrow{
+  font-size:1.1rem;color:#c0c8d4;
+  transition:transform .2s,color .2s;
+}
+.mod-card:hover .mc-arrow{
+  transform:translateX(4px);
+  color:var(--gold);
+}
+
+/* NEW badge */
+.mc-new{
+  position:absolute;top:14px;right:14px;
+  background:var(--gold);color:var(--dark);
+  font-size:.65rem;font-weight:900;
+  padding:2px 8px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+
+/* ═══════════════════════════════
+   INSTRUCTIONS PANEL
+═══════════════════════════════ */
+.instructions{
+  background:#fff;
+  border-radius:var(--card-r);
+  box-shadow:var(--shadow);
+  padding:22px 24px;
+  margin-bottom:24px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+@media(max-width:600px){.instructions{grid-template-columns:1fr;}}
+
+.inst-block h4{
+  font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;
+  color:#9aa3ad;margin-bottom:10px;
+}
+.inst-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 0;border-bottom:1px solid #f0f3f7;
+  font-size:.85rem;line-height:1.5;
+}
+.inst-item:last-child{border-bottom:none;}
+.inst-item .ii-icon{font-size:1.2rem;flex-shrink:0;}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer{
+  background:var(--dark);
+  color:#b0c4de;
+  padding:16px 24px;
+  text-align:center;
+  font-size:.82rem;
+  border-top:3px solid var(--gold);
+}
+footer strong{color:var(--gold);}
+footer .f-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+footer .f-divider{opacity:.3;}
+
+/* ═══════════════════════════════
+   TOUCH RIPPLE
+═══════════════════════════════ */
+@keyframes ripple{
+  0%{transform:scale(0);opacity:.4;}
+  100%{transform:scale(4);opacity:0;}
+}
+.ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,.35);
+  width:60px;height:60px;margin-left:-30px;margin-top:-30px;
+  animation:ripple .5s ease-out forwards;
+  pointer-events:none;z-index:10;
+}
+
+/* ═══════════════════════════════
+   BACK BUTTON NOTE
+═══════════════════════════════ */
+.back-note{
+  background:var(--gold-lt);
+  border-left:4px solid var(--gold);
+  border-radius:0 12px 12px 0;
+  padding:12px 16px;
+  font-size:.84rem;color:#6b3a00;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
+/* ═══════════════════════════════
+   SCROLL ANIMATION
+═══════════════════════════════ */
+.mod-card{opacity:0;transform:translateY(20px);}
+.mod-card.visible{
+  opacity:1;transform:translateY(0);
+  transition:opacity .4s ease,transform .4s ease,box-shadow .22s,transform .22s cubic-bezier(.4,0,.2,1);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="app-logo"><span>🎓</span></div>
+  <h1>Contabilidad <em>Interactiva</em></h1>
+  <p>Módulos didácticos táctiles para el aprendizaje de Principios de Contabilidad</p>
+  <div class="hero-badges">
+    <span class="hero-badge gold">📚 10 Módulos</span>
+    <span class="hero-badge">🇭🇳 Empresa Hondureña</span>
+    <span class="hero-badge">📱 Táctil & Offline</span>
+    <span class="hero-badge">🎯 NIIF PYMES</span>
+  </div>
+</div>
+
+<!-- ═══ PROGRESS STRIP ═══ -->
+<div class="progress-strip">
+  <span class="ps-label">📊 Módulos disponibles</span>
+  <div class="ps-chips" id="ps-chips"></div>
+  <span class="ps-tip">Toca una tarjeta para comenzar</span>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- Back button instructions -->
+  <div class="back-note">
+    💡 <strong>Navegación:</strong> Al abrir un módulo, usa el botón <strong>← Atrás</strong> de tu navegador o dispositivo para regresar a este menú. En pantallas táctiles, desliza desde el borde izquierdo. Todos los módulos funcionan <strong>sin conexión a internet</strong>.
+  </div>
+
+  <!-- Instructions -->
+  <div class="section-label">¿Cómo usar los módulos?</div>
+  <div class="instructions">
+    <div class="inst-block">
+      <h4>📋 Estructura de cada módulo</h4>
+      <div class="inst-item"><span class="ii-icon">📘</span><span><strong>Concepto:</strong> Explicación visual con ejemplos hondureños (Ferretería, Distribuidora, SAR, ENEE)</span></div>
+      <div class="inst-item"><span class="ii-icon">⚡</span><span><strong>Simulación:</strong> Interactúa con casos prácticos paso a paso</span></div>
+      <div class="inst-item"><span class="ii-icon">🎯</span><span><strong>Mini-Juego:</strong> Evalúa tu comprensión con puntaje inmediato</span></div>
+    </div>
+    <div class="inst-block">
+      <h4>📌 Recomendaciones</h4>
+      <div class="inst-item"><span class="ii-icon">1️⃣</span><span>Estudia los módulos <strong>en orden</strong> — cada uno construye sobre el anterior</span></div>
+      <div class="inst-item"><span class="ii-icon">🔁</span><span>Repite el mini-juego hasta obtener <strong>70% o más</strong> antes de avanzar</span></div>
+      <div class="inst-item"><span class="ii-icon">📖</span><span>Complementa con el libro de texto <strong>Principios de Contabilidad</strong> Contabilidad Interactiva</span></div>
+    </div>
+  </div>
+
+  <!-- Modules grid -->
+  <div class="section-label">Módulos del curso</div>
+  <div class="modules-grid" id="modules-grid"></div>
+
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="f-row">
+    <span style="font-size:.85rem;">Herramienta didáctica interactiva desarrollada por</span>
+    <span class="f-divider">·</span>
+    <span><strong style="color:#fff;">Juan Carlos Reyes</strong></span>
+    <span class="f-divider">·</span>
+    <a href="mailto:juancreyes.hn@gmail.com"
+       style="color:var(--gold);text-decoration:none;font-weight:700;transition:opacity .2s;"
+       onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
+      ✉️ juancreyes.hn@gmail.com
+    </a>
+  </div>
+  <div style="margin-top:6px;font-size:.75rem;opacity:.55;">
+    Principios de Contabilidad · 10 módulos interactivos · NIIF PYMES
+  </div>
+</footer>
+
+<script>
+// ═══ MODULE DATA ═══
+const MODULES = [
+  {
+    id: 1,
+    file: 'modulo1_ecuacion_contable.html',
+    icon: '⚖️',
+    name: 'La Ecuación Contable',
+    desc: 'Activo = Pasivo + Patrimonio. Fundamento de toda la contabilidad.',
+    tag: 'Base fundamental',
+    color: '#0D6B8C',
+    colorLt: '#E0F4FA',
+    isNew: false,
+  },
+  {
+    id: 2,
+    file: 'modulo2_componentes.html',
+    icon: '🌳',
+    name: 'Subcuentas por Componente',
+    desc: 'Activo Circulante/Corriente, No Corriente, Pasivo, Patrimonio — con ISV 15%.',
+    tag: 'Clasificación',
+    color: '#1565C0',
+    colorLt: '#E3F2FD',
+    isNew: false,
+  },
+  {
+    id: 3,
+    file: 'modulo3_ingresos_gastos.html',
+    icon: '📈',
+    name: 'Ingresos y Gastos',
+    desc: 'Cómo afectan al Patrimonio. Termómetro animado del resultado del período.',
+    tag: 'Estado de Resultados',
+    color: '#2E7D32',
+    colorLt: '#E8F5E9',
+    isNew: false,
+  },
+  {
+    id: 4,
+    file: 'modulo4_naturaleza_cuentas.html',
+    icon: '📖',
+    name: 'Naturaleza de las Cuentas',
+    desc: 'El Debe y el Haber. Cuentas deudoras y acreedoras. Partida doble.',
+    tag: 'Debe · Haber',
+    color: '#6A1B9A',
+    colorLt: '#F3E5F5',
+    isNew: false,
+  },
+  {
+    id: 5,
+    file: 'modulo5_libro_diario.html',
+    icon: '✏️',
+    name: 'El Libro Diario',
+    desc: 'Registro cronológico de asientos. Partida doble. ISV 15% en cada operación.',
+    tag: 'ISV 15% incluido',
+    color: '#0D6B8C',
+    colorLt: '#E0F4FA',
+    isNew: false,
+  },
+  {
+    id: 6,
+    file: 'modulo6_libro_mayor.html',
+    icon: '📋',
+    name: 'El Libro Mayor',
+    desc: 'Mayorización animada. Cuentas T con saldos. Balance de Comprobación.',
+    tag: 'Mayorización',
+    color: '#00695C',
+    colorLt: '#E0F2F1',
+    isNew: false,
+  },
+  {
+    id: 7,
+    file: 'modulo7_estados_financieros.html',
+    icon: '🏛️',
+    name: 'Estados Financieros',
+    desc: 'Balance General y Estado de Resultados (P&G). Conexión entre ambos estados.',
+    tag: 'Balance · P&G',
+    color: '#C62828',
+    colorLt: '#FFEBEE',
+    isNew: false,
+  },
+  {
+    id: 8,
+    file: 'modulo8_ciclo_contable.html',
+    icon: '🔄',
+    name: 'El Ciclo Contable',
+    desc: 'Simulación completa: 7 estaciones desde la apertura hasta el cierre formal.',
+    tag: 'Ciclo completo',
+    color: '#E65100',
+    colorLt: '#FFF3E0',
+    isNew: false,
+  },
+  {
+    id: 9,
+    file: 'modulo9_asientos_ajuste.html',
+    icon: '🔧',
+    name: 'Asientos de Ajuste',
+    desc: 'Los 4 tipos: prepagados, diferidos, gastos devengados e ingresos devengados.',
+    tag: 'NIIF PYMES Sec.2.36',
+    color: '#4527A0',
+    colorLt: '#EDE7F6',
+    isNew: true,
+  },
+  {
+    id: 10,
+    file: 'modulo10_hoja_trabajo.html',
+    icon: '📊',
+    name: 'La Hoja de Trabajo',
+    desc: 'Planilla de 10 columnas. Del BC sin ajustar hasta los Estados Financieros.',
+    tag: '10 columnas',
+    color: '#00838F',
+    colorLt: '#E0F7FA',
+    isNew: true,
+  },
+];
+
+// ═══ BUILD CHIPS ═══
+function buildChips() {
+  const container = document.getElementById('ps-chips');
+  MODULES.forEach(m => {
+    const chip = document.createElement('div');
+    chip.className = 'ps-chip done';
+    chip.textContent = m.id;
+    chip.title = m.name;
+    chip.style.background = m.color;
+    chip.style.color = '#fff';
+    container.appendChild(chip);
+  });
+}
+
+// ═══ BUILD CARDS ═══
+function buildCards() {
+  const grid = document.getElementById('modules-grid');
+  MODULES.forEach((m, i) => {
+    const a = document.createElement('a');
+    a.className = 'mod-card';
+    a.href = m.file;
+    a.setAttribute('aria-label', `Módulo ${m.id}: ${m.name}`);
+    a.innerHTML = `
+      <div class="mc-stripe" style="background:${m.color};"></div>
+      ${m.isNew ? '<span class="mc-new">Nuevo</span>' : ''}
+      <div class="mc-body">
+        <div class="mc-num" style="background:${m.color};">${m.id}</div>
+        <span class="mc-icon">${m.icon}</span>
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-desc">${m.desc}</div>
+        <div class="mc-footer">
+          <span class="mc-tag" style="background:${m.colorLt};color:${m.color};">${m.tag}</span>
+          <span class="mc-arrow">→</span>
+        </div>
+      </div>`;
+
+    // Touch ripple
+    a.addEventListener('pointerdown', function(e) {
+      const rect = a.getBoundingClientRect();
+      const rip = document.createElement('div');
+      rip.className = 'ripple';
+      rip.style.left = (e.clientX - rect.left) + 'px';
+      rip.style.top  = (e.clientY - rect.top) + 'px';
+      a.appendChild(rip);
+      setTimeout(() => rip.remove(), 600);
+    });
+
+    // Staggered animation delay
+    a.style.transitionDelay = (i * 0.05) + 's';
+
+    grid.appendChild(a);
+  });
+}
+
+// ═══ SCROLL REVEAL ═══
+function revealCards() {
+  const cards = document.querySelectorAll('.mod-card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  cards.forEach(c => io.observe(c));
+}
+
+// ═══ INIT ═══
+buildChips();
+buildCards();
+// Small delay so CSS transition kicks in
+requestAnimationFrame(() => setTimeout(revealCards, 80));
+</script>
+</body>
+</html>

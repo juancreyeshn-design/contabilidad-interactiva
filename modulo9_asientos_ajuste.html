@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 9 — Asientos de Ajuste | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --gold:    #F4A811; --gold-lt: #FFF8E0;
+  --dark:    #1B2638;
+  --bg:      #F5F7FA;
+  --card-r:  16px;
+  --shadow:  0 6px 24px rgba(0,0,0,.11);
+  /* Tipo A — Gastos prepagados */
+  --ta:  #0D6B8C; --ta-lt: #E0F4FA;
+  /* Tipo B — Ingresos diferidos */
+  --tb:  #8E44AD; --tb-lt: #F8F0FF;
+  /* Tipo C — Gastos devengados */
+  --tc:  #C0392B; --tc-lt: #FDECEA;
+  /* Tipo D — Ingresos devengados */
+  --td:  #1A8A4A; --td-lt: #E4F9ED;
+  /* Contables */
+  --debe:  #0D6B8C; --debe-lt: #E0F4FA;
+  --haber: #1A8A4A; --haber-lt:#E4F9ED;
+  --activo:#0D6B8C; --pasivo:#C0392B; --patrim:#1A8A4A;
+  --ingreso:#E67E22; --gasto:#8E44AD;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.75rem;padding:5px 13px;border-radius:30px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.4rem;font-weight:900;}
+header p{font-size:.85rem;color:#b0b8c4;margin-top:2px;}
+
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e4ea;padding:0 20px;gap:4px;overflow-x:auto;}
+.tab-btn{padding:16px 20px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.93rem;font-weight:700;color:#6b7684;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold);}
+
+.section{display:none;padding:24px 18px 64px;max-width:1080px;margin:0 auto;}
+.section.active{display:block;}
+
+/* ── SHARED ── */
+.intro-banner{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:22px 26px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;}
+.intro-banner .ib-icon{font-size:2.4rem;flex-shrink:0;}
+.intro-banner h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+.intro-banner p{font-size:.88rem;color:#b0b8c4;line-height:1.6;}
+
+.note-box{background:var(--gold-lt);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 16px;font-size:.85rem;color:#6b3a00;line-height:1.6;margin-bottom:16px;}
+.note-box strong{color:#5a2d00;}
+
+/* ── TAB 1: CONCEPTO ── */
+.principio-box{background:var(--dark);border-radius:var(--card-r);padding:22px 26px;margin-bottom:22px;box-shadow:var(--shadow);text-align:center;}
+.principio-box h3{font-size:1.1rem;font-weight:900;color:var(--gold);margin-bottom:8px;}
+.principio-box p{font-size:.92rem;color:#d0d8e4;line-height:1.65;max-width:680px;margin:0 auto;}
+
+.tipos-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;}
+@media(max-width:620px){.tipos-grid{grid-template-columns:1fr;}}
+
+.tipo-card{border-radius:var(--card-r);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s,box-shadow .18s;user-select:none;}
+.tipo-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.15);}
+.tipo-card.ta{background:var(--ta);color:#fff;}
+.tipo-card.tb{background:var(--tb);color:#fff;}
+.tipo-card.tc{background:var(--tc);color:#fff;}
+.tipo-card.td{background:var(--td);color:#fff;}
+.tipo-card .tc-letra{font-size:2.2rem;font-weight:900;opacity:.25;float:right;line-height:1;}
+.tipo-card .tc-icon{font-size:2rem;display:block;margin-bottom:8px;}
+.tipo-card h4{font-size:1.05rem;font-weight:900;margin-bottom:4px;}
+.tipo-card p{font-size:.82rem;opacity:.88;line-height:1.5;margin-bottom:10px;}
+.tipo-card .tc-tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:.75rem;font-weight:700;}
+
+.devengo-strip{display:flex;align-items:stretch;gap:0;border-radius:var(--card-r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:8px;}
+.ds-side{flex:1;padding:16px 18px;}
+.ds-side.base{background:#fff;}
+.ds-side.niif{background:var(--patrim);color:#fff;}
+.ds-side h4{font-size:.82rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.ds-side h4.niif-h{color:#a8efc1;}
+.ds-side p{font-size:.85rem;line-height:1.55;}
+.ds-side p.niif-p{color:#d0eedd;}
+.ds-divider{width:4px;background:var(--gold);}
+
+/* ── TAB 2: LOS 4 TIPOS ── */
+.tipo-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.tnav-btn{padding:12px 18px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;color:#6b7684;transition:all .2s;}
+.tnav-btn.active{color:#fff;border-color:transparent;}
+.tnav-btn.ta.active{background:var(--ta);}
+.tnav-btn.tb.active{background:var(--tb);}
+.tnav-btn.tc.active{background:var(--tc);}
+.tnav-btn.td.active{background:var(--td);}
+
+.tipo-content{display:none;}
+.tipo-content.active{display:block;}
+
+.tc-header{border-radius:var(--card-r);padding:20px 24px;color:#fff;margin-bottom:18px;box-shadow:var(--shadow);}
+.tc-header h3{font-size:1.1rem;font-weight:900;margin-bottom:4px;}
+.tc-header p{font-size:.88rem;opacity:.88;line-height:1.6;}
+.tc-header .tch-tag{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:700;margin-top:10px;}
+
+/* Timeline visual */
+.timeline{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:20px;margin-bottom:18px;}
+.timeline h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:14px;}
+.tl-row{display:flex;align-items:center;gap:0;position:relative;}
+.tl-node{width:14px;height:14px;border-radius:50%;flex-shrink:0;z-index:1;}
+.tl-line{flex:1;height:3px;}
+.tl-label{position:absolute;top:20px;font-size:.72rem;font-weight:700;white-space:nowrap;}
+.tl-event{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:.8rem;margin-top:28px;font-weight:700;}
+
+/* Before/After asiento */
+.ba-layout{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start;margin-bottom:16px;}
+@media(max-width:600px){.ba-layout{grid-template-columns:1fr;}}
+.ba-arrow{font-size:2rem;color:#c0c8d4;display:flex;align-items:center;justify-content:center;padding-top:40px;}
+
+.asiento-block{border-radius:var(--card-r);overflow:hidden;box-shadow:var(--shadow);}
+.ab-header{padding:11px 14px;font-weight:900;font-size:.88rem;color:#fff;}
+.ab-body{background:#fff;}
+.ab-row{display:grid;grid-template-columns:1fr 90px 90px;gap:6px;padding:9px 14px;border-bottom:1px solid #edf0f4;font-size:.85rem;align-items:center;}
+.ab-row:last-child{border-bottom:none;}
+.ab-row .abr-cuenta{font-weight:700;}
+.ab-row .abr-cuenta.sub{padding-left:18px;font-weight:600;color:#6b7684;}
+.ab-row .abr-debe{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.ab-row .abr-haber{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.ab-total{display:grid;grid-template-columns:1fr 90px 90px;gap:6px;padding:9px 14px;background:var(--bg);border-top:2px solid var(--dark);font-size:.82rem;}
+.ab-total span{font-family:'Source Code Pro',monospace;font-weight:900;}
+.ab-total .abt-d{color:var(--debe);text-align:right;}
+.ab-total .abt-h{color:var(--haber);text-align:right;}
+
+/* Effect cards */
+.effect-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+@media(max-width:500px){.effect-row{grid-template-columns:1fr;}}
+.effect-card{border-radius:12px;padding:14px 16px;}
+.effect-card h5{font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.effect-card p{font-size:.85rem;line-height:1.5;}
+.effect-card.activo-eff{background:var(--debe-lt);}
+.effect-card.pasivo-eff{background:var(--tc-lt);}
+.effect-card.ingreso-eff{background:var(--td-lt);}
+.effect-card.gasto-eff{background:var(--tb-lt);}
+.effect-card h5.a{color:var(--activo);}
+.effect-card h5.p{color:var(--pasivo);}
+.effect-card h5.i{color:var(--ingreso);}
+.effect-card h5.g{color:var(--gasto);}
+
+/* Regla mnemónica */
+.regla-box{border-radius:var(--card-r);padding:16px 20px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);margin-bottom:4px;}
+.regla-box .rb-icon{font-size:2rem;flex-shrink:0;}
+.regla-box h4{font-size:.9rem;font-weight:900;margin-bottom:4px;}
+.regla-box p{font-size:.83rem;line-height:1.5;}
+
+/* ── TAB 3: CONSTRUCTOR ── */
+.constructor-intro{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);}
+.constructor-intro .ci-icon{font-size:2.2rem;}
+.constructor-intro h3{font-size:1.05rem;font-weight:900;}
+.constructor-intro p{font-size:.87rem;color:#b0b8c4;margin-top:3px;}
+
+.selector-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.sel-btn{padding:12px 18px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;color:#6b7684;}
+.sel-btn:hover{border-color:var(--dark);}
+.sel-btn.active{color:#fff;border-color:transparent;}
+.sel-btn.ta.active{background:var(--ta);}
+.sel-btn.tb.active{background:var(--tb);}
+.sel-btn.tc.active{background:var(--tc);}
+.sel-btn.td.active{background:var(--td);}
+
+.constructor-panel{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;display:none;}
+.constructor-panel.active{display:block;}
+.cp-top{padding:16px 20px;color:#fff;display:flex;align-items:center;gap:12px;}
+.cp-top h3{font-size:1rem;font-weight:900;}
+.cp-top p{font-size:.82rem;opacity:.85;margin-top:2px;}
+.cp-body{padding:20px;}
+
+/* Step animation */
+.steps-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.step-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:var(--bg);opacity:0;transform:translateX(-8px);transition:opacity .4s,transform .4s;}
+.step-item.show{opacity:1;transform:none;}
+.step-item .si-num{background:var(--dark);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;flex-shrink:0;}
+.step-item .si-text strong{display:block;font-size:.9rem;font-weight:900;margin-bottom:2px;}
+.step-item .si-text span{font-size:.82rem;color:#6b7684;line-height:1.5;}
+
+/* Before/After comparison for constructor */
+.comp-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:580px){.comp-layout{grid-template-columns:1fr;}}
+.comp-card{border-radius:12px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.09);}
+.comp-card-head{padding:11px 14px;color:#fff;font-weight:900;font-size:.88rem;}
+.comp-row{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #edf0f4;font-size:.88rem;}
+.comp-row:last-child{border-bottom:none;}
+.comp-row.highlight{background:#fffbe6;font-weight:900;}
+.comp-row span:first-child{color:#6b7684;}
+.comp-row span:last-child{font-family:'Source Code Pro',monospace;font-weight:700;}
+.comp-total{display:flex;justify-content:space-between;padding:10px 14px;border-top:2px solid var(--dark);font-weight:900;font-size:.88rem;}
+.comp-total span:last-child{font-family:'Source Code Pro',monospace;}
+
+.anim-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);margin-bottom:12px;}
+.anim-btn:hover{background:#2a3a54;transform:scale(1.02);}
+
+/* ── TAB 4: BALANCE COMPROBACIÓN ── */
+.bc-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:640px){.bc-layout{grid-template-columns:1fr;}}
+.bc-card{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);overflow:hidden;}
+.bc-card-head{padding:13px 16px;color:#fff;font-weight:900;font-size:.95rem;display:flex;align-items:center;gap:8px;}
+.bc-table-head{display:grid;grid-template-columns:1fr 90px 90px;padding:9px 14px;background:var(--bg);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#9aa3ad;}
+.bc-row{display:grid;grid-template-columns:1fr 90px 90px;padding:9px 14px;border-bottom:1px solid #edf0f4;font-size:.85rem;align-items:center;transition:background .15s;}
+.bc-row:hover{background:var(--bg);}
+.bc-row.changed{background:#fffbe6;}
+.bc-row .bcr-name{font-weight:700;}
+.bc-row .bcr-d{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--debe);text-align:right;}
+.bc-row .bcr-h{font-family:'Source Code Pro',monospace;font-weight:700;color:var(--haber);text-align:right;}
+.bc-total-row{display:grid;grid-template-columns:1fr 90px 90px;padding:11px 14px;background:var(--dark);color:#fff;}
+.bc-total-row span{font-family:'Source Code Pro',monospace;font-weight:900;text-align:right;}
+.bc-total-row span:first-child{font-family:'Nunito',sans-serif;font-size:.82rem;color:#b0b8c4;text-align:left;}
+.bc-total-row span.d{color:#93d8f0;}
+.bc-total-row span.h{color:#a8efc1;}
+
+.diff-badge{text-align:center;padding:14px;border-radius:12px;font-size:.95rem;font-weight:700;margin-top:12px;}
+.diff-badge.changed{background:var(--gold-lt);color:#6b3a00;}
+.diff-badge.eq{background:var(--haber-lt);color:var(--haber);}
+
+/* ── TAB 5: MINI-JUEGO ── */
+.gj-header{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;box-shadow:var(--shadow);}
+.gj-header .gh-icon{font-size:2.2rem;}
+.gj-header h3{font-size:1.05rem;font-weight:900;}
+.gj-header p{font-size:.87rem;color:#b0b8c4;margin-top:3px;}
+
+.gj-prog{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.prog-wrap{flex:1;background:#e0e4ea;border-radius:99px;height:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ta),var(--td));transition:width .4s;width:0%;}
+.prog-lbl{font-size:.9rem;font-weight:700;color:#6b7684;white-space:nowrap;}
+
+.gj-situation{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:24px;margin-bottom:20px;box-shadow:var(--shadow);animation:cardIn .3s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.gjs-seq{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px;}
+.gjs-icon{font-size:2.8rem;display:block;margin-bottom:10px;}
+.gjs-text{font-size:1.05rem;font-weight:900;line-height:1.5;margin-bottom:6px;}
+.gjs-amount{font-family:'Source Code Pro',monospace;font-size:1.1rem;color:var(--gold);font-weight:700;}
+
+/* Step 1: Tipo */
+.step-title{font-size:.82rem;font-weight:700;text-align:center;color:#6b7684;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;}
+.tipo-btns{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:480px){.tipo-btns{grid-template-columns:1fr;}}
+.tipo-btn{padding:14px 12px;border-radius:12px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:#fff;transition:all .18s;box-shadow:var(--shadow);text-align:left;display:flex;flex-direction:column;gap:3px;}
+.tipo-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.15);}
+.tipo-btn.ta{background:var(--ta);}
+.tipo-btn.tb{background:var(--tb);}
+.tipo-btn.tc{background:var(--tc);}
+.tipo-btn.td{background:var(--td);}
+.tipo-btn .tbt-label{font-size:1rem;font-weight:900;}
+.tipo-btn .tbt-sub{font-size:.75rem;opacity:.8;}
+
+/* Step 2: Cuentas */
+.cuentas-section{margin-bottom:14px;}
+.cs-label{font-size:.82rem;font-weight:700;padding:5px 12px;border-radius:8px;display:inline-block;margin-bottom:10px;}
+.cs-label.d{background:var(--debe-lt);color:var(--debe);}
+.cs-label.h{background:var(--haber-lt);color:var(--haber);}
+.cuenta-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.cuenta-chip{padding:10px 14px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.cuenta-chip:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(0,0,0,.13);}
+.cuenta-chip.sel-d{background:var(--debe);color:#fff;border-color:var(--debe);}
+.cuenta-chip.sel-h{background:var(--haber);color:#fff;border-color:var(--haber);}
+.cuenta-chip.correct{background:#d4edda;color:#155724;border-color:#a8efc1;}
+.cuenta-chip.wrong{background:#f8d7da;color:#721c24;border-color:#f5b3ae;}
+
+.verify-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--dark);color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);margin-bottom:12px;}
+.verify-btn:hover{background:#2a3a54;transform:scale(1.02);}
+.verify-btn:disabled{opacity:.38;cursor:not-allowed;transform:none!important;}
+
+.gj-feedback{border-radius:12px;padding:14px 18px;font-size:.93rem;font-weight:700;display:none;animation:popIn .25s ease;line-height:1.6;margin-bottom:12px;}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gj-feedback.ok{background:var(--haber-lt);color:var(--haber);display:block;}
+.gj-feedback.bad{background:var(--tc-lt);color:var(--tc);display:block;}
+.gj-next-btn{width:100%;padding:13px;border-radius:12px;border:none;background:var(--ta);color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:all .18s;display:none;margin-bottom:8px;}
+.gj-next-btn.show{display:block;}
+.gj-next-btn:hover{background:#1A9BBF;}
+
+.live-score{background:#fff;border-radius:12px;padding:12px;display:flex;gap:14px;justify-content:center;align-items:center;box-shadow:var(--shadow);flex-wrap:wrap;}
+.ls-item strong{display:block;font-size:1.5rem;font-weight:900;}
+.ls-item span{font-size:.75rem;color:#6b7684;}
+.ls-item.cor strong{color:var(--haber);}
+.ls-item.err strong{color:var(--pasivo);}
+.ls-div{width:1px;height:34px;background:#e0e4ea;}
+
+/* Result */
+.gj-result{display:none;background:#fff;border-radius:var(--card-r);padding:36px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.confetti-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(450px) rotate(720deg);opacity:0;}}
+.r-emoji{font-size:3.5rem;margin-bottom:8px;}
+.r-title{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+.r-score{font-size:3.8rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.r-msg{font-size:1rem;color:#3d4a5c;margin-bottom:20px;}
+.r-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.r-stat{background:var(--bg);border-radius:12px;padding:12px 20px;}
+.r-stat strong{display:block;font-size:1.4rem;font-weight:900;}
+.r-stat span{font-size:.8rem;color:#6b7684;}
+.retry-btn{padding:14px 40px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.retry-btn:hover{background:#2a3a54;transform:scale(1.03);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 9</div>
+    <h1>Módulo 9: Asientos de Ajuste</h1>
+    <p>Principio de devengo · Los 4 tipos · Efecto en los estados financieros</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">📘 Concepto</button>
+  <button class="tab-btn" onclick="showTab('tipos',this)">🔍 Los 4 Tipos</button>
+  <button class="tab-btn" onclick="showTab('constructor',this)">⚙️ Constructor</button>
+  <button class="tab-btn" onclick="showTab('bc',this)">⚖️ Efecto en BC</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: CONCEPTO ══════════════ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="principio-box">
+    <h3>⚖️ El Principio de Devengo — Base de los Ajustes</h3>
+    <p>Los ingresos y gastos deben reconocerse <strong>cuando ocurren económicamente</strong>, no cuando se cobra o paga el dinero. Esto significa que al final de cada período es necesario <em>ajustar</em> las cuentas para que reflejen la realidad económica — aunque el efectivo aún no haya cambiado de manos.</p>
+  </div>
+
+  <div class="devengo-strip">
+    <div class="ds-side base">
+      <h4 style="color:#C0392B;">❌ Sin principio de devengo</h4>
+      <p>Una empresa paga L 6,000 de seguro por 6 meses en enero. Sin ajuste, registra todo como <em>gasto en enero</em> aunque el seguro cubre hasta junio. Los estados financieros quedan distorsionados.</p>
+    </div>
+    <div class="ds-divider"></div>
+    <div class="ds-side niif">
+      <h4 class="niif-h">✅ Con principio de devengo (NIIF PYMES Sec. 2.36)</h4>
+      <p class="niif-p">Solo se registra como gasto <em>la parte consumida</em> (L 1,000 por mes). El resto permanece como activo (Seguro Pagado por Adelantado) hasta que se consuma. Cada período muestra su costo real.</p>
+    </div>
+  </div>
+
+  <div class="note-box">
+    📖 <strong>Referencia normativa:</strong> NIIF para PYMES Sección 2.36 — Base contable de acumulación (devengo). Adoptada en Honduras mediante Resolución No. 001/2012 del CCPAH. El libro de texto de la Contabilidad Interactiva lo desarrolla en el capítulo de Ajustes y Hoja de Trabajo.
+  </div>
+
+  <div style="font-size:1rem;font-weight:900;margin-bottom:14px;text-align:center;">Los 4 tipos de asientos de ajuste — toca cada uno para explorar</div>
+  <div class="tipos-grid">
+    <div class="tipo-card ta" onclick="goToTipo('A')">
+      <span class="tc-letra">A</span>
+      <span class="tc-icon">💳</span>
+      <h4>Gastos Pagados por Adelantado</h4>
+      <p>Se pagó el efectivo ANTES de consumir el beneficio. Al final del período, hay que ajustar cuánto ya se consumió.</p>
+      <span class="tc-tag">Prepagados · Diferidos</span>
+    </div>
+    <div class="tipo-card tb" onclick="goToTipo('B')">
+      <span class="tc-letra">B</span>
+      <span class="tc-icon">🏦</span>
+      <h4>Ingresos Cobrados por Adelantado</h4>
+      <p>Se cobró el efectivo ANTES de prestar el servicio. Hay que ajustar cuánto ya se ganó al final del período.</p>
+      <span class="tc-tag">Diferidos · Pasivo → Ingreso</span>
+    </div>
+    <div class="tipo-card tc" onclick="goToTipo('C')">
+      <span class="tc-letra">C</span>
+      <span class="tc-icon">👷</span>
+      <h4>Gastos Devengados No Pagados</h4>
+      <p>El gasto YA ocurrió pero aún no se ha pagado. Hay que registrar tanto el gasto como la deuda pendiente.</p>
+      <span class="tc-tag">Acumulados · Gasto + Pasivo</span>
+    </div>
+    <div class="tipo-card td" onclick="goToTipo('D')">
+      <span class="tc-letra">D</span>
+      <span class="tc-icon">🧾</span>
+      <h4>Ingresos Devengados No Cobrados</h4>
+      <p>El ingreso YA se ganó pero aún no se ha cobrado. Hay que registrar el ingreso y el derecho a cobrar.</p>
+      <span class="tc-tag">Acumulados · Activo + Ingreso</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2: LOS 4 TIPOS ══════════════ -->
+<div id="tab-tipos" class="section">
+
+  <div class="tipo-nav">
+    <button class="tnav-btn ta active" onclick="showTipo('A',this)">💳 Tipo A — Prepagados</button>
+    <button class="tnav-btn tb" onclick="showTipo('B',this)">🏦 Tipo B — Diferidos</button>
+    <button class="tnav-btn tc" onclick="showTipo('C',this)">👷 Tipo C — Gastos Acumulados</button>
+    <button class="tnav-btn td" onclick="showTipo('D',this)">🧾 Tipo D — Ingresos Acumulados</button>
+  </div>
+
+  <!-- TIPO A -->
+  <div class="tipo-content active" id="tipo-A">
+    <div class="tc-header" style="background:var(--ta);">
+      <h3>💳 Tipo A — Gastos Pagados por Adelantado (Prepagados)</h3>
+      <p><strong>Situación:</strong> La Ferretería "El Maestro" paga L 6,000 el 1 de enero por un seguro contra incendios de Seguros Continental con vigencia de 6 meses (enero–junio). Al 31 de enero, ¿cuánto es gasto real?</p>
+      <span class="tch-tag">Activo → Gasto · L 1,000 por mes</span>
+    </div>
+    <div class="note-box">🧮 Cálculo: L 6,000 ÷ 6 meses = <strong>L 1,000 por mes</strong>. Al 31 de enero, solo 1 mes fue consumido. Quedan 5 meses (L 5,000) como activo.</div>
+    <div class="ba-layout">
+      <div class="asiento-block">
+        <div class="ab-header" style="background:#6b7684;">📋 ASIENTO ORIGINAL (1 enero) — Sin ajuste</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--ta);">💳 Seguro Pagado x Adelantado</span><span class="abr-debe">L 6,000</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub">💵 Caja y Bancos</span><span></span><span class="abr-haber">L 6,000</span></div>
+        </div>
+        <div class="ab-total"><span></span><span class="abt-d">L 6,000</span><span class="abt-h">L 6,000</span></div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="asiento-block">
+        <div class="ab-header" style="background:var(--ta);">✅ ASIENTO DE AJUSTE (31 enero)</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--gasto);">📉 Gasto de Seguro</span><span class="abr-debe">L 1,000</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub" style="color:var(--ta);">💳 Seguro Pagado x Adelantado</span><span></span><span class="abr-haber">L 1,000</span></div>
+        </div>
+        <div class="ab-total"><span style="font-size:.75rem;color:#9aa3ad;">Consume 1 mes</span><span class="abt-d">L 1,000</span><span class="abt-h">L 1,000</span></div>
+      </div>
+    </div>
+    <div class="effect-row">
+      <div class="effect-card activo-eff"><h5 class="a">🏦 Efecto en Activo</h5><p>Seguro Pagado x Adelantado baja de <strong>L 6,000 → L 5,000</strong>. Solo quedan 5 meses por consumir.</p></div>
+      <div class="effect-card gasto-eff"><h5 class="g">📉 Efecto en Resultados</h5><p>Aparece <strong>Gasto de Seguro L 1,000</strong> en el Estado de Resultados. Reduce la utilidad del período.</p></div>
+    </div>
+    <div class="regla-box" style="background:var(--ta-lt);">
+      <span class="rb-icon">🧠</span>
+      <div><h4 style="color:var(--ta);">Regla Tipo A: Activo → Gasto</h4><p>El prepago nace como <strong>Activo</strong> (derecho a recibir el servicio). Con el ajuste, la parte consumida se convierte en <strong>Gasto</strong>. El activo disminuye, el gasto aumenta.</p></div>
+    </div>
+  </div>
+
+  <!-- TIPO B -->
+  <div class="tipo-content" id="tipo-B">
+    <div class="tc-header" style="background:var(--tb);">
+      <h3>🏦 Tipo B — Ingresos Cobrados por Adelantado (Diferidos)</h3>
+      <p><strong>Situación:</strong> La ferretería cobra L 4,800 el 1 de octubre por alquiler de su bodega trasera por 4 meses (oct–ene). Al 31 de octubre, ¿cuánto es ingreso real?</p>
+      <span class="tch-tag">Pasivo → Ingreso · L 1,200 por mes</span>
+    </div>
+    <div class="note-box">🧮 Cálculo: L 4,800 ÷ 4 meses = <strong>L 1,200 por mes</strong>. Al 31 de octubre, solo 1 mes fue prestado. Quedan 3 meses (L 3,600) como pasivo (aún se le debe el servicio al arrendatario).</div>
+    <div class="ba-layout">
+      <div class="asiento-block">
+        <div class="ab-header" style="background:#6b7684;">📋 ASIENTO ORIGINAL (1 octubre)</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--activo);">💵 Caja y Bancos</span><span class="abr-debe">L 4,800</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub" style="color:var(--tb);">🏦 Alquiler Cobrado x Adelantado</span><span></span><span class="abr-haber">L 4,800</span></div>
+        </div>
+        <div class="ab-total"><span></span><span class="abt-d">L 4,800</span><span class="abt-h">L 4,800</span></div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="asiento-block">
+        <div class="ab-header" style="background:var(--tb);">✅ ASIENTO DE AJUSTE (31 octubre)</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--tb);">🏦 Alquiler Cobrado x Adelantado</span><span class="abr-debe">L 1,200</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub" style="color:var(--ingreso);">📈 Ingresos por Alquiler</span><span></span><span class="abr-haber">L 1,200</span></div>
+        </div>
+        <div class="ab-total"><span style="font-size:.75rem;color:#9aa3ad;">Gana 1 mes</span><span class="abt-d">L 1,200</span><span class="abt-h">L 1,200</span></div>
+      </div>
+    </div>
+    <div class="effect-row">
+      <div class="effect-card pasivo-eff"><h5 class="p">📋 Efecto en Pasivo</h5><p>Alquiler Cobrado x Adelantado baja de <strong>L 4,800 → L 3,600</strong>. La deuda de servicio disminuye.</p></div>
+      <div class="effect-card ingreso-eff"><h5 class="i">📈 Efecto en Resultados</h5><p>Aparece <strong>Ingreso por Alquiler L 1,200</strong> en el Estado de Resultados. Aumenta la utilidad del período.</p></div>
+    </div>
+    <div class="regla-box" style="background:var(--tb-lt);">
+      <span class="rb-icon">🧠</span>
+      <div><h4 style="color:var(--tb);">Regla Tipo B: Pasivo → Ingreso</h4><p>El cobro anticipado nace como <strong>Pasivo</strong> (se debe el servicio). Con el ajuste, la parte prestada se convierte en <strong>Ingreso</strong>. El pasivo disminuye, el ingreso aumenta.</p></div>
+    </div>
+  </div>
+
+  <!-- TIPO C -->
+  <div class="tipo-content" id="tipo-C">
+    <div class="tc-header" style="background:var(--tc);">
+      <h3>👷 Tipo C — Gastos Devengados No Pagados (Acumulados)</h3>
+      <p><strong>Situación:</strong> Los 3 empleados de la ferretería ganan L 900 diarios cada uno. Al 31 de julio, los últimos 3 días laborados (L 8,100) no se han pagado. El período cierra antes del pago.</p>
+      <span class="tch-tag">Gasto + Pasivo · L 8,100 por pagar</span>
+    </div>
+    <div class="note-box">🧮 Cálculo: 3 empleados × L 900/día × 3 días = <strong>L 8,100</strong> devengados y no pagados. Ya se trabajó — el gasto existe aunque el pago sea la próxima quincena.</div>
+    <div class="ba-layout">
+      <div class="asiento-block">
+        <div class="ab-header" style="background:#6b7684;">❌ SITUACIÓN SIN AJUSTE (al 31 julio)</div>
+        <div class="ab-body">
+          <div style="padding:14px;text-align:center;font-size:.85rem;color:#9aa3ad;">
+            No hay asiento. El gasto no está registrado.<br>El Estado de Resultados subestima los gastos del período.
+          </div>
+        </div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="asiento-block">
+        <div class="ab-header" style="background:var(--tc);">✅ ASIENTO DE AJUSTE (31 julio)</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--gasto);">👷 Gasto de Sueldos</span><span class="abr-debe">L 8,100</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub" style="color:var(--tc);">📋 Sueldos por Pagar</span><span></span><span class="abr-haber">L 8,100</span></div>
+        </div>
+        <div class="ab-total"><span style="font-size:.75rem;color:#9aa3ad;">3 días devengados</span><span class="abt-d">L 8,100</span><span class="abt-h">L 8,100</span></div>
+      </div>
+    </div>
+    <div class="effect-row">
+      <div class="effect-card pasivo-eff"><h5 class="p">📋 Efecto en Pasivo</h5><p>Aparece <strong>Sueldos por Pagar L 8,100</strong> en el Balance. La empresa reconoce la deuda con sus empleados.</p></div>
+      <div class="effect-card gasto-eff"><h5 class="g">📉 Efecto en Resultados</h5><p>Aparece <strong>Gasto de Sueldos L 8,100</strong>. La utilidad disminuye para reflejar el costo real del período.</p></div>
+    </div>
+    <div class="regla-box" style="background:var(--tc-lt);">
+      <span class="rb-icon">🧠</span>
+      <div><h4 style="color:var(--tc);">Regla Tipo C: Gasto + Pasivo (desde cero)</h4><p>No había registro previo. El ajuste crea simultáneamente el <strong>Gasto</strong> (Debe) y el <strong>Pasivo</strong> (Haber). Cuando se pague, se cancela el pasivo contra Caja.</p></div>
+    </div>
+  </div>
+
+  <!-- TIPO D -->
+  <div class="tipo-content" id="tipo-D">
+    <div class="tc-header" style="background:var(--td);">
+      <h3>🧾 Tipo D — Ingresos Devengados No Cobrados (Acumulados)</h3>
+      <p><strong>Situación:</strong> La ferretería presta un servicio de instalación eléctrica el 28 de julio por L 3,500. La factura no se emite sino hasta agosto. Al 31 de julio, el ingreso ya se ganó.</p>
+      <span class="tch-tag">Activo + Ingreso · L 3,500 devengado</span>
+    </div>
+    <div class="note-box">📌 El trabajo está hecho. Según el principio de devengo, el ingreso pertenece a julio aunque el cobro sea en agosto. Hay que reconocerlo en el período correcto.</div>
+    <div class="ba-layout">
+      <div class="asiento-block">
+        <div class="ab-header" style="background:#6b7684;">❌ SITUACIÓN SIN AJUSTE (al 31 julio)</div>
+        <div class="ab-body">
+          <div style="padding:14px;text-align:center;font-size:.85rem;color:#9aa3ad;">
+            No hay asiento. El ingreso no está registrado.<br>El Estado de Resultados subestima los ingresos del período.
+          </div>
+        </div>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="asiento-block">
+        <div class="ab-header" style="background:var(--td);">✅ ASIENTO DE AJUSTE (31 julio)</div>
+        <div class="ab-body">
+          <div style="padding:7px 14px;font-size:.72rem;color:#9aa3ad;display:grid;grid-template-columns:1fr 90px 90px;"><span>Cuenta</span><span style="text-align:right;">Debe</span><span style="text-align:right;">Haber</span></div>
+          <div class="ab-row"><span class="abr-cuenta" style="color:var(--activo);">🧾 Ingresos por Cobrar</span><span class="abr-debe">L 3,500</span><span></span></div>
+          <div class="ab-row"><span class="abr-cuenta sub" style="color:var(--ingreso);">📈 Ingresos por Servicios</span><span></span><span class="abr-haber">L 3,500</span></div>
+        </div>
+        <div class="ab-total"><span style="font-size:.75rem;color:#9aa3ad;">Servicio prestado</span><span class="abt-d">L 3,500</span><span class="abt-h">L 3,500</span></div>
+      </div>
+    </div>
+    <div class="effect-row">
+      <div class="effect-card activo-eff"><h5 class="a">🏦 Efecto en Activo</h5><p>Aparece <strong>Ingresos por Cobrar L 3,500</strong> en el Balance. Es un activo — el derecho a cobrar.</p></div>
+      <div class="effect-card ingreso-eff"><h5 class="i">📈 Efecto en Resultados</h5><p>Aparece <strong>Ingresos por Servicios L 3,500</strong>. La utilidad del período aumenta para reflejar el trabajo real.</p></div>
+    </div>
+    <div class="regla-box" style="background:var(--td-lt);">
+      <span class="rb-icon">🧠</span>
+      <div><h4 style="color:var(--td);">Regla Tipo D: Activo + Ingreso (desde cero)</h4><p>No había registro previo. El ajuste crea el <strong>Activo</strong> "Ingresos por Cobrar" (Debe) y el <strong>Ingreso</strong> (Haber). Cuando se cobre, se cancela el activo contra Caja.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3: CONSTRUCTOR ══════════════ -->
+<div id="tab-constructor" class="section">
+  <div class="constructor-intro">
+    <span class="ci-icon">⚙️</span>
+    <div>
+      <h3>Constructor de Ajustes — Paso a Paso</h3>
+      <p>Selecciona un tipo de ajuste y observa cómo se construye el asiento, qué cambia antes y después, y su efecto en los estados financieros.</p>
+    </div>
+  </div>
+
+  <div class="selector-btns">
+    <button class="sel-btn ta active" onclick="loadConstructor('A',this)">💳 Tipo A — Seguro prepagado</button>
+    <button class="sel-btn tb" onclick="loadConstructor('B',this)">🏦 Tipo B — Alquiler cobrado adelantado</button>
+    <button class="sel-btn tc" onclick="loadConstructor('C',this)">👷 Tipo C — Sueldos por pagar</button>
+    <button class="sel-btn td" onclick="loadConstructor('D',this)">🧾 Tipo D — Servicio devengado</button>
+  </div>
+
+  <div id="constructor-content"></div>
+</div>
+
+<!-- ══════════════ TAB 4: EFECTO EN BC ══════════════ -->
+<div id="tab-bc" class="section">
+  <div class="intro-banner">
+    <span class="ib-icon">⚖️</span>
+    <div>
+      <h3>El Balance de Comprobación: Antes y Después de Ajustes</h3>
+      <p>El libro de texto presenta <strong>dos</strong> Balances de Comprobación: uno antes de los ajustes y otro después. La diferencia entre ambos son exactamente los asientos de ajuste aplicados. Los estados financieros se preparan siempre desde el BC <em>ajustado</em>.</p>
+    </div>
+  </div>
+
+  <div class="note-box">📌 <strong>Nota importante para los estudiantes:</strong> El Balance de Comprobación que vimos en el Módulo 6 era <strong>ANTES de ajustes</strong>. En el proceso contable completo, después de los ajustes se prepara un segundo BC que es el punto de partida para los estados financieros finales.</div>
+
+  <div class="bc-layout">
+    <!-- BC SIN AJUSTES -->
+    <div class="bc-card">
+      <div class="bc-card-head" style="background:#6b7684;">📋 BC Sin Ajustes — 31 julio 2025</div>
+      <div class="bc-table-head"><span>Cuenta</span><span style="text-align:right;">Deudor</span><span style="text-align:right;">Acreedor</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">💵 Caja y Bancos</span><span class="bcr-d">L 60,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">💳 Seguro Pagado x Adelantado</span><span class="bcr-d">L 6,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">📦 Inventario Mercadería</span><span class="bcr-d">L 20,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">💻 Equipo de Cómputo</span><span class="bcr-d">L 6,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--pasivo);">📋 Cuentas por Pagar</span><span></span><span class="bcr-h">L 12,000</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--pasivo);">🏦 Alquiler Cobrado x Adelantado</span><span></span><span class="bcr-h">L 4,800</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--patrim);">👤 Capital Social</span><span></span><span class="bcr-h">L 50,000</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--patrim);">💰 Utilidades Anteriores</span><span></span><span class="bcr-h">L 14,500</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--ingreso);">📈 Ingresos por Ventas</span><span></span><span class="bcr-h">L 18,000</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--gasto);">👷 Gasto de Sueldos</span><span class="bcr-d">L 5,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--gasto);">🏪 Gasto de Alquiler</span><span class="bcr-d">L 3,500</span><span></span></div>
+      <div class="bc-total-row"><span>TOTALES</span><span class="d">L 100,500</span><span class="h">L 99,300</span></div>
+    </div>
+
+    <!-- BC CON AJUSTES -->
+    <div class="bc-card">
+      <div class="bc-card-head" style="background:var(--td);">✅ BC Con Ajustes — 31 julio 2025</div>
+      <div class="bc-table-head"><span>Cuenta</span><span style="text-align:right;">Deudor</span><span style="text-align:right;">Acreedor</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">💵 Caja y Bancos</span><span class="bcr-d">L 60,000</span><span></span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--activo);">💳 Seguro Pagado x Adelantado</span><span class="bcr-d" style="color:var(--ta);">L 5,000 ↓</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">📦 Inventario Mercadería</span><span class="bcr-d">L 20,000</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--activo);">💻 Equipo de Cómputo</span><span class="bcr-d">L 6,000</span><span></span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--activo);">🧾 Ingresos por Cobrar</span><span class="bcr-d" style="color:var(--td);">L 3,500 ✨</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--pasivo);">📋 Cuentas por Pagar</span><span></span><span class="bcr-h">L 12,000</span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--pasivo);">🏦 Alquiler Cobrado x Adelantado</span><span></span><span class="bcr-h" style="color:var(--tb);">L 3,600 ↓</span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--pasivo);">👷 Sueldos por Pagar</span><span></span><span class="bcr-h" style="color:var(--tc);">L 8,100 ✨</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--patrim);">👤 Capital Social</span><span></span><span class="bcr-h">L 50,000</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--patrim);">💰 Utilidades Anteriores</span><span></span><span class="bcr-h">L 14,500</span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--ingreso);">📈 Ingresos por Ventas</span><span></span><span class="bcr-h">L 18,000</span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--ingreso);">📈 Ingresos por Servicios</span><span></span><span class="bcr-h" style="color:var(--td);">L 3,500 ✨</span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--ingreso);">📈 Ingresos por Alquiler</span><span></span><span class="bcr-h" style="color:var(--tb);">L 1,200 ✨</span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--gasto);">👷 Gasto de Sueldos</span><span class="bcr-d">L 5,000</span><span></span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--gasto);">👷 Gasto Sueldos Ajuste</span><span class="bcr-d" style="color:var(--tc);">L 8,100 ✨</span><span></span></div>
+      <div class="bc-row"><span class="bcr-name" style="color:var(--gasto);">🏪 Gasto de Alquiler</span><span class="bcr-d">L 3,500</span><span></span></div>
+      <div class="bc-row changed"><span class="bcr-name" style="color:var(--gasto);">💳 Gasto de Seguro</span><span class="bcr-d" style="color:var(--ta);">L 1,000 ✨</span><span></span></div>
+      <div class="bc-total-row"><span>TOTALES</span><span class="d">L 112,100</span><span class="h">L 110,900</span></div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    🔑 <strong>Las filas amarillas</strong> son cuentas que cambiaron por los ajustes. ✨ = cuenta nueva que aparece. ↓ = cuenta que disminuyó su saldo. Después de verificar el BC ajustado, se procede a elaborar los Estados Financieros definitivos del período.
+  </div>
+
+  <div style="background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:20px 24px;">
+    <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:14px;">Resumen del impacto de los 4 ajustes en la Utilidad del período</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--bg);font-size:.9rem;">
+        <span>📈 Utilidad SIN ajustes</span>
+        <span style="font-family:'Source Code Pro',monospace;font-weight:700;color:#a07000;">L 9,500</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--tc-lt);font-size:.9rem;">
+        <span style="color:var(--tc);">👷 − Gasto Sueldos Tipo C</span>
+        <span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--tc);">(L 8,100)</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--ta-lt);font-size:.9rem;">
+        <span style="color:var(--ta);">💳 − Gasto Seguro Tipo A</span>
+        <span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--ta);">(L 1,000)</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--tb-lt);font-size:.9rem;">
+        <span style="color:var(--tb);">🏦 + Ingreso Alquiler Tipo B</span>
+        <span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--tb);">L 1,200</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:9px 12px;border-radius:8px;background:var(--td-lt);font-size:.9rem;">
+        <span style="color:var(--td);">🧾 + Ingreso Servicios Tipo D</span>
+        <span style="font-family:'Source Code Pro',monospace;font-weight:700;color:var(--td);">L 3,500</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px 12px;border-radius:8px;background:var(--dark);color:#fff;font-size:1rem;font-weight:900;margin-top:4px;">
+        <span>✅ Utilidad AJUSTADA del período</span>
+        <span style="font-family:'Source Code Pro',monospace;color:var(--gold);">L 5,100</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 5: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+  <div class="gj-header">
+    <span class="gh-icon">🎯</span>
+    <div>
+      <h3>Identifica el tipo de ajuste y arma el asiento — 10 situaciones</h3>
+      <p>Paso 1: ¿Qué tipo de ajuste es? · Paso 2: ¿Qué cuenta va al DEBE y cuál al HABER?</p>
+    </div>
+  </div>
+
+  <div class="gj-prog"><div class="prog-wrap"><div class="prog-fill" id="gj-prog-fill"></div></div><div class="prog-lbl" id="gj-prog-lbl">0 / 10</div></div>
+
+  <div id="gj-area">
+    <div class="gj-situation" id="gj-situation">
+      <div class="gjs-seq" id="gjs-seq"></div>
+      <span class="gjs-icon" id="gjs-icon"></span>
+      <div class="gjs-text" id="gjs-text"></div>
+      <div class="gjs-amount" id="gjs-amount"></div>
+    </div>
+
+    <div id="step1-area">
+      <div class="step-title">Paso 1 — ¿Qué tipo de ajuste es esta situación?</div>
+      <div class="tipo-btns">
+        <button class="tipo-btn ta" onclick="gjSelTipo('A',this)">
+          <span class="tbt-label">💳 Tipo A</span>
+          <span class="tbt-sub">Gasto pagado por adelantado</span>
+        </button>
+        <button class="tipo-btn tb" onclick="gjSelTipo('B',this)">
+          <span class="tbt-label">🏦 Tipo B</span>
+          <span class="tbt-sub">Ingreso cobrado por adelantado</span>
+        </button>
+        <button class="tipo-btn tc" onclick="gjSelTipo('C',this)">
+          <span class="tbt-label">👷 Tipo C</span>
+          <span class="tbt-sub">Gasto devengado no pagado</span>
+        </button>
+        <button class="tipo-btn td" onclick="gjSelTipo('D',this)">
+          <span class="tbt-label">🧾 Tipo D</span>
+          <span class="tbt-sub">Ingreso devengado no cobrado</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="step2-area" style="display:none;">
+      <div class="step-title">Paso 2 — Selecciona la cuenta del DEBE y la del HABER</div>
+      <div class="cuentas-section">
+        <span class="cs-label d">← DEBE (¿qué cuenta se carga?)</span>
+        <div class="cuenta-chips" id="debe-chips"></div>
+      </div>
+      <div class="cuentas-section" style="margin-top:12px;">
+        <span class="cs-label h">HABER (¿qué cuenta se abona?) →</span>
+        <div class="cuenta-chips" id="haber-chips"></div>
+      </div>
+      <button class="verify-btn" id="verify-btn" onclick="gjVerify()" disabled>✅ Verificar asiento</button>
+    </div>
+
+    <div class="gj-feedback" id="gj-feedback"></div>
+    <button class="gj-next-btn" id="gj-next-btn" onclick="gjNext()">▶ Siguiente situación</button>
+
+    <div class="live-score" style="margin-top:14px;">
+      <div class="ls-item cor"><strong id="ls-cor">0</strong><span>✅ Correctas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item err"><strong id="ls-err">0</strong><span>❌ Incorrectas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item"><strong id="ls-rem">10</strong><span>Restantes</span></div>
+    </div>
+  </div>
+
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-emoji" id="r-emoji"></div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div>
+    <div class="r-msg"   id="r-msg"></div>
+    <div class="r-stats" id="r-stats"></div>
+    <button class="retry-btn" onclick="gjInit()">🔄 Nuevo intento</button>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+function showTab(n, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  btn.classList.add('active');
+  if (n === 'constructor') loadConstructor('A', document.querySelector('.sel-btn.ta'));
+}
+
+// ─── CONCEPTO: navegar a tipo ───
+function goToTipo(letter) {
+  showTab('tipos', document.querySelectorAll('.tab-btn')[1]);
+  showTipo(letter, document.querySelector(`.tnav-btn.t${letter.toLowerCase()}`));
+}
+
+// ─── TIPOS NAV ───
+function showTipo(letter, btn) {
+  document.querySelectorAll('.tipo-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tipo-' + letter).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ─── CONSTRUCTOR DATA ───
+const constructorData = {
+  A: {
+    color: 'var(--ta)', label: '💳 Tipo A — Seguro Pagado por Adelantado',
+    desc: 'Ferretería "El Maestro" pagó L 6,000 el 1 de enero por seguro Seguros Continental (6 meses). Al 31 de enero se debe ajustar 1 mes consumido.',
+    steps: [
+      { title: 'Identificar el período cubierto', text: 'L 6,000 ÷ 6 meses = L 1,000 por mes. En enero se consumió 1 mes = L 1,000 de gasto real.' },
+      { title: 'Registrar el asiento original (1 enero)', text: 'DEBE: Seguro Pagado por Adelantado L 6,000 / HABER: Caja y Bancos L 6,000. El prepago nace como activo.' },
+      { title: 'Registrar el ajuste (31 enero)', text: 'DEBE: Gasto de Seguro L 1,000 / HABER: Seguro Pagado por Adelantado L 1,000. Se convierte el activo en gasto.' },
+      { title: 'Verificar el efecto', text: 'Activo baja: L 6,000 → L 5,000. Gasto de Seguro: L 1,000 aparece en el Estado de Resultados.' },
+    ],
+    before: [
+      { cuenta: '💳 Seguro Pagado x Adelantado', val: 'L 6,000', highlight: false },
+      { cuenta: '📉 Gasto de Seguro', val: '— (no existe)', highlight: false },
+    ],
+    after: [
+      { cuenta: '💳 Seguro Pagado x Adelantado', val: 'L 5,000', highlight: true },
+      { cuenta: '📉 Gasto de Seguro', val: 'L 1,000', highlight: true },
+    ],
+    util: { before: 'Mayor (no hay gasto)', after: 'Menor (−L 1,000 en gastos)' },
+  },
+  B: {
+    color: 'var(--tb)', label: '🏦 Tipo B — Alquiler Cobrado por Adelantado',
+    desc: 'La ferretería cobró L 4,800 el 1 de octubre por alquiler de bodega por 4 meses (oct–ene). Al 31 de octubre se ajusta 1 mes ganado.',
+    steps: [
+      { title: 'Identificar el período de servicio', text: 'L 4,800 ÷ 4 meses = L 1,200 por mes. En octubre se prestó 1 mes = L 1,200 de ingreso real.' },
+      { title: 'Registrar el asiento original (1 octubre)', text: 'DEBE: Caja y Bancos L 4,800 / HABER: Alquiler Cobrado x Adelantado L 4,800. El cobro nace como pasivo.' },
+      { title: 'Registrar el ajuste (31 octubre)', text: 'DEBE: Alquiler Cobrado x Adelantado L 1,200 / HABER: Ingresos por Alquiler L 1,200. Se convierte el pasivo en ingreso.' },
+      { title: 'Verificar el efecto', text: 'Pasivo baja: L 4,800 → L 3,600. Ingreso por Alquiler: L 1,200 aparece en el Estado de Resultados.' },
+    ],
+    before: [
+      { cuenta: '🏦 Alquiler Cobrado x Adelantado (Pasivo)', val: 'L 4,800', highlight: false },
+      { cuenta: '📈 Ingresos por Alquiler', val: '— (no existe)', highlight: false },
+    ],
+    after: [
+      { cuenta: '🏦 Alquiler Cobrado x Adelantado (Pasivo)', val: 'L 3,600', highlight: true },
+      { cuenta: '📈 Ingresos por Alquiler', val: 'L 1,200', highlight: true },
+    ],
+    util: { before: 'Menor (ingreso no reconocido)', after: 'Mayor (+L 1,200 en ingresos)' },
+  },
+  C: {
+    color: 'var(--tc)', label: '👷 Tipo C — Sueldos Devengados No Pagados',
+    desc: '3 empleados × L 900/día. Al 31 de julio, los últimos 3 días laborados (L 8,100) no se pagaron. Se deben reconocer como gasto del período.',
+    steps: [
+      { title: 'Calcular el gasto devengado', text: '3 empleados × L 900/día × 3 días = L 8,100. Este monto es gasto del período aunque se pagará después.' },
+      { title: 'No hay asiento original', text: 'A diferencia del Tipo A y B, aquí no hubo movimiento de efectivo previo. El ajuste crea todo desde cero.' },
+      { title: 'Registrar el ajuste (31 julio)', text: 'DEBE: Gasto de Sueldos L 8,100 / HABER: Sueldos por Pagar L 8,100. Se reconoce gasto y deuda simultáneamente.' },
+      { title: 'Verificar el efecto', text: 'Nuevo Pasivo: Sueldos por Pagar L 8,100 en Balance. Gasto de Sueldos aumenta L 8,100 en Estado de Resultados.' },
+    ],
+    before: [
+      { cuenta: '👷 Gasto de Sueldos', val: 'L 5,000 (solo pagados)', highlight: false },
+      { cuenta: '📋 Sueldos por Pagar', val: '— (no existe)', highlight: false },
+    ],
+    after: [
+      { cuenta: '👷 Gasto de Sueldos', val: 'L 13,100 (+L 8,100)', highlight: true },
+      { cuenta: '📋 Sueldos por Pagar', val: 'L 8,100', highlight: true },
+    ],
+    util: { before: 'Mayor (gasto subestimado)', after: 'Menor (−L 8,100 en gastos adicionales)' },
+  },
+  D: {
+    color: 'var(--td)', label: '🧾 Tipo D — Ingreso de Servicio Devengado',
+    desc: 'La ferretería prestó un servicio de instalación el 28 de julio por L 3,500. La factura se emite en agosto, pero el ingreso es de julio.',
+    steps: [
+      { title: 'Identificar el ingreso devengado', text: 'El servicio fue prestado el 28 de julio. Según el principio de devengo, el ingreso pertenece a julio aunque se facture después.' },
+      { title: 'No hay asiento original', text: 'No hubo cobro ni factura en julio. El ajuste crea el derecho a cobrar y el ingreso simultáneamente.' },
+      { title: 'Registrar el ajuste (31 julio)', text: 'DEBE: Ingresos por Cobrar L 3,500 / HABER: Ingresos por Servicios L 3,500. Se reconoce el activo y el ingreso.' },
+      { title: 'Verificar el efecto', text: 'Nuevo Activo: Ingresos por Cobrar L 3,500 en Balance. Ingresos por Servicios aumenta en Estado de Resultados.' },
+    ],
+    before: [
+      { cuenta: '🧾 Ingresos por Cobrar', val: '— (no existe)', highlight: false },
+      { cuenta: '📈 Ingresos por Servicios', val: '— (no existe)', highlight: false },
+    ],
+    after: [
+      { cuenta: '🧾 Ingresos por Cobrar', val: 'L 3,500', highlight: true },
+      { cuenta: '📈 Ingresos por Servicios', val: 'L 3,500', highlight: true },
+    ],
+    util: { before: 'Menor (ingreso no reconocido)', after: 'Mayor (+L 3,500 en ingresos)' },
+  },
+};
+
+let constructorStep = 0;
+let activeConstructor = 'A';
+
+function loadConstructor(letter, btn) {
+  activeConstructor = letter;
+  constructorStep = 0;
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const d = constructorData[letter];
+  const stepsHTML = d.steps.map((s, i) => `
+    <div class="step-item" id="cstep-${i}">
+      <div class="si-num">${i + 1}</div>
+      <div class="si-text"><strong>${s.title}</strong><span>${s.text}</span></div>
+    </div>`).join('');
+  const beforeRows = d.before.map(r => `
+    <div class="comp-row${r.highlight ? ' highlight' : ''}">
+      <span>${r.cuenta}</span><span>${r.val}</span>
+    </div>`).join('');
+  const afterRows = d.after.map(r => `
+    <div class="comp-row${r.highlight ? ' highlight' : ''}">
+      <span>${r.cuenta}</span><span>${r.val}</span>
+    </div>`).join('');
+  document.getElementById('constructor-content').innerHTML = `
+    <div class="constructor-panel active">
+      <div class="cp-top" style="background:${d.color};">
+        <div><h3>${d.label}</h3><p>${d.desc}</p></div>
+      </div>
+      <div class="cp-body">
+        <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:12px;">Pasos del ajuste — toca "Siguiente paso" para avanzar</div>
+        <div class="steps-list">${stepsHTML}</div>
+        <button class="anim-btn" id="cstep-btn" onclick="nextConstructorStep()">▶ Siguiente paso</button>
+        <div class="comp-layout" style="margin-top:20px;">
+          <div class="comp-card">
+            <div class="comp-card-head" style="background:#6b7684;">❌ Antes del ajuste</div>
+            ${beforeRows}
+            <div style="padding:9px 14px;font-size:.78rem;color:#9aa3ad;border-top:1px solid #edf0f4;">Utilidad: ${d.util.before}</div>
+          </div>
+          <div class="comp-card">
+            <div class="comp-card-head" style="background:${d.color};">✅ Después del ajuste</div>
+            ${afterRows}
+            <div style="padding:9px 14px;font-size:.78rem;font-weight:700;border-top:2px solid currentColor;" style="color:${d.color}">Utilidad: ${d.util.after}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function nextConstructorStep() {
+  const d = constructorData[activeConstructor];
+  if (constructorStep < d.steps.length) {
+    const el = document.getElementById('cstep-' + constructorStep);
+    if (el) el.classList.add('show');
+    constructorStep++;
+  }
+  if (constructorStep >= d.steps.length) {
+    const btn = document.getElementById('cstep-btn');
+    if (btn) { btn.textContent = '✅ Ajuste completo — selecciona otro tipo'; btn.disabled = true; }
+  }
+}
+
+// ─── MINI-JUEGO DATA ───
+const gjQuestions = [
+  {
+    icon:'💳', text:'La ferretería paga L 12,000 el 1 de marzo por 6 meses de publicidad en Radio América. Al 31 de marzo, ¿cuánto es gasto real?', amount:'L 2,000 por mes consumido',
+    tipo:'A', tipoLabel:'Tipo A — Gasto Prepagado',
+    debeCorrect:'Gasto de Publicidad', haberCorrect:'Publicidad Pagada x Adelantado',
+    debeOpts:['Gasto de Publicidad','Publicidad Pagada x Adelantado','Caja y Bancos','Ingresos por Publicidad'],
+    haberOpts:['Publicidad Pagada x Adelantado','Gasto de Publicidad','Cuentas por Pagar','Capital Social'],
+    why:'Tipo A: la parte consumida del prepago pasa a GASTO (Debe). El activo prepagado DISMINUYE (Haber).'
+  },
+  {
+    icon:'🏦', text:'Un cliente paga L 9,000 en noviembre por 3 meses de consultoría (nov, dic, ene). Al 30 de noviembre, ¿cuánto es ingreso real?', amount:'L 3,000 por mes prestado',
+    tipo:'B', tipoLabel:'Tipo B — Ingreso Diferido',
+    debeCorrect:'Consultoría Cobrada x Adelantado', haberCorrect:'Ingresos por Consultoría',
+    debeOpts:['Consultoría Cobrada x Adelantado','Ingresos por Consultoría','Caja y Bancos','Cuentas por Cobrar'],
+    haberOpts:['Ingresos por Consultoría','Consultoría Cobrada x Adelantado','Capital Social','Gasto de Servicios'],
+    why:'Tipo B: el pasivo diferido DISMINUYE (Debe) a medida que se presta el servicio. El INGRESO se reconoce (Haber).'
+  },
+  {
+    icon:'👷', text:'Al 31 de agosto, la ferretería debe 5 días de sueldos a 2 empleados. Cada empleado gana L 800 diarios. No se ha pagado aún.', amount:'L 8,000 devengados sin pagar',
+    tipo:'C', tipoLabel:'Tipo C — Gasto Acumulado',
+    debeCorrect:'Gasto de Sueldos', haberCorrect:'Sueldos por Pagar',
+    debeOpts:['Gasto de Sueldos','Sueldos por Pagar','Caja y Bancos','Capital Social'],
+    haberOpts:['Sueldos por Pagar','Gasto de Sueldos','Ingresos por Servicios','Caja y Bancos'],
+    why:'Tipo C: el GASTO se reconoce aunque no se pague (Debe). Se crea el PASIVO "Sueldos por Pagar" (Haber).'
+  },
+  {
+    icon:'🧾', text:'La ferretería instaló tuberías el 29 de julio por L 4,500. El cliente firmará el contrato en agosto y pagará entonces. El trabajo ya está hecho.', amount:'L 4,500 devengados sin cobrar',
+    tipo:'D', tipoLabel:'Tipo D — Ingreso Acumulado',
+    debeCorrect:'Ingresos por Cobrar', haberCorrect:'Ingresos por Servicios',
+    debeOpts:['Ingresos por Cobrar','Ingresos por Servicios','Caja y Bancos','Gasto de Sueldos'],
+    haberOpts:['Ingresos por Servicios','Ingresos por Cobrar','Cuentas por Pagar','Capital Social'],
+    why:'Tipo D: se crea el ACTIVO "Ingresos por Cobrar" (Debe). El INGRESO se reconoce en el período del servicio (Haber).'
+  },
+  {
+    icon:'💳', text:'El 1 de septiembre se pagan L 3,600 por 12 meses de suscripción a un software contable. Al 30 de septiembre, ¿cuánto es gasto?', amount:'L 300 por mes consumido',
+    tipo:'A', tipoLabel:'Tipo A — Gasto Prepagado',
+    debeCorrect:'Gasto de Software', haberCorrect:'Software Pagado x Adelantado',
+    debeOpts:['Gasto de Software','Software Pagado x Adelantado','Caja y Bancos','Capital Social'],
+    haberOpts:['Software Pagado x Adelantado','Gasto de Software','Ingresos por Servicios','Cuentas por Pagar'],
+    why:'Tipo A: 1 mes consumido de 12 = L 300 pasa a GASTO (Debe). El activo prepagado baja L 300 (Haber).'
+  },
+  {
+    icon:'🏦', text:'Un distribuidor paga L 6,000 el 1 de octubre por arrendamiento de equipo de la ferretería durante 5 meses. Al 31 de octubre hay 4 meses pendientes de servicio.', amount:'L 1,200 ingreso del mes',
+    tipo:'B', tipoLabel:'Tipo B — Ingreso Diferido',
+    debeCorrect:'Arrendamiento Cobrado x Adelantado', haberCorrect:'Ingresos por Arrendamiento',
+    debeOpts:['Arrendamiento Cobrado x Adelantado','Ingresos por Arrendamiento','Caja y Bancos','Gasto de Alquiler'],
+    haberOpts:['Ingresos por Arrendamiento','Arrendamiento Cobrado x Adelantado','Cuentas por Pagar','Capital Social'],
+    why:'Tipo B: el pasivo disminuye (Debe) al prestar 1 mes de servicio. El ingreso del mes se reconoce (Haber).'
+  },
+  {
+    icon:'👷', text:'Al cierre de octubre, el contador calcula que la empresa debe L 1,500 de intereses sobre un préstamo del Banco de Honduras, S.A.. El pago de intereses es en noviembre.', amount:'L 1,500 intereses devengados',
+    tipo:'C', tipoLabel:'Tipo C — Gasto Acumulado',
+    debeCorrect:'Gasto de Intereses', haberCorrect:'Intereses por Pagar',
+    debeOpts:['Gasto de Intereses','Intereses por Pagar','Caja y Bancos','Préstamo Bancario'],
+    haberOpts:['Intereses por Pagar','Gasto de Intereses','Ingresos Financieros','Capital Social'],
+    why:'Tipo C: el GASTO de intereses pertenece a octubre aunque se pague en noviembre (Debe). Se crea el pasivo (Haber).'
+  },
+  {
+    icon:'🧾', text:'En diciembre, la ferretería terminó de construir una bodega para un cliente por L 15,000. El cliente pagará en enero. La obra está entregada.', amount:'L 15,000 ingreso devengado',
+    tipo:'D', tipoLabel:'Tipo D — Ingreso Acumulado',
+    debeCorrect:'Ingresos por Cobrar', haberCorrect:'Ingresos por Construcción',
+    debeOpts:['Ingresos por Cobrar','Ingresos por Construcción','Caja y Bancos','Gasto de Materiales'],
+    haberOpts:['Ingresos por Construcción','Ingresos por Cobrar','Cuentas por Pagar','Capital Social'],
+    why:'Tipo D: la obra fue entregada en diciembre — el ingreso es de diciembre (principio de devengo). ACTIVO (Debe) + INGRESO (Haber).'
+  },
+  {
+    icon:'💳', text:'La ferretería pagó L 2,400 el 1 de julio por 4 meses de seguro vehicular del camión de reparto (julio–octubre). Al 31 de julio, ¿cuánto es gasto?', amount:'L 600 por mes consumido',
+    tipo:'A', tipoLabel:'Tipo A — Gasto Prepagado',
+    debeCorrect:'Gasto de Seguro Vehículo', haberCorrect:'Seguro Vehicular Prepagado',
+    debeOpts:['Gasto de Seguro Vehículo','Seguro Vehicular Prepagado','Caja y Bancos','Ingreso por Seguros'],
+    haberOpts:['Seguro Vehicular Prepagado','Gasto de Seguro Vehículo','Capital Social','Ingresos por Servicios'],
+    why:'Tipo A: 1 mes de 4 consumido = L 600 pasa a GASTO (Debe). El activo prepagado baja en L 600 (Haber).'
+  },
+  {
+    icon:'👷', text:'Al 31 de marzo, la ferretería adeuda al contador externo L 3,500 por servicios de contabilidad de marzo. La factura llegará en abril.', amount:'L 3,500 honorarios devengados',
+    tipo:'C', tipoLabel:'Tipo C — Gasto Acumulado',
+    debeCorrect:'Gasto de Honorarios', haberCorrect:'Honorarios por Pagar',
+    debeOpts:['Gasto de Honorarios','Honorarios por Pagar','Caja y Bancos','Ingresos por Servicios'],
+    haberOpts:['Honorarios por Pagar','Gasto de Honorarios','Capital Social','Cuentas por Cobrar'],
+    why:'Tipo C: el servicio contable fue consumido en marzo (Gasto, Debe). La deuda al contador es un pasivo (Haber).'
+  },
+];
+
+let gjDeck = [], gjIdx = 0, gjCorr = 0, gjErr = 0;
+let gjSelTipoVal = null, gjSelDebeVal = null, gjSelHaberVal = null;
+
+function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
+
+function gjInit() {
+  gjDeck = shuffle(gjQuestions).slice(0, 10);
+  gjIdx = 0; gjCorr = 0; gjErr = 0;
+  document.getElementById('gj-result').style.display = 'none';
+  document.getElementById('gj-area').style.display = 'block';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  updateLive(); updateProg(); gjLoadQ();
+}
+
+function gjLoadQ() {
+  if (gjIdx >= gjDeck.length) { gjEnd(); return; }
+  const q = gjDeck[gjIdx];
+  gjSelTipoVal = null; gjSelDebeVal = null; gjSelHaberVal = null;
+  document.getElementById('gjs-seq').textContent = `Situación ${gjIdx + 1} de ${gjDeck.length}`;
+  document.getElementById('gjs-icon').textContent = q.icon;
+  document.getElementById('gjs-text').textContent = q.text;
+  document.getElementById('gjs-amount').textContent = q.amount;
+  document.getElementById('gj-situation').style.animation = 'none';
+  void document.getElementById('gj-situation').offsetWidth;
+  document.getElementById('gj-situation').style.animation = 'cardIn .3s ease';
+  document.getElementById('step1-area').style.display = 'block';
+  document.getElementById('step2-area').style.display = 'none';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  document.querySelectorAll('.tipo-btn').forEach(b => b.disabled = false);
+}
+
+function gjSelTipo(letter, btn) {
+  gjSelTipoVal = letter;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.disabled = true);
+  const q = gjDeck[gjIdx];
+  // Build step 2 chips
+  const dc = document.getElementById('debe-chips');
+  const hc = document.getElementById('haber-chips');
+  dc.innerHTML = q.debeOpts.map(o => `<button class="cuenta-chip" onclick="gjChipDebe('${o}',this)">${o}</button>`).join('');
+  hc.innerHTML = q.haberOpts.map(o => `<button class="cuenta-chip" onclick="gjChipHaber('${o}',this)">${o}</button>`).join('');
+  document.getElementById('step1-area').style.display = 'none';
+  document.getElementById('step2-area').style.display = 'block';
+  document.getElementById('verify-btn').disabled = true;
+}
+
+function gjChipDebe(val, btn) {
+  gjSelDebeVal = val;
+  document.querySelectorAll('#debe-chips .cuenta-chip').forEach(b => b.classList.remove('sel-d'));
+  btn.classList.add('sel-d');
+  checkReady();
+}
+function gjChipHaber(val, btn) {
+  gjSelHaberVal = val;
+  document.querySelectorAll('#haber-chips .cuenta-chip').forEach(b => b.classList.remove('sel-h'));
+  btn.classList.add('sel-h');
+  checkReady();
+}
+function checkReady() {
+  document.getElementById('verify-btn').disabled = !(gjSelDebeVal && gjSelHaberVal);
+}
+
+function gjVerify() {
+  const q = gjDeck[gjIdx];
+  const tipoOk  = gjSelTipoVal === q.tipo;
+  const debeOk  = gjSelDebeVal === q.debeCorrect;
+  const haberOk = gjSelHaberVal === q.haberCorrect;
+  const allOk   = tipoOk && debeOk && haberOk;
+  if (allOk) gjCorr++; else gjErr++;
+
+  // Mark chips
+  document.querySelectorAll('#debe-chips .cuenta-chip').forEach(b => {
+    if (b.textContent === q.debeCorrect) b.classList.add('correct');
+    else if (b.classList.contains('sel-d') && !debeOk) b.classList.add('wrong');
+    b.disabled = true;
+  });
+  document.querySelectorAll('#haber-chips .cuenta-chip').forEach(b => {
+    if (b.textContent === q.haberCorrect) b.classList.add('correct');
+    else if (b.classList.contains('sel-h') && !haberOk) b.classList.add('wrong');
+    b.disabled = true;
+  });
+
+  const fb = document.getElementById('gj-feedback');
+  fb.className = 'gj-feedback ' + (allOk ? 'ok' : 'bad');
+  const tipoInfo = tipoOk ? '' : ` Era <strong>${q.tipoLabel}</strong>.`;
+  const debeInfo = debeOk ? '' : ` DEBE correcto: <strong>${q.debeCorrect}</strong>.`;
+  const haberInfo = haberOk ? '' : ` HABER correcto: <strong>${q.haberCorrect}</strong>.`;
+  fb.innerHTML = allOk
+    ? `✅ ¡Perfecto! ${q.why}`
+    : `❌ Hay errores.${tipoInfo}${debeInfo}${haberInfo}<br><span style="font-size:.85rem;">${q.why}</span>`;
+
+  document.getElementById('verify-btn').disabled = true;
+  document.getElementById('gj-next-btn').className = 'gj-next-btn show';
+  gjIdx++;
+  updateLive(); updateProg();
+}
+
+function gjNext() { gjLoadQ(); }
+
+function updateLive() {
+  document.getElementById('ls-cor').textContent = gjCorr;
+  document.getElementById('ls-err').textContent = gjErr;
+  document.getElementById('ls-rem').textContent = Math.max(0, gjDeck.length - gjIdx);
+}
+function updateProg() {
+  const pct = gjDeck.length > 0 ? (gjIdx / gjDeck.length * 100) : 0;
+  document.getElementById('gj-prog-fill').style.width = pct + '%';
+  document.getElementById('gj-prog-lbl').textContent = `${gjIdx} / ${gjDeck.length}`;
+}
+
+function gjEnd() {
+  document.getElementById('gj-area').style.display = 'none';
+  const res = document.getElementById('gj-result');
+  res.style.display = 'block';
+  const pct = Math.round(gjCorr / gjDeck.length * 100);
+  document.getElementById('r-emoji').textContent = pct === 100 ? '🏆' : pct >= 70 ? '🎉' : '📚';
+  document.getElementById('r-title').textContent = pct >= 70 ? '¡Dominas los asientos de ajuste!' : 'Sigue practicando los ajustes';
+  document.getElementById('r-score').textContent = `${gjCorr}/${gjDeck.length}`;
+  document.getElementById('r-score').style.color = pct >= 70 ? 'var(--td)' : 'var(--tc)';
+  document.getElementById('r-msg').textContent =
+    pct === 100 ? '¡Perfecto! Identificas correctamente los 4 tipos de ajuste y sus asientos.'
+    : pct >= 70  ? `${pct}% de aciertos. Repasa los tipos que fallaste en la pestaña "Los 4 Tipos".`
+    : pct >= 50  ? `${pct}% de aciertos. Vuelve al Concepto y estudia cada tipo con sus reglas mnemónicas.`
+    :              `${pct}% de aciertos. Los ajustes requieren práctica. Explora el Constructor paso a paso.`;
+  document.getElementById('r-stats').innerHTML = `
+    <div class="r-stat"><strong style="color:var(--td);">${gjCorr}</strong><span>✅ Correctas</span></div>
+    <div class="r-stat"><strong style="color:var(--tc);">${gjErr}</strong><span>❌ Incorrectas</span></div>
+    <div class="r-stat"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  if (pct >= 70) spawnConfetti();
+}
+
+function spawnConfetti() {
+  const bg = document.getElementById('confetti-bg');
+  bg.innerHTML = '';
+  const colors = ['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#8E44AD','#fff','#a8efc1'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const sz = 6 + Math.random() * 8;
+    el.style.cssText = `left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+gjInit();
+loadConstructor('A', document.querySelector('.sel-btn.ta'));
+</script>
+</body>
+</html>

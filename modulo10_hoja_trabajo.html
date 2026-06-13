@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 10 — La Hoja de Trabajo | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --gold:    #F4A811; --gold-lt: #FFF8E0;
+  --dark:    #1B2638; --dark2:  #243044;
+  --bg:      #F0F3F8;
+  --card-r:  14px;
+  --shadow:  0 4px 20px rgba(0,0,0,.10);
+  /* Columnas */
+  --c-bc:    #4B5563; --c-bc-lt:    #F3F4F6;
+  --c-adj:   #7C3AED; --c-adj-lt:   #EDE9FE;
+  --c-bca:   #0D6B8C; --c-bca-lt:   #E0F4FA;
+  --c-er:    #059669; --c-er-lt:    #D1FAE5;
+  --c-bg:    #DC2626; --c-bg-lt:    #FEE2E2;
+  /* Cuentas */
+  --activo:  #0D6B8C; --activo-lt:  #E0F4FA;
+  --pasivo:  #C0392B; --pasivo-lt:  #FDECEA;
+  --patrim:  #1A8A4A; --patrim-lt:  #E4F9ED;
+  --ingreso: #059669; --ingreso-lt: #D1FAE5;
+  --gasto:   #D97706; --gasto-lt:   #FEF3C7;
+  --debe:    #0D6B8C; --haber:      #1A8A4A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+header{background:var(--dark);color:#fff;padding:16px 24px;display:flex;align-items:center;gap:14px;border-bottom:4px solid var(--gold);}
+.app-badge{background:var(--gold);color:var(--dark);font-weight:900;font-size:.72rem;padding:4px 12px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+header h1{font-size:1.35rem;font-weight:900;}
+header p{font-size:.83rem;color:#b0b8c4;margin-top:2px;}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:2px solid #e0e4ea;padding:0 18px;gap:4px;overflow-x:auto;}
+.tab-btn{padding:15px 20px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;color:#6b7684;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab-btn.active{color:var(--dark);border-bottom-color:var(--gold);}
+
+.section{display:none;padding:22px 16px 64px;max-width:1200px;margin:0 auto;}
+.section.active{display:block;}
+
+/* SHARED */
+.intro-banner{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:14px;}
+.intro-banner .ib-icon{font-size:2.2rem;flex-shrink:0;}
+.intro-banner h3{font-size:1.05rem;font-weight:900;margin-bottom:4px;}
+.intro-banner p{font-size:.87rem;color:#b0b8c4;line-height:1.6;}
+.note-box{background:var(--gold-lt);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:11px 15px;font-size:.84rem;color:#6b3a00;line-height:1.6;margin-bottom:14px;}
+
+/* ══ TAB 1: CONCEPTO ══ */
+.ciclo-strip{display:flex;align-items:center;gap:0;overflow-x:auto;background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:18px 16px;margin-bottom:18px;}
+.ciclo-box{border-radius:10px;padding:12px 14px;text-align:center;min-width:110px;flex-shrink:0;}
+.ciclo-box .cb-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
+.ciclo-box .cb-name{font-size:.78rem;font-weight:700;display:block;}
+.ciclo-box .cb-sub{font-size:.68rem;color:#9aa3ad;}
+.ciclo-box.highlight{outline:3px solid var(--gold);}
+.ciclo-arrow{font-size:1.4rem;color:#c0c8d4;padding:0 4px;flex-shrink:0;}
+
+/* 10-column map */
+.col-map{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:700px){.col-map{grid-template-columns:repeat(2,1fr);}}
+.col-pair{border-radius:var(--card-r);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s;user-select:none;}
+.col-pair:hover{transform:translateY(-3px);}
+.cp-header{padding:12px 14px;color:#fff;text-align:center;}
+.cp-header .cph-num{font-size:1.4rem;font-weight:900;opacity:.7;}
+.cp-header .cph-name{font-size:.85rem;font-weight:900;display:block;margin-top:2px;}
+.cp-body{background:#fff;padding:12px 14px;}
+.cp-body p{font-size:.78rem;color:#6b7684;line-height:1.5;margin-bottom:8px;}
+.cp-cols{display:flex;gap:6px;}
+.cp-col{flex:1;border-radius:6px;padding:6px;text-align:center;font-size:.72rem;font-weight:700;}
+.cp-col.d{background:rgba(13,107,140,.12);color:var(--debe);}
+.cp-col.h{background:rgba(26,138,74,.12);color:var(--haber);}
+
+/* Detail panel */
+.col-detail{background:#fff;border-radius:var(--card-r);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px;display:none;animation:fadeDown .3s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.col-detail.show{display:block;}
+.col-detail h4{font-size:1rem;font-weight:900;margin-bottom:8px;}
+.col-detail p{font-size:.88rem;color:#3d4a5c;line-height:1.6;margin-bottom:8px;}
+.col-detail .cd-rule{border-radius:8px;padding:10px 14px;font-size:.84rem;line-height:1.5;}
+
+/* ══ TAB 2: SIMULACIÓN ══ */
+/* Steps */
+.sim-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.sim-step-btn{padding:10px 16px;border-radius:10px;border:2px solid #dce0e8;background:#fff;font-family:'Nunito',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;color:#6b7684;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.sim-step-btn.done{border-color:var(--ingreso);background:var(--ingreso-lt);color:var(--ingreso);}
+.sim-step-btn.active{border-color:var(--gold);background:var(--gold-lt);color:#6b3a00;}
+
+/* THE SPREADSHEET */
+.spreadsheet-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:18px;}
+.spreadsheet{border-collapse:collapse;font-size:.78rem;min-width:900px;width:100%;}
+/* Column group headers */
+.spreadsheet .cg-header{padding:8px 4px;text-align:center;color:#fff;font-weight:900;font-size:.8rem;}
+.spreadsheet .cg-bc{background:var(--c-bc);}
+.spreadsheet .cg-adj{background:var(--c-adj);}
+.spreadsheet .cg-bca{background:var(--c-bca);}
+.spreadsheet .cg-er{background:var(--c-er);}
+.spreadsheet .cg-bg{background:var(--c-bg);}
+/* Sub-headers D/H */
+.spreadsheet .sh{padding:6px 8px;text-align:center;font-weight:700;font-size:.72rem;}
+.spreadsheet .sh-bc{background:var(--c-bc-lt);color:var(--c-bc);}
+.spreadsheet .sh-adj{background:var(--c-adj-lt);color:var(--c-adj);}
+.spreadsheet .sh-bca{background:var(--c-bca-lt);color:var(--c-bca);}
+.spreadsheet .sh-er{background:var(--c-er-lt);color:var(--c-er);}
+.spreadsheet .sh-bg{background:var(--c-bg-lt);color:var(--c-bg);}
+/* Account name col */
+.spreadsheet .acc-col{background:var(--dark);color:#fff;padding:7px 10px;font-weight:700;font-size:.78rem;white-space:nowrap;min-width:160px;}
+.spreadsheet .acc-col.activo-r{color:#93d8f0;}
+.spreadsheet .acc-col.pasivo-r{color:#f5b3ae;}
+.spreadsheet .acc-col.patrim-r{color:#a8efc1;}
+.spreadsheet .acc-col.ingreso-r{color:#6ee7b7;}
+.spreadsheet .acc-col.gasto-r{color:#fcd34d;}
+/* Data cells */
+.spreadsheet td.cell{padding:6px 8px;text-align:right;border-bottom:1px solid #e8ebef;font-family:'Source Code Pro',monospace;font-size:.78rem;min-width:78px;transition:background .3s;}
+.spreadsheet td.cell.filled{font-weight:700;}
+.spreadsheet td.cell.bc-d{background:var(--c-bc-lt);}
+.spreadsheet td.cell.bc-h{background:var(--c-bc-lt);}
+.spreadsheet td.cell.adj-d{background:var(--c-adj-lt);}
+.spreadsheet td.cell.adj-h{background:var(--c-adj-lt);}
+.spreadsheet td.cell.bca-d{background:var(--c-bca-lt);}
+.spreadsheet td.cell.bca-h{background:var(--c-bca-lt);}
+.spreadsheet td.cell.er-d{background:var(--c-er-lt);}
+.spreadsheet td.cell.er-h{background:var(--c-er-lt);}
+.spreadsheet td.cell.bg-d{background:var(--c-bg-lt);}
+.spreadsheet td.cell.bg-h{background:var(--c-bg-lt);}
+.spreadsheet td.cell.empty{color:#d0d5dd;background:#fafafa;}
+.spreadsheet td.cell.input-cell{padding:2px 4px;background:#fff8e0;}
+.spreadsheet td.cell.correct{background:#d1fae5!important;color:var(--ingreso);}
+.spreadsheet td.cell.wrong{background:#fee2e2!important;color:var(--c-bg);}
+.spreadsheet td.cell.highlight-flow{animation:flowPulse .8s ease 2;}
+@keyframes flowPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(.85);}}
+/* Input inside cell */
+.cell-input{border:none;background:transparent;font-family:'Source Code Pro',monospace;font-weight:700;font-size:.78rem;text-align:right;width:70px;color:var(--dark);}
+.cell-input:focus{outline:2px solid var(--gold);border-radius:4px;background:#fff;}
+/* Total row */
+.spreadsheet tr.total-row td{font-weight:900;font-family:'Source Code Pro',monospace;background:var(--dark);color:#fff;padding:8px 8px;border-top:3px solid var(--gold);}
+.spreadsheet tr.total-row td.acc-col{background:var(--dark);color:var(--gold);}
+.spreadsheet tr.total-row td.c-d{color:#93d8f0;}
+.spreadsheet tr.total-row td.c-h{color:#a8efc1;}
+/* Utility row */
+.spreadsheet tr.util-row td{background:#fffbe6;font-weight:900;font-family:'Source Code Pro',monospace;}
+.spreadsheet tr.util-row td.acc-col{background:#fffbe6;color:var(--dark);}
+
+/* Action buttons */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.act-btn{padding:12px 22px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .18s;box-shadow:var(--shadow);}
+.act-btn.primary{background:var(--dark);color:#fff;}
+.act-btn.primary:hover{background:#243044;transform:scale(1.02);}
+.act-btn.purple{background:var(--c-adj);color:#fff;}
+.act-btn.purple:hover{background:#6d28d9;transform:scale(1.02);}
+.act-btn.teal{background:var(--c-bca);color:#fff;}
+.act-btn.teal:hover{transform:scale(1.02);}
+.act-btn.green{background:var(--c-er);color:#fff;}
+.act-btn.green:hover{transform:scale(1.02);}
+.act-btn.red{background:var(--c-bg);color:#fff;}
+.act-btn.red:hover{transform:scale(1.02);}
+.act-btn.gold{background:var(--gold);color:var(--dark);}
+.act-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+
+/* Validation */
+.validation-panel{border-radius:var(--card-r);padding:16px 20px;margin-bottom:14px;animation:popIn .3s ease;display:none;}
+.validation-panel.show{display:block;}
+.validation-panel.ok{background:var(--ingreso-lt);border:2px solid var(--ingreso);}
+.validation-panel.bad{background:var(--pasivo-lt);border:2px solid var(--pasivo);}
+@keyframes popIn{from{transform:scale(.95);opacity:0;}to{transform:scale(1);opacity:1;}}
+.val-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:.88rem;}
+.val-row:last-child{margin-bottom:0;}
+.val-icon{font-size:1.1rem;}
+.val-text{flex:1;font-weight:700;}
+.val-nums{font-family:'Source Code Pro',monospace;font-weight:700;font-size:.85rem;}
+
+/* Utility highlight */
+.util-highlight{background:var(--gold);color:var(--dark);border-radius:10px;padding:12px 16px;text-align:center;margin-bottom:14px;font-weight:900;font-size:.95rem;display:none;}
+.util-highlight.show{display:block;}
+
+/* ══ TAB 3: MINI-JUEGO ══ */
+.gj-header{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:18px 22px;display:flex;align-items:center;gap:14px;margin-bottom:18px;box-shadow:var(--shadow);}
+.gj-header .gh-icon{font-size:2rem;}
+.gj-header h3{font-size:1.02rem;font-weight:900;}
+.gj-header p{font-size:.85rem;color:#b0b8c4;margin-top:2px;}
+
+.gj-prog{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.prog-wrap{flex:1;background:#e0e4ea;border-radius:99px;height:9px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--c-er),var(--c-bg));transition:width .4s;width:0%;}
+.prog-lbl{font-size:.88rem;font-weight:700;color:#6b7684;white-space:nowrap;}
+
+.gj-card{background:var(--dark);color:#fff;border-radius:var(--card-r);padding:22px;text-align:center;box-shadow:var(--shadow);margin-bottom:18px;animation:cardIn .3s ease;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.gjc-seq{font-size:.73rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:6px;}
+.gjc-icon{font-size:2.8rem;display:block;margin-bottom:8px;}
+.gjc-name{font-size:1.3rem;font-weight:900;margin-bottom:4px;}
+.gjc-saldo{font-family:'Source Code Pro',monospace;font-size:1.05rem;color:var(--gold);margin-bottom:6px;}
+.gjc-hint{font-size:.82rem;color:#b0b8c4;}
+
+/* Classification grid */
+.gj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.gj-col-btn{border-radius:12px;border:none;padding:18px 12px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:900;color:#fff;transition:all .18s;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:5px;}
+.gj-col-btn:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.18);}
+.gj-col-btn.er-d{background:var(--c-er);}
+.gj-col-btn.er-h{background:#047857;}
+.gj-col-btn.bg-d{background:var(--c-bg);}
+.gj-col-btn.bg-h{background:#b91c1c;}
+.gj-col-btn .gcb-icon{font-size:1.6rem;}
+.gj-col-btn .gcb-main{font-size:.95rem;}
+.gj-col-btn .gcb-sub{font-size:.72rem;opacity:.8;}
+
+.gj-feedback{border-radius:12px;padding:13px 17px;font-size:.92rem;font-weight:700;display:none;animation:popIn .25s ease;line-height:1.6;margin-bottom:10px;}
+.gj-feedback.ok{background:var(--ingreso-lt);color:var(--ingreso);display:block;}
+.gj-feedback.bad{background:var(--pasivo-lt);color:var(--pasivo);display:block;}
+.gj-next-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--c-bca);color:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;cursor:pointer;transition:all .18s;display:none;margin-bottom:8px;}
+.gj-next-btn.show{display:block;}
+.gj-next-btn:hover{background:#0e5f7a;}
+.live-score{background:#fff;border-radius:10px;padding:11px;display:flex;gap:12px;justify-content:center;align-items:center;box-shadow:var(--shadow);flex-wrap:wrap;}
+.ls-item strong{display:block;font-size:1.4rem;font-weight:900;}
+.ls-item span{font-size:.73rem;color:#6b7684;}
+.ls-item.cor strong{color:var(--ingreso);}
+.ls-item.err strong{color:var(--pasivo);}
+.ls-div{width:1px;height:30px;background:#e0e4ea;}
+
+.gj-result{display:none;background:#fff;border-radius:var(--card-r);padding:32px 24px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.confetti-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.confetti-piece{position:absolute;animation:cFall linear forwards;}
+@keyframes cFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(450px) rotate(720deg);opacity:0;}}
+.r-emoji{font-size:3rem;margin-bottom:8px;}
+.r-title{font-size:1.4rem;font-weight:900;margin-bottom:6px;}
+.r-score{font-size:3.5rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.r-msg{font-size:.95rem;color:#3d4a5c;margin-bottom:18px;}
+.r-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+.r-stat{background:var(--bg);border-radius:10px;padding:10px 16px;}
+.r-stat strong{display:block;font-size:1.3rem;font-weight:900;}
+.r-stat span{font-size:.78rem;color:#6b7684;}
+.retry-btn{padding:13px 36px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.retry-btn:hover{background:#2a3a54;transform:scale(1.02);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 10</div>
+    <h1>Módulo 10: La Hoja de Trabajo</h1>
+    <p>Distribuidora "El Progreso" · Tegucigalpa · Planilla de 10 Columnas</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('concepto',this)">📘 Concepto</button>
+  <button class="tab-btn" onclick="showTab('simulacion',this)">📊 Simulación</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: CONCEPTO ══════════════ -->
+<div id="tab-concepto" class="section active">
+
+  <div class="intro-banner">
+    <span class="ib-icon">📋</span>
+    <div>
+      <h3>La Hoja de Trabajo: el puente entre el Mayor y los Estados Financieros</h3>
+      <p>Es una planilla contable de <strong>10 columnas (5 pares Debe/Haber)</strong> que organiza toda la información del período en un solo lugar. No es un estado financiero oficial — es una herramienta de trabajo que facilita la preparación del Estado de Resultados y el Balance General. El libro de texto la llama también <em>"Estado de Trabajo"</em> o <em>"Hoja de Papel de Trabajo"</em>.</p>
+    </div>
+  </div>
+
+  <!-- Ciclo contable con HT resaltada -->
+  <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:10px;">Posición en el ciclo contable</div>
+  <div class="ciclo-strip">
+    <div class="ciclo-box" style="background:#F3F4F6;">
+      <span class="cb-icon">📒</span>
+      <span class="cb-name">Libro Diario</span>
+      <span class="cb-sub">Asientos</span>
+    </div>
+    <span class="ciclo-arrow">→</span>
+    <div class="ciclo-box" style="background:#F3F4F6;">
+      <span class="cb-icon">📊</span>
+      <span class="cb-name">Libro Mayor</span>
+      <span class="cb-sub">Saldos</span>
+    </div>
+    <span class="ciclo-arrow">→</span>
+    <div class="ciclo-box" style="background:#F3F4F6;">
+      <span class="cb-icon">⚖️</span>
+      <span class="cb-name">BC sin Ajustar</span>
+      <span class="cb-sub">Cols. 1-2</span>
+    </div>
+    <span class="ciclo-arrow">→</span>
+    <div class="ciclo-box highlight" style="background:var(--gold-lt);border:2px solid var(--gold);">
+      <span class="cb-icon">📋</span>
+      <span class="cb-name" style="color:var(--dark);">Hoja de Trabajo</span>
+      <span class="cb-sub" style="color:#a07000;">10 columnas ← AQUÍ</span>
+    </div>
+    <span class="ciclo-arrow">→</span>
+    <div class="ciclo-box" style="background:#F3F4F6;">
+      <span class="cb-icon">📈</span>
+      <span class="cb-name">Edo. Resultados</span>
+      <span class="cb-sub">Cols. 7-8</span>
+    </div>
+    <span class="ciclo-arrow">→</span>
+    <div class="ciclo-box" style="background:#F3F4F6;">
+      <span class="cb-icon">🏛️</span>
+      <span class="cb-name">Balance General</span>
+      <span class="cb-sub">Cols. 9-10</span>
+    </div>
+  </div>
+
+  <div class="note-box">📖 <strong>Referencia libro de texto Contabilidad Interactiva:</strong> La Hoja de Trabajo integra los 5 momentos del cierre contable en un solo documento. Permite detectar errores antes de elaborar los estados financieros definitivos. Su uso es pre-computacional — hoy los sistemas contables la generan automáticamente.</div>
+
+  <!-- Las 10 columnas -->
+  <div style="font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9aa3ad;margin-bottom:12px;">Las 5 secciones (10 columnas) — toca cada par para ver su función</div>
+  <div class="col-map">
+    <div class="col-pair" onclick="showColDetail('bc')">
+      <div class="cp-header" style="background:var(--c-bc);">
+        <span class="cph-num">1 - 2</span>
+        <span class="cph-name">Balance de Comprobación</span>
+      </div>
+      <div class="cp-body">
+        <p>Los saldos del Mayor <em>antes</em> de los asientos de ajuste. Punto de partida.</p>
+        <div class="cp-cols">
+          <div class="cp-col d">Col. 1<br>Debe</div>
+          <div class="cp-col h">Col. 2<br>Haber</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-pair" onclick="showColDetail('adj')">
+      <div class="cp-header" style="background:var(--c-adj);">
+        <span class="cph-num">3 - 4</span>
+        <span class="cph-name">Ajustes</span>
+      </div>
+      <div class="cp-body">
+        <p>Los asientos de ajuste del período (prepagados, diferidos, devengados).</p>
+        <div class="cp-cols">
+          <div class="cp-col d" style="background:rgba(124,58,237,.12);color:var(--c-adj);">Col. 3<br>Debe</div>
+          <div class="cp-col h" style="background:rgba(124,58,237,.12);color:var(--c-adj);">Col. 4<br>Haber</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-pair" onclick="showColDetail('bca')">
+      <div class="cp-header" style="background:var(--c-bca);">
+        <span class="cph-num">5 - 6</span>
+        <span class="cph-name">BC Ajustado</span>
+      </div>
+      <div class="cp-body">
+        <p>Resultado de combinar las columnas 1-4. Base para elaborar los EEFF.</p>
+        <div class="cp-cols">
+          <div class="cp-col d">Col. 5<br>Debe</div>
+          <div class="cp-col h">Col. 6<br>Haber</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-pair" onclick="showColDetail('er')">
+      <div class="cp-header" style="background:var(--c-er);">
+        <span class="cph-num">7 - 8</span>
+        <span class="cph-name">Estado de Resultados</span>
+      </div>
+      <div class="cp-body">
+        <p>Solo cuentas <strong>temporales</strong>: Ingresos (col.8-Haber) y Gastos (col.7-Debe).</p>
+        <div class="cp-cols">
+          <div class="cp-col d" style="background:rgba(5,150,105,.12);color:var(--c-er);">Col. 7<br>Gastos</div>
+          <div class="cp-col h" style="background:rgba(5,150,105,.12);color:var(--c-er);">Col. 8<br>Ingresos</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-pair" onclick="showColDetail('bg')">
+      <div class="cp-header" style="background:var(--c-bg);">
+        <span class="cph-num">9 - 10</span>
+        <span class="cph-name">Balance General</span>
+      </div>
+      <div class="cp-body">
+        <p>Solo cuentas <strong>permanentes</strong>: Activos (col.9-Debe), Pasivos y Patrimonio (col.10-Haber).</p>
+        <div class="cp-cols">
+          <div class="cp-col d" style="background:rgba(220,38,38,.12);color:var(--c-bg);">Col. 9<br>Activos</div>
+          <div class="cp-col h" style="background:rgba(220,38,38,.12);color:var(--c-bg);">Col. 10<br>Pas+Pat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-detail" id="detail-bc">
+    <h4 style="color:var(--c-bc);">📋 Columnas 1-2: Balance de Comprobación (Sin Ajustar)</h4>
+    <p>Se toman directamente del Libro Mayor. Contiene <em>todas</em> las cuentas: activos, pasivos, patrimonio, ingresos y gastos. La suma de la columna 1 (Debe) debe ser igual a la suma de la columna 2 (Haber). Si no cuadra, hay un error en el Mayor.</p>
+    <div class="cd-rule" style="background:var(--c-bc-lt);color:var(--c-bc);">🔑 Regla: Σ Col.1 = Σ Col.2 · Si no cuadra → hay error en el Mayor que debe corregirse antes de continuar.</div>
+  </div>
+  <div class="col-detail" id="detail-adj">
+    <h4 style="color:var(--c-adj);">🔧 Columnas 3-4: Asientos de Ajuste</h4>
+    <p>Se transcriben aquí los asientos de ajuste del Módulo 9 (prepagados, diferidos, devengados). Cada ajuste afecta mínimo dos cuentas: una al Debe (col.3) y otra al Haber (col.4). Una misma cuenta puede aparecer en múltiples ajustes.</p>
+    <div class="cd-rule" style="background:var(--c-adj-lt);color:var(--c-adj);">🔑 Regla: Σ Col.3 = Σ Col.4 · Los ajustes también deben cuadrar (Partida Doble).</div>
+  </div>
+  <div class="col-detail" id="detail-bca">
+    <h4 style="color:var(--c-bca);">⚖️ Columnas 5-6: Balance de Comprobación Ajustado</h4>
+    <p>Se calcula combinando las columnas 1-4 fila por fila. Para cuentas de naturaleza deudora: Col.5 = Col.1 + Col.3 − Col.4. Para cuentas de naturaleza acreedora: Col.6 = Col.2 + Col.4 − Col.3. Este es el BC "correcto" que refleja la realidad económica del período.</p>
+    <div class="cd-rule" style="background:var(--c-bca-lt);color:var(--c-bca);">🔑 Regla: Σ Col.5 = Σ Col.6 · Los estados financieros se elaboran desde este par de columnas.</div>
+  </div>
+  <div class="col-detail" id="detail-er">
+    <h4 style="color:var(--c-er);">📈 Columnas 7-8: Estado de Resultados</h4>
+    <p>Solo viajan aquí las cuentas <strong>temporales</strong>: Gastos van a Col.7 (Debe) e Ingresos van a Col.8 (Haber). Si Σ Col.8 > Σ Col.7 → Utilidad del período (va a Col.7 para cuadrar). Si Σ Col.7 > Σ Col.8 → Pérdida del período (va a Col.8 para cuadrar).</p>
+    <div class="cd-rule" style="background:var(--c-er-lt);color:var(--c-er);">🔑 Regla: La Utilidad/Pérdida es el valor que hace que Σ Col.7 = Σ Col.8. Esa misma cifra "viaja" luego a las columnas 9-10 del Balance General.</div>
+  </div>
+  <div class="col-detail" id="detail-bg">
+    <h4 style="color:var(--c-bg);">🏛️ Columnas 9-10: Balance General</h4>
+    <p>Solo viajan aquí las cuentas <strong>permanentes</strong>: Activos → Col.9 (Debe). Pasivos y Patrimonio → Col.10 (Haber). La Utilidad del período también va a Col.10 (aumenta el Patrimonio). La Pérdida va a Col.9 (disminuye el Patrimonio).</p>
+    <div class="cd-rule" style="background:var(--c-bg-lt);color:var(--c-bg);">🔑 Regla: Σ Col.9 = Σ Col.10 · Si no cuadra → revisar que la Utilidad/Pérdida fue correctamente trasladada desde las columnas 7-8.</div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2: SIMULACIÓN ══════════════ -->
+<div id="tab-simulacion" class="section">
+
+  <div class="intro-banner">
+    <span class="ib-icon">🏪</span>
+    <div>
+      <h3>Distribuidora "El Progreso" — Tegucigalpa, Honduras</h3>
+      <p>Completa la Hoja de Trabajo del período junio 2025. Las columnas 1-2 (BC sin ajustar) ya están llenas. Sigue los pasos para completar las 10 columnas.</p>
+    </div>
+  </div>
+
+  <div class="sim-steps" id="sim-steps">
+    <div class="sim-step-btn active" id="sstep-1">① Ver BC sin ajustar</div>
+    <div class="sim-step-btn" id="sstep-2">② Ingresar ajustes</div>
+    <div class="sim-step-btn" id="sstep-3">③ Calcular BC ajustado</div>
+    <div class="sim-step-btn" id="sstep-4">④ Clasificar en ER y BG</div>
+    <div class="sim-step-btn" id="sstep-5">⑤ Validar y ver resultado</div>
+  </div>
+
+  <div id="sim-instruction" class="note-box">
+    📌 <strong>Paso 1:</strong> Observa las columnas 1 y 2 — el Balance de Comprobación sin ajustar tomado del Libro Mayor de la Distribuidora "El Progreso" al 30 de junio de 2025.
+  </div>
+
+  <div class="action-row" id="action-row">
+    <button class="act-btn primary" id="btn-step2" onclick="activateStep(2)">② Ingresar ajustes →</button>
+    <button class="act-btn purple" id="btn-step3" onclick="calcBCA()" disabled>③ Calcular BC Ajustado</button>
+    <button class="act-btn green"  id="btn-step4" onclick="classifyAll()" disabled>④ Clasificar cuentas</button>
+    <button class="act-btn gold"   id="btn-step5" onclick="validateAll()" disabled>⑤ Validar hoja</button>
+  </div>
+
+  <div class="spreadsheet-wrap">
+    <table class="spreadsheet" id="spreadsheet">
+      <thead>
+        <tr>
+          <td rowspan="2" style="background:var(--dark);color:var(--gold);font-weight:900;padding:8px 10px;font-size:.82rem;">Cuenta</td>
+          <td colspan="2" class="cg-header cg-bc">BC Sin Ajustar<br><span style="font-size:.68rem;opacity:.7;">Cols. 1 - 2</span></td>
+          <td colspan="2" class="cg-header cg-adj">Ajustes<br><span style="font-size:.68rem;opacity:.7;">Cols. 3 - 4</span></td>
+          <td colspan="2" class="cg-header cg-bca">BC Ajustado<br><span style="font-size:.68rem;opacity:.7;">Cols. 5 - 6</span></td>
+          <td colspan="2" class="cg-header cg-er">Estado Resultados<br><span style="font-size:.68rem;opacity:.7;">Cols. 7 - 8</span></td>
+          <td colspan="2" class="cg-header cg-bg">Balance General<br><span style="font-size:.68rem;opacity:.7;">Cols. 9 - 10</span></td>
+        </tr>
+        <tr>
+          <td class="sh sh-bc">Debe</td><td class="sh sh-bc">Haber</td>
+          <td class="sh sh-adj">Debe</td><td class="sh sh-adj">Haber</td>
+          <td class="sh sh-bca">Debe</td><td class="sh sh-bca">Haber</td>
+          <td class="sh sh-er">Debe</td><td class="sh sh-er">Haber</td>
+          <td class="sh sh-bg">Debe</td><td class="sh sh-bg">Haber</td>
+        </tr>
+      </thead>
+      <tbody id="spreadsheet-body"></tbody>
+    </table>
+  </div>
+
+  <div class="util-highlight" id="util-highlight"></div>
+
+  <div class="validation-panel" id="validation-panel"></div>
+</div>
+
+<!-- ══════════════ TAB 3: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+  <div class="gj-header">
+    <span class="gh-icon">🎯</span>
+    <div>
+      <h3>¿A qué columna de la Hoja de Trabajo va esta cuenta?</h3>
+      <p>Decide si cada cuenta va al Estado de Resultados (cols. 7-8) o al Balance General (cols. 9-10), y si va al Debe o al Haber.</p>
+    </div>
+  </div>
+
+  <div class="gj-prog"><div class="prog-wrap"><div class="prog-fill" id="gj-prog-fill"></div></div><div class="prog-lbl" id="gj-prog-lbl">0 / 12</div></div>
+
+  <div id="gj-area">
+    <div class="gj-card" id="gj-card">
+      <div class="gjc-seq" id="gjc-seq"></div>
+      <span class="gjc-icon" id="gjc-icon"></span>
+      <div class="gjc-name"  id="gjc-name"></div>
+      <div class="gjc-saldo" id="gjc-saldo"></div>
+      <div class="gjc-hint"  id="gjc-hint"></div>
+    </div>
+
+    <div style="font-size:.82rem;font-weight:700;text-align:center;color:#6b7684;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">¿En qué columna de la Hoja de Trabajo va?</div>
+    <div class="gj-grid">
+      <button class="gj-col-btn er-d" onclick="gjAnswer('er','d')">
+        <span class="gcb-icon">📉</span>
+        <span class="gcb-main">Col. 7 — DEBE</span>
+        <span class="gcb-sub">Estado de Resultados · Gastos</span>
+      </button>
+      <button class="gj-col-btn er-h" onclick="gjAnswer('er','h')">
+        <span class="gcb-icon">📈</span>
+        <span class="gcb-main">Col. 8 — HABER</span>
+        <span class="gcb-sub">Estado de Resultados · Ingresos</span>
+      </button>
+      <button class="gj-col-btn bg-d" onclick="gjAnswer('bg','d')">
+        <span class="gcb-icon">🏦</span>
+        <span class="gcb-main">Col. 9 — DEBE</span>
+        <span class="gcb-sub">Balance General · Activos</span>
+      </button>
+      <button class="gj-col-btn bg-h" onclick="gjAnswer('bg','h')">
+        <span class="gcb-icon">📋</span>
+        <span class="gcb-main">Col. 10 — HABER</span>
+        <span class="gcb-sub">Balance General · Pasivo + Patrimonio</span>
+      </button>
+    </div>
+
+    <div class="gj-feedback" id="gj-feedback"></div>
+    <button class="gj-next-btn" id="gj-next-btn" onclick="gjNext()">▶ Siguiente cuenta</button>
+
+    <div class="live-score" style="margin-top:12px;">
+      <div class="ls-item cor"><strong id="ls-cor">0</strong><span>✅ Correctas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item err"><strong id="ls-err">0</strong><span>❌ Incorrectas</span></div>
+      <div class="ls-div"></div>
+      <div class="ls-item"><strong id="ls-rem">12</strong><span>Restantes</span></div>
+    </div>
+  </div>
+
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-emoji" id="r-emoji"></div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div>
+    <div class="r-msg" id="r-msg"></div>
+    <div class="r-stats" id="r-stats"></div>
+    <button class="retry-btn" onclick="gjInit()">🔄 Nuevo intento</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function showTab(n, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  btn.classList.add('active');
+  if (n === 'simulacion') initSpreadsheet();
+}
+
+// ══════════════════════════════════════════
+// CONCEPT: column detail panels
+// ══════════════════════════════════════════
+let openDetail = null;
+function showColDetail(key) {
+  const id = 'detail-' + key;
+  if (openDetail === id) {
+    document.getElementById(id).classList.remove('show');
+    openDetail = null;
+  } else {
+    if (openDetail) document.getElementById(openDetail).classList.remove('show');
+    document.getElementById(id).classList.add('show');
+    openDetail = id;
+    setTimeout(() => document.getElementById(id).scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+  }
+}
+
+// ══════════════════════════════════════════
+// SPREADSHEET DATA
+// ══════════════════════════════════════════
+// Accounts for "Distribuidora El Progreso" - Tegucigalda, Honduras
+// Columns: name, group, bc1(D), bc2(H), adj3(D), adj4(H), dest(er|bg), destSide(d|h)
+const ACCOUNTS = [
+  // Activos
+  { name:'💵 Caja y Bancos',               grp:'activo',  bc1:38500, bc2:0,     adj3:0,    adj4:0,    dest:'bg', dside:'d' },
+  { name:'🧾 Cuentas por Cobrar',           grp:'activo',  bc1:12000, bc2:0,     adj3:3500, adj4:0,    dest:'bg', dside:'d' }, // +ingr devengado
+  { name:'💳 Seguro Pagado x Adelantado',   grp:'activo',  bc1:7200,  bc2:0,     adj3:0,    adj4:1200, dest:'bg', dside:'d' }, // -1 mes consumido
+  { name:'📦 Inventario de Mercadería',     grp:'activo',  bc1:25000, bc2:0,     adj3:0,    adj4:0,    dest:'bg', dside:'d' },
+  { name:'💻 Equipo de Cómputo',            grp:'activo',  bc1:15000, bc2:0,     adj3:0,    adj4:0,    dest:'bg', dside:'d' },
+  { name:'🚛 Vehículo de Reparto',          grp:'activo',  bc1:42000, bc2:0,     adj3:0,    adj4:0,    dest:'bg', dside:'d' },
+  // Pasivos
+  { name:'📋 Cuentas por Pagar',            grp:'pasivo',  bc1:0,     bc2:18000, adj3:0,    adj4:0,    dest:'bg', dside:'h' },
+  { name:'🏦 Préstamo Bancario (Banco de Honduras, S.A.)',grp:'pasivo',  bc1:0,     bc2:30000, adj3:0,    adj4:0,    dest:'bg', dside:'h' },
+  { name:'👷 Sueldos por Pagar',            grp:'pasivo',  bc1:0,     bc2:0,     adj3:0,    adj4:6500, dest:'bg', dside:'h' }, // ajuste
+  { name:'🏦 Alquiler Cobr. x Adelantado', grp:'pasivo',  bc1:0,     bc2:4800,  adj3:1600, adj4:0,    dest:'bg', dside:'h' }, // -1 mes
+  { name:'📊 ISV por Pagar (15%)',          grp:'pasivo',  bc1:0,     bc2:3000,  adj3:0,    adj4:0,    dest:'bg', dside:'h' },
+  // Patrimonio
+  { name:'👤 Capital Social',              grp:'patrim',  bc1:0,     bc2:60000, adj3:0,    adj4:0,    dest:'bg', dside:'h' },
+  { name:'💰 Utilidades Retenidas',        grp:'patrim',  bc1:0,     bc2:22100, adj3:0,    adj4:0,    dest:'bg', dside:'h' },
+  // Ingresos
+  { name:'📈 Ingresos por Ventas',         grp:'ingreso', bc1:0,     bc2:48000, adj3:0,    adj4:0,    dest:'er', dside:'h' },
+  { name:'📈 Ingresos por Alquiler',       grp:'ingreso', bc1:0,     bc2:0,     adj3:0,    adj4:1600, dest:'er', dside:'h' }, // ajuste
+  { name:'📈 Ingresos por Servicios',      grp:'ingreso', bc1:0,     bc2:0,     adj3:0,    adj4:3500, dest:'er', dside:'h' }, // ajuste
+  // Gastos
+  { name:'👷 Gasto de Sueldos',            grp:'gasto',   bc1:14000, bc2:0,     adj3:6500, adj4:0,    dest:'er', dside:'d' }, // +ajuste
+  { name:'🚚 Gasto de Transporte',         grp:'gasto',   bc1:3200,  bc2:0,     adj3:0,    adj4:0,    dest:'er', dside:'d' },
+  { name:'💡 Gasto de Electricidad',       grp:'gasto',   bc1:1800,  bc2:0,     adj3:0,    adj4:0,    dest:'er', dside:'d' },
+  { name:'💳 Gasto de Seguro',             grp:'gasto',   bc1:0,     bc2:0,     adj3:1200, adj4:0,    dest:'er', dside:'d' }, // ajuste
+  { name:'🏪 Gasto de Alquiler Local',     grp:'gasto',   bc1:8400,  bc2:0,     adj3:0,    adj4:0,    dest:'er', dside:'d' },
+];
+
+const grpColor = { activo:'activo-r', pasivo:'pasivo-r', patrim:'patrim-r', ingreso:'ingreso-r', gasto:'gasto-r' };
+
+function fmt(n) { return n > 0 ? 'L ' + n.toLocaleString('es-HN') : ''; }
+function fmtNum(n) { return n !== 0 ? n.toLocaleString('es-HN') : ''; }
+
+let simPhase = 1; // 1=BC only, 2=adjustments visible, 3=BCA calc, 4=classified, 5=validated
+let spreadsheetBuilt = false;
+
+function initSpreadsheet() {
+  if (spreadsheetBuilt) return;
+  spreadsheetBuilt = true;
+  renderSpreadsheet();
+}
+
+function renderSpreadsheet() {
+  const tbody = document.getElementById('spreadsheet-body');
+  tbody.innerHTML = '';
+
+  ACCOUNTS.forEach((acc, i) => {
+    const bca5 = acc.bc1 + acc.adj3 - acc.adj4;
+    const bca6 = acc.bc2 + acc.adj4 - acc.adj3;
+    const bca5Final = bca5 > 0 ? bca5 : 0;
+    const bca6Final = bca6 > 0 ? bca6 : 0;
+
+    const adj3Show = simPhase >= 2 && acc.adj3 > 0;
+    const adj4Show = simPhase >= 2 && acc.adj4 > 0;
+    const bca5Show = simPhase >= 3;
+    const erShow   = simPhase >= 4 && acc.dest === 'er';
+    const bgShow   = simPhase >= 4 && acc.dest === 'bg';
+
+    const er7 = acc.dest === 'er' && acc.dside === 'd' ? bca5Final || bca6Final : 0;
+    const er8 = acc.dest === 'er' && acc.dside === 'h' ? bca6Final || bca5Final : 0;
+    const bg9  = acc.dest === 'bg' && acc.dside === 'd' ? bca5Final : 0;
+    const bg10 = acc.dest === 'bg' && acc.dside === 'h' ? bca6Final : 0;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="acc-col ${grpColor[acc.grp]}">${acc.name}</td>
+      <td class="cell bc-d filled">${fmt(acc.bc1)}</td>
+      <td class="cell bc-h filled">${fmt(acc.bc2)}</td>
+      <td class="cell adj-d ${adj3Show?'filled':''}" id="a3-${i}">${adj3Show?fmt(acc.adj3):''}</td>
+      <td class="cell adj-h ${adj4Show?'filled':''}" id="a4-${i}">${adj4Show?fmt(acc.adj4):''}</td>
+      <td class="cell bca-d ${bca5Show&&bca5Final>0?'filled':''}">${bca5Show&&bca5Final>0?fmt(bca5Final):''}</td>
+      <td class="cell bca-h ${bca5Show&&bca6Final>0?'filled':''}">${bca5Show&&bca6Final>0?fmt(bca6Final):''}</td>
+      <td class="cell er-d  ${erShow&&er7>0?'filled':''}">${erShow&&er7>0?fmt(er7):''}</td>
+      <td class="cell er-h  ${erShow&&er8>0?'filled':''}">${erShow&&er8>0?fmt(er8):''}</td>
+      <td class="cell bg-d  ${bgShow&&bg9>0?'filled':''}">${bgShow&&bg9>0?fmt(bg9):''}</td>
+      <td class="cell bg-h  ${bgShow&&bg10>0?'filled':''}">${bgShow&&bg10>0?fmt(bg10):''}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Totals row
+  const totBC1  = ACCOUNTS.reduce((s,a)=>s+a.bc1,0);
+  const totBC2  = ACCOUNTS.reduce((s,a)=>s+a.bc2,0);
+  const totAdj3 = ACCOUNTS.reduce((s,a)=>s+a.adj3,0);
+  const totAdj4 = ACCOUNTS.reduce((s,a)=>s+a.adj4,0);
+
+  const calcBCA5 = (a) => { const v=a.bc1+a.adj3-a.adj4; return v>0?v:0; };
+  const calcBCA6 = (a) => { const v=a.bc2+a.adj4-a.adj3; return v>0?v:0; };
+
+  const totBCA5 = ACCOUNTS.reduce((s,a)=>s+calcBCA5(a),0);
+  const totBCA6 = ACCOUNTS.reduce((s,a)=>s+calcBCA6(a),0);
+
+  const totER7  = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='d').reduce((s,a)=>s+calcBCA5(a),0);
+  const totER8  = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='h').reduce((s,a)=>s+calcBCA6(a),0);
+  const utilidad = totER8 - totER7;
+  const totBG9  = ACCOUNTS.filter(a=>a.dest==='bg'&&a.dside==='d').reduce((s,a)=>s+calcBCA5(a),0);
+  const totBG10 = ACCOUNTS.filter(a=>a.dest==='bg'&&a.dside==='h').reduce((s,a)=>s+calcBCA6(a),0);
+
+  // Utility row (only in phase 4+)
+  if (simPhase >= 4 && utilidad !== 0) {
+    const utr = document.createElement('tr');
+    utr.className = 'util-row';
+    const isUtil = utilidad > 0;
+    utr.innerHTML = `
+      <td class="acc-col" style="background:#fffbe6;color:var(--dark);font-style:italic;">${isUtil?'💰 Utilidad del Período':'⚠️ Pérdida del Período'}</td>
+      <td class="cell" colspan="6"></td>
+      <td class="cell" style="font-weight:900;color:${isUtil?'var(--c-er)':'var(--c-bg)'};">${isUtil?fmt(utilidad):''}</td>
+      <td class="cell"></td>
+      <td class="cell"></td>
+      <td class="cell" style="font-weight:900;color:${isUtil?'var(--c-bg)':'var(--c-er)'};">${isUtil?fmt(utilidad):''}</td>`;
+    tbody.appendChild(utr);
+  }
+
+  // Totals
+  const ttr = document.createElement('tr');
+  ttr.className = 'total-row';
+  const er7final = simPhase>=4 ? totER7+(utilidad>0?utilidad:0) : 0;
+  const er8final = simPhase>=4 ? totER8+(utilidad<0?Math.abs(utilidad):0) : 0;
+  const bg9final = simPhase>=4 ? totBG9+(utilidad<0?Math.abs(utilidad):0) : 0;
+  const bg10final= simPhase>=4 ? totBG10+(utilidad>0?utilidad:0) : 0;
+  ttr.innerHTML = `
+    <td class="acc-col" style="color:var(--gold);">TOTALES</td>
+    <td class="c-d">${fmt(totBC1)}</td><td class="c-h">${fmt(totBC2)}</td>
+    <td class="c-d">${simPhase>=2?fmt(totAdj3):''}</td><td class="c-h">${simPhase>=2?fmt(totAdj4):''}</td>
+    <td class="c-d">${simPhase>=3?fmt(totBCA5):''}</td><td class="c-h">${simPhase>=3?fmt(totBCA6):''}</td>
+    <td class="c-d">${simPhase>=4?fmt(er7final):''}</td><td class="c-h">${simPhase>=4?fmt(er8final):''}</td>
+    <td class="c-d">${simPhase>=4?fmt(bg9final):''}</td><td class="c-h">${simPhase>=4?fmt(bg10final):''}</td>`;
+  tbody.appendChild(ttr);
+}
+
+const instructions = [
+  '',
+  '📌 <strong>Paso 1:</strong> Observa las columnas 1 y 2 — el Balance de Comprobación sin ajustar tomado del Libro Mayor de la Distribuidora "El Progreso" al 30 de junio de 2025.',
+  '📌 <strong>Paso 2:</strong> Las columnas 3 y 4 muestran los <strong>asientos de ajuste</strong> del período: seguro prepagado (−L 1,200/mes), alquiler cobrado adelantado (+L 1,600/mes), sueldos devengados (+L 6,500) e ingresos por cobrar (+L 3,500).',
+  '📌 <strong>Paso 3:</strong> Las columnas 5 y 6 muestran el <strong>BC Ajustado</strong> — resultado de combinar las 4 primeras columnas. Cada saldo refleja ahora la realidad económica del período.',
+  '📌 <strong>Paso 4:</strong> Las cuentas se clasifican: <span style="color:var(--c-er)"><strong>Ingresos y Gastos → columnas 7-8 (Estado de Resultados)</strong></span> · <span style="color:var(--c-bg)"><strong>Activos, Pasivos y Patrimonio → columnas 9-10 (Balance General)</strong></span>.',
+  '📌 <strong>Paso 5:</strong> Verificación completa. La Utilidad del período actúa como enlace entre el Estado de Resultados y el Balance General, haciendo que ambos cuadren.',
+];
+
+function activateStep(n) {
+  simPhase = n;
+  document.getElementById('sim-instruction').innerHTML = instructions[n];
+  updateStepBtns();
+  renderSpreadsheet();
+  if (n === 2) { document.getElementById('btn-step3').disabled = false; }
+  if (n === 3) { document.getElementById('btn-step4').disabled = false; }
+  if (n === 4) {
+    document.getElementById('btn-step5').disabled = false;
+    showUtilHighlight();
+  }
+}
+
+function calcBCA() { activateStep(3); }
+function classifyAll() { activateStep(4); }
+
+function showUtilHighlight() {
+  const totER7 = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='d').reduce((s,a)=>s+(a.bc1+a.adj3-a.adj4>0?a.bc1+a.adj3-a.adj4:0),0);
+  const totER8 = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='h').reduce((s,a)=>s+(a.bc2+a.adj4-a.adj3>0?a.bc2+a.adj4-a.adj3:0),0);
+  const util = totER8 - totER7;
+  const el = document.getElementById('util-highlight');
+  if (util > 0) {
+    el.innerHTML = `💰 Utilidad del Período: L ${util.toLocaleString('es-HN')} — este valor "viaja" de la Col. 7 (ER) a la Col. 10 (BG), haciendo que ambos estados cuadren. ¡Es el enlace entre los dos estados financieros!`;
+    el.classList.add('show');
+  }
+}
+
+function validateAll() {
+  activateStep(5);
+  const totER7 = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='d').reduce((s,a)=>s+(a.bc1+a.adj3-a.adj4>0?a.bc1+a.adj3-a.adj4:0),0);
+  const totER8 = ACCOUNTS.filter(a=>a.dest==='er'&&a.dside==='h').reduce((s,a)=>s+(a.bc2+a.adj4-a.adj3>0?a.bc2+a.adj4-a.adj3:0),0);
+  const totBG9 = ACCOUNTS.filter(a=>a.dest==='bg'&&a.dside==='d').reduce((s,a)=>s+(a.bc1+a.adj3-a.adj4>0?a.bc1+a.adj3-a.adj4:0),0);
+  const totBG10= ACCOUNTS.filter(a=>a.dest==='bg'&&a.dside==='h').reduce((s,a)=>s+(a.bc2+a.adj4-a.adj3>0?a.bc2+a.adj4-a.adj3:0),0);
+  const util   = totER8 - totER7;
+  const bc1tot = ACCOUNTS.reduce((s,a)=>s+a.bc1,0);
+  const bc2tot = ACCOUNTS.reduce((s,a)=>s+a.bc2,0);
+  const adj3tot= ACCOUNTS.reduce((s,a)=>s+a.adj3,0);
+  const adj4tot= ACCOUNTS.reduce((s,a)=>s+a.adj4,0);
+  const bca5tot= ACCOUNTS.reduce((s,a)=>s+(a.bc1+a.adj3-a.adj4>0?a.bc1+a.adj3-a.adj4:0),0);
+  const bca6tot= ACCOUNTS.reduce((s,a)=>s+(a.bc2+a.adj4-a.adj3>0?a.bc2+a.adj4-a.adj3:0),0);
+
+  const er7f = totER7 + (util>0?util:0);
+  const er8f = totER8 + (util<0?Math.abs(util):0);
+  const bg9f = totBG9 + (util<0?Math.abs(util):0);
+  const bg10f= totBG10+ (util>0?util:0);
+
+  const checks = [
+    { ok: bc1tot === bc2tot,   label: 'BC sin ajustar cuadra',    v: `L ${bc1tot.toLocaleString('es-HN')} = L ${bc2tot.toLocaleString('es-HN')}` },
+    { ok: adj3tot === adj4tot, label: 'Columnas de ajuste cuadran', v: `L ${adj3tot.toLocaleString('es-HN')} = L ${adj4tot.toLocaleString('es-HN')}` },
+    { ok: bca5tot === bca6tot, label: 'BC Ajustado cuadra',        v: `L ${bca5tot.toLocaleString('es-HN')} = L ${bca6tot.toLocaleString('es-HN')}` },
+    { ok: er7f === er8f,       label: 'Estado de Resultados cuadra', v: `L ${er7f.toLocaleString('es-HN')} = L ${er8f.toLocaleString('es-HN')}` },
+    { ok: bg9f === bg10f,      label: 'Balance General cuadra',    v: `L ${bg9f.toLocaleString('es-HN')} = L ${bg10f.toLocaleString('es-HN')}` },
+  ];
+
+  const allOk = checks.every(c => c.ok);
+  const vp = document.getElementById('validation-panel');
+  vp.className = 'validation-panel show ' + (allOk ? 'ok' : 'bad');
+  vp.innerHTML = `<div style="font-weight:900;font-size:1rem;margin-bottom:12px;">${allOk?'✅ Hoja de Trabajo validada correctamente':'⚠️ La hoja tiene diferencias — revisa los pasos'}</div>` +
+    checks.map(c => `<div class="val-row"><span class="val-icon">${c.ok?'✅':'❌'}</span><span class="val-text">${c.label}</span><span class="val-nums">${c.v}</span></div>`).join('') +
+    (allOk ? `<div style="margin-top:12px;font-size:.88rem;color:var(--ingreso);font-weight:700;">💰 Utilidad del período: L ${util.toLocaleString('es-HN')} — registrada en el Patrimonio del Balance General.</div>` : '');
+}
+
+function updateStepBtns() {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('sstep-' + i);
+    el.className = 'sim-step-btn' + (i < simPhase ? ' done' : i === simPhase ? ' active' : '');
+  }
+}
+
+// ══════════════════════════════════════════
+// MINI-JUEGO DATA
+// ══════════════════════════════════════════
+const gjQuestions = [
+  { icon:'💵', name:'Caja y Bancos',                saldo:'L 38,500', hint:'Efectivo en cuentas bancarias',          col:'bg', side:'d', why:'Activo corriente → Balance General, Debe (Col.9). Los activos siempre van al Debe del BG.' },
+  { icon:'📈', name:'Ingresos por Ventas',           saldo:'L 48,000', hint:'Ventas del período',                    col:'er', side:'h', why:'Cuenta de Ingresos → Estado de Resultados, Haber (Col.8). Los ingresos aumentan por el Haber.' },
+  { icon:'👷', name:'Gasto de Sueldos',              saldo:'L 20,500', hint:'Incluye sueldos pagados + ajuste',      col:'er', side:'d', why:'Cuenta de Gastos → Estado de Resultados, Debe (Col.7). Los gastos aumentan por el Debe.' },
+  { icon:'📋', name:'Cuentas por Pagar',             saldo:'L 18,000', hint:'Facturas a proveedores pendientes',     col:'bg', side:'h', why:'Pasivo corriente → Balance General, Haber (Col.10). Los pasivos van al Haber del BG.' },
+  { icon:'👤', name:'Capital Social',                saldo:'L 60,000', hint:'Aportación de los socios',              col:'bg', side:'h', why:'Patrimonio → Balance General, Haber (Col.10). El patrimonio va al Haber del BG.' },
+  { icon:'💳', name:'Seguro Pagado x Adelantado',    saldo:'L 6,000',  hint:'Porción que aún no se ha consumido',    col:'bg', side:'d', why:'Activo corriente (prepagado) → Balance General, Debe (Col.9). Es un recurso vigente.' },
+  { icon:'🚛', name:'Vehículo de Reparto',           saldo:'L 42,000', hint:'Activo fijo de la distribuidora',      col:'bg', side:'d', why:'Activo no corriente → Balance General, Debe (Col.9). Todos los activos van al Debe.' },
+  { icon:'🏦', name:'Préstamo Bancario',             saldo:'L 30,000', hint:'Deuda con Banco de Honduras, S.A.',            col:'bg', side:'h', why:'Pasivo no corriente → Balance General, Haber (Col.10). Las deudas van al Haber.' },
+  { icon:'🚚', name:'Gasto de Transporte',           saldo:'L 3,200',  hint:'Fletes y distribución del período',    col:'er', side:'d', why:'Cuenta de Gastos → Estado de Resultados, Debe (Col.7).' },
+  { icon:'📈', name:'Ingresos por Alquiler',         saldo:'L 1,600',  hint:'Alquiler de bodega devengado',         col:'er', side:'h', why:'Ingreso (cuenta temporal) → Estado de Resultados, Haber (Col.8).' },
+  { icon:'💰', name:'Utilidades Retenidas',          saldo:'L 22,100', hint:'Ganancias acumuladas de años anteriores', col:'bg', side:'h', why:'Patrimonio → Balance General, Haber (Col.10). Es una cuenta permanente del patrimonio.' },
+  { icon:'📊', name:'ISV por Pagar (15%)',           saldo:'L 3,000',  hint:'ISV recaudado pendiente de remesar al SAR', col:'bg', side:'h', why:'Pasivo corriente → Balance General, Haber (Col.10). La empresa lo recauda pero lo debe al SAR.' },
+  { icon:'💡', name:'Gasto de Electricidad (ENEE)',  saldo:'L 1,800',  hint:'Factura de luz del período',           col:'er', side:'d', why:'Gasto operacional → Estado de Resultados, Debe (Col.7).' },
+  { icon:'🧾', name:'Ingresos por Cobrar',           saldo:'L 3,500',  hint:'Servicio prestado aún no facturado',   col:'bg', side:'d', why:'Activo corriente (ingreso devengado) → Balance General, Debe (Col.9). Es un derecho a cobrar.' },
+  { icon:'🏪', name:'Gasto de Alquiler Local',       saldo:'L 8,400',  hint:'Alquiler mensual del local comercial', col:'er', side:'d', why:'Gasto operacional → Estado de Resultados, Debe (Col.7).' },
+];
+
+let gjDeck = [], gjIdx = 0, gjCorr = 0, gjErr = 0;
+const TOTAL_Q = 12;
+
+function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
+
+function gjInit() {
+  gjDeck = shuffle(gjQuestions).slice(0, TOTAL_Q);
+  gjIdx = 0; gjCorr = 0; gjErr = 0;
+  document.getElementById('gj-result').style.display = 'none';
+  document.getElementById('gj-area').style.display = 'block';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  updateLive(); updateProg(); gjLoadQ();
+}
+
+function gjLoadQ() {
+  if (gjIdx >= gjDeck.length) { gjEnd(); return; }
+  const q = gjDeck[gjIdx];
+  document.getElementById('gjc-seq').textContent   = `Cuenta ${gjIdx + 1} de ${gjDeck.length}`;
+  document.getElementById('gjc-icon').textContent  = q.icon;
+  document.getElementById('gjc-name').textContent  = q.name;
+  document.getElementById('gjc-saldo').textContent = 'Saldo BC Ajustado: ' + q.saldo;
+  document.getElementById('gjc-hint').textContent  = q.hint;
+  document.getElementById('gj-card').style.animation = 'none';
+  void document.getElementById('gj-card').offsetWidth;
+  document.getElementById('gj-card').style.animation = 'cardIn .3s ease';
+  document.getElementById('gj-feedback').className = 'gj-feedback';
+  document.getElementById('gj-next-btn').className = 'gj-next-btn';
+  document.querySelectorAll('.gj-col-btn').forEach(b => b.disabled = false);
+}
+
+function gjAnswer(col, side) {
+  document.querySelectorAll('.gj-col-btn').forEach(b => b.disabled = true);
+  const q = gjDeck[gjIdx];
+  const ok = col === q.col && side === q.side;
+  if (ok) gjCorr++; else gjErr++;
+  const colLabels = { 'er-d':'Col.7 Debe (Gastos)', 'er-h':'Col.8 Haber (Ingresos)', 'bg-d':'Col.9 Debe (Activos)', 'bg-h':'Col.10 Haber (Pas+Pat)' };
+  const fb = document.getElementById('gj-feedback');
+  fb.className = 'gj-feedback ' + (ok ? 'ok' : 'bad');
+  fb.innerHTML = ok
+    ? `✅ ¡Correcto! ${q.why}`
+    : `❌ No es correcto. Va en <strong>${colLabels[q.col + '-' + q.side]}</strong>.<br><span style="font-size:.85rem;">${q.why}</span>`;
+  gjIdx++;
+  updateLive(); updateProg();
+  document.getElementById('gj-next-btn').className = 'gj-next-btn show';
+}
+
+function gjNext() { gjLoadQ(); }
+
+function updateLive() {
+  document.getElementById('ls-cor').textContent = gjCorr;
+  document.getElementById('ls-err').textContent = gjErr;
+  document.getElementById('ls-rem').textContent = Math.max(0, gjDeck.length - gjIdx);
+}
+function updateProg() {
+  const pct = gjDeck.length > 0 ? (gjIdx / gjDeck.length * 100) : 0;
+  document.getElementById('gj-prog-fill').style.width = pct + '%';
+  document.getElementById('gj-prog-lbl').textContent = `${gjIdx} / ${gjDeck.length}`;
+}
+
+function gjEnd() {
+  document.getElementById('gj-area').style.display = 'none';
+  const res = document.getElementById('gj-result');
+  res.style.display = 'block';
+  const pct = Math.round(gjCorr / gjDeck.length * 100);
+  document.getElementById('r-emoji').textContent = pct === 100 ? '🏆' : pct >= 70 ? '🎉' : '📚';
+  document.getElementById('r-title').textContent = pct >= 70 ? '¡Dominas la Hoja de Trabajo!' : 'Sigue practicando la clasificación';
+  document.getElementById('r-score').textContent = `${gjCorr}/${gjDeck.length}`;
+  document.getElementById('r-score').style.color = pct >= 70 ? 'var(--ingreso)' : 'var(--pasivo)';
+  document.getElementById('r-msg').textContent =
+    pct === 100 ? '¡Perfecto! Clasificas todas las cuentas correctamente en la Hoja de Trabajo.'
+    : pct >= 70  ? `${pct}% — Muy bien. Repasa las cuentas que fallaste en la tab de Simulación.`
+    : pct >= 50  ? `${pct}% — Recuerda: cuentas temporales (Ingresos/Gastos) → cols. 7-8; permanentes → cols. 9-10.`
+    :              `${pct}% — Estudia el Concepto de las 10 columnas y vuelve a intentarlo.`;
+  document.getElementById('r-stats').innerHTML = `
+    <div class="r-stat"><strong style="color:var(--ingreso);">${gjCorr}</strong><span>✅ Correctas</span></div>
+    <div class="r-stat"><strong style="color:var(--pasivo);">${gjErr}</strong><span>❌ Incorrectas</span></div>
+    <div class="r-stat"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  if (pct >= 70) spawnConfetti();
+}
+
+function spawnConfetti() {
+  const bg = document.getElementById('confetti-bg');
+  bg.innerHTML = '';
+  const colors = ['#F4A811','#059669','#0D6B8C','#DC2626','#7C3AED','#fff','#D97706'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const sz = 6 + Math.random() * 8;
+    el.style.cssText = `left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+gjInit();
+</script>
+</body>
+</html>

@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 4 — El Debe y el Haber | Contabilidad Interactiva</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Source+Code+Pro:wght@700&display=swap');
+
+:root {
+  --debe:      #0D6B8C;
+  --debe-lt:   #E0F4FA;
+  --debe-mid:  #1A9BBF;
+  --haber:     #1A8A4A;
+  --haber-lt:  #E4F9ED;
+  --haber-mid: #23B560;
+  --deudora:   #C0392B;
+  --acreedor:  #7B2FBE;
+  --activo:    #0D6B8C;
+  --pasivo:    #C0392B;
+  --patrim:    #1A8A4A;
+  --ingreso:   #E67E22;
+  --gasto:     #8E44AD;
+  --gold:      #F4A811;
+  --dark:      #1B2638;
+  --bg:        #F5F7FA;
+  --card-r:    16px;
+  --shadow:    0 6px 24px rgba(0,0,0,0.11);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; overflow-x: hidden; }
+
+/* ── HEADER ── */
+header {
+  background: var(--dark); color: #fff;
+  padding: 18px 28px; display: flex; align-items: center; gap: 16px;
+  border-bottom: 4px solid var(--gold);
+}
+.app-badge {
+  background: var(--gold); color: var(--dark);
+  font-weight: 900; font-size: 0.75rem; padding: 5px 13px;
+  border-radius: 30px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+}
+header h1 { font-size: 1.4rem; font-weight: 900; }
+header p  { font-size: 0.85rem; color: #b0b8c4; margin-top: 2px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; background: #fff;
+  border-bottom: 2px solid #e0e4ea; padding: 0 20px; gap: 4px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 16px 20px; border: none; background: none;
+  font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700;
+  color: #6b7684; cursor: pointer; border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+}
+.tab-btn.active { color: var(--dark); border-bottom-color: var(--gold); }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 24px 18px 64px; max-width: 1080px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* ══════════════════════════════════════
+   TAB 1 — CUENTA EN T
+══════════════════════════════════════ */
+.t-intro {
+  text-align: center; margin-bottom: 24px;
+  font-size: 1rem; color: #6b7684;
+}
+.t-intro strong { color: var(--dark); }
+
+/* Big T account */
+.t-account-wrap {
+  background: #fff; border-radius: var(--card-r);
+  box-shadow: var(--shadow); overflow: hidden; margin-bottom: 28px;
+}
+.t-account-title {
+  background: var(--dark); color: #fff;
+  text-align: center; padding: 16px;
+  font-size: 1.1rem; font-weight: 900; letter-spacing: .04em;
+}
+.t-account-body {
+  display: grid; grid-template-columns: 1fr 1fr;
+  min-height: 220px;
+}
+.t-side {
+  padding: 24px 20px; cursor: pointer;
+  transition: background .2s;
+  display: flex; flex-direction: column; gap: 12px;
+  position: relative;
+}
+.t-side.debe  { border-right: 3px solid var(--dark); background: var(--debe-lt); }
+.t-side.haber { background: var(--haber-lt); }
+.t-side:hover.debe  { background: #c8eaf7; }
+.t-side:hover.haber { background: #c0f0d8; }
+.t-side-label {
+  font-size: 1.6rem; font-weight: 900; text-align: center;
+  padding-bottom: 12px; border-bottom: 2px solid currentColor;
+}
+.t-side.debe  .t-side-label { color: var(--debe); }
+.t-side.haber .t-side-label { color: var(--haber); }
+.t-side-sub {
+  font-size: 0.88rem; color: #6b7684; text-align: center; font-style: italic;
+}
+.t-side-hint {
+  text-align: center; font-size: 0.82rem; color: #9aa3ad; margin-top: auto;
+}
+.t-side-hint span {
+  display: inline-block; background: rgba(0,0,0,0.05);
+  padding: 5px 12px; border-radius: 20px;
+}
+
+/* Panel that slides in */
+.t-panel {
+  display: none; background: #fff;
+  border-top: 2px solid #e0e4ea;
+  padding: 24px 28px; animation: slideDown .3s ease;
+}
+.t-panel.open { display: block; }
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;} }
+.t-panel h3 { font-size: 1.1rem; font-weight: 900; margin-bottom: 16px; }
+.t-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:600px){ .t-panel-grid{ grid-template-columns:1fr; } }
+.t-panel-card {
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.93rem;
+}
+.t-panel-card .tpc-icon { font-size: 1.5rem; flex-shrink:0; }
+.t-panel-card .tpc-name { font-weight: 700; display: block; }
+.t-panel-card .tpc-desc { font-size: 0.8rem; color: #6b7684; }
+
+/* ── NATURALEZA TABLE ── */
+.nat-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 16px; text-align:center; }
+.nat-grid {
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 28px;
+}
+@media(max-width:760px){ .nat-grid{ grid-template-columns:1fr 1fr; } }
+@media(max-width:420px){ .nat-grid{ grid-template-columns:1fr; } }
+
+.nat-card {
+  border-radius: var(--card-r); padding: 18px 14px;
+  text-align: center; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+  cursor: pointer; transition: transform .18s, box-shadow .18s;
+  user-select: none;
+}
+.nat-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 10px 28px rgba(0,0,0,.16); }
+.nat-card .nc-icon  { font-size: 2.2rem; }
+.nat-card .nc-name  { font-size: 1rem; font-weight: 900; }
+.nat-card .nc-nat   { font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.nat-card .nc-rule  { font-size: 0.78rem; color: #6b7684; line-height: 1.4; }
+
+.nat-card.activo  { background: #EBF5FF; }
+.nat-card.pasivo  { background: #FFF0EF; }
+.nat-card.patrim  { background: #F0FFF5; }
+.nat-card.ingreso { background: #FFF5E6; }
+.nat-card.gasto   { background: #F8F0FF; }
+
+.nat-card.activo  .nc-name { color: var(--activo); }
+.nat-card.pasivo  .nc-name { color: var(--pasivo); }
+.nat-card.patrim  .nc-name { color: var(--patrim); }
+.nat-card.ingreso .nc-name { color: var(--ingreso); }
+.nat-card.gasto   .nc-name { color: var(--gasto); }
+
+.nat-card.activo  .nc-nat { background: var(--debe-lt);  color: var(--debe); }
+.nat-card.gastos  .nc-nat { background: var(--debe-lt);  color: var(--debe); }
+.nat-card.gasto   .nc-nat { background: var(--debe-lt);  color: var(--debe); }
+.nat-card.pasivo  .nc-nat { background: var(--haber-lt); color: var(--haber); }
+.nat-card.patrim  .nc-nat { background: var(--haber-lt); color: var(--haber); }
+.nat-card.ingreso .nc-nat { background: var(--haber-lt); color: var(--haber); }
+
+/* Mnemónico */
+.mnemo-box {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 22px 28px;
+  margin-bottom: 28px; box-shadow: var(--shadow);
+  display: flex; align-items: flex-start; gap: 18px;
+}
+.mnemo-icon { font-size: 2.8rem; flex-shrink:0; }
+.mnemo-content h3 { font-size: 1.05rem; font-weight: 900; margin-bottom: 8px; color: var(--gold); }
+.mnemo-content p  { font-size: 0.93rem; color: #d0d8e4; line-height: 1.6; }
+.mnemo-row {
+  display: flex; gap: 24px; flex-wrap: wrap; margin-top: 14px;
+}
+.mnemo-col { flex: 1; min-width: 180px; }
+.mnemo-col h4 { font-size: 0.82rem; text-transform:uppercase; letter-spacing:.07em; margin-bottom: 8px; }
+.mnemo-col.d h4 { color: #93d8f0; }
+.mnemo-col.h h4 { color: #a8efc1; }
+.mnemo-tag {
+  display: inline-block; padding: 5px 12px; border-radius: 20px;
+  font-weight: 700; font-size: 0.88rem; margin: 3px 4px 3px 0;
+}
+.mnemo-tag.d { background: rgba(13,107,140,0.35); color: #93d8f0; }
+.mnemo-tag.h { background: rgba(26,138,74,0.35);  color: #a8efc1; }
+
+/* ══════════════════════════════════════
+   TAB 2 — ANIMACIÓN PARTIDA DOBLE
+══════════════════════════════════════ */
+.anim-intro {
+  background: var(--dark); color: #fff;
+  border-radius: var(--card-r); padding: 22px 26px;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 24px; box-shadow: var(--shadow);
+}
+.anim-intro .ai-icon { font-size: 2.2rem; flex-shrink:0; }
+.anim-intro h3 { font-size: 1.1rem; font-weight: 900; }
+.anim-intro p  { font-size: 0.87rem; color: #b0b8c4; margin-top: 3px; }
+
+/* Scenario selector */
+.scenario-tabs {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px;
+}
+.sc-tab {
+  padding: 11px 18px; border-radius: 10px; border: 2px solid #dce0e8;
+  background: #fff; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; color: #6b7684; transition: all .2s;
+}
+.sc-tab.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+.sc-tab:hover  { border-color: var(--dark); }
+
+/* Operation description */
+.op-desc {
+  background: #fff; border-radius: var(--card-r); padding: 20px 24px;
+  box-shadow: var(--shadow); margin-bottom: 22px;
+}
+.op-desc .od-label { font-size: 0.78rem; text-transform:uppercase; letter-spacing:.08em; color:#9aa3ad; margin-bottom:6px; }
+.op-desc .od-text  { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+.op-desc .od-detail{ font-size: 0.9rem; color: #6b7684; }
+.op-desc .od-norm  { font-size: 0.82rem; color: #9aa3ad; margin-top: 8px; font-style: italic; }
+
+/* Dual T display */
+.dual-t { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; margin-bottom: 20px; }
+@media(max-width:640px){ .dual-t{ grid-template-columns:1fr; } }
+.dual-t-equal { display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#c0c8d4; font-weight:900; padding-top:60px; }
+
+.t-mini-wrap { background:#fff; border-radius:var(--card-r); box-shadow:var(--shadow); overflow:hidden; }
+.t-mini-title { padding: 12px 16px; text-align:center; font-weight:900; font-size:0.95rem; color:#fff; }
+.t-mini-body  { display:grid; grid-template-columns:1fr 1fr; min-height:120px; }
+.t-mini-side  {
+  padding: 14px 12px; display:flex; flex-direction:column; gap:8px;
+}
+.t-mini-side.d { border-right:2px solid #e0e4ea; background:var(--debe-lt); }
+.t-mini-side.h { background:var(--haber-lt); }
+.t-mini-side-lbl { font-size:0.82rem; font-weight:900; text-align:center; padding-bottom:8px; border-bottom:1px solid currentColor; }
+.t-mini-side.d .t-mini-side-lbl { color:var(--debe); }
+.t-mini-side.h .t-mini-side-lbl { color:var(--haber); }
+.t-mini-entry {
+  background:#fff; border-radius:8px; padding:8px 10px;
+  font-size:0.85rem; display:flex; flex-direction:column; gap:2px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  opacity:0; transform:translateY(6px);
+  transition:opacity .4s ease, transform .4s ease;
+}
+.t-mini-entry.show { opacity:1; transform:none; }
+.t-mini-entry .te-name   { font-weight:700; font-size:0.82rem; }
+.t-mini-entry .te-amount { font-family:'Source Code Pro',monospace; font-weight:700; font-size:0.88rem; }
+.t-mini-entry.debe-entry  .te-amount { color:var(--debe); }
+.t-mini-entry.haber-entry .te-amount { color:var(--haber); }
+.t-mini-foot {
+  padding: 10px 14px; background:var(--bg);
+  font-size:0.82rem; display:flex; justify-content:space-between; align-items:center;
+}
+.t-mini-foot .tf-saldo { font-family:'Source Code Pro',monospace; font-weight:700; }
+
+/* Step controls */
+.step-controls { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+.step-btn {
+  padding: 13px 24px; border-radius: 12px; border: none;
+  font-family:'Nunito',sans-serif; font-size:0.95rem; font-weight:700;
+  cursor:pointer; transition:all .18s; box-shadow:var(--shadow);
+}
+.step-btn.primary { background:var(--dark); color:#fff; }
+.step-btn.primary:hover { background:#2a3a54; transform:scale(1.03); }
+.step-btn.secondary { background:#fff; color:var(--dark); border:2px solid #dce0e8; }
+.step-btn.secondary:hover { background:var(--bg); }
+
+.step-log {
+  background:#fff; border-radius:var(--card-r); padding:18px 22px;
+  box-shadow:var(--shadow); min-height:60px;
+}
+.step-log .sl-title { font-size:0.78rem; text-transform:uppercase; letter-spacing:.08em; color:#9aa3ad; margin-bottom:10px; }
+.step-entry {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid #edf0f4; font-size:0.93rem;
+  opacity:0; animation: fadeIn .4s ease forwards;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:none;}}
+.step-entry:last-child { border-bottom:none; }
+.step-entry .se-step  { background:var(--dark); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:900; flex-shrink:0; }
+.step-entry .se-text  { flex:1; }
+.step-entry .se-debe  { font-family:'Source Code Pro',monospace; font-weight:700; color:var(--debe); min-width:90px; text-align:right; }
+.step-entry .se-haber { font-family:'Source Code Pro',monospace; font-weight:700; color:var(--haber); min-width:90px; text-align:right; }
+.step-entry-head {
+  display:grid; grid-template-columns:24px 1fr 90px 90px;
+  gap:10px; padding:6px 0; font-size:0.75rem; color:#9aa3ad;
+  text-transform:uppercase; letter-spacing:.06em; border-bottom:2px solid #e0e4ea; margin-bottom:4px;
+}
+
+/* ══════════════════════════════════════
+   TAB 3 — MINI-JUEGO
+══════════════════════════════════════ */
+.gj-header {
+  background:var(--dark); color:#fff; border-radius:var(--card-r);
+  padding:20px 24px; display:flex; align-items:center; gap:16px;
+  margin-bottom:22px; box-shadow:var(--shadow);
+}
+.gj-header .gh-icon { font-size:2.2rem; }
+.gj-header h3 { font-size:1.1rem; font-weight:900; }
+.gj-header p  { font-size:0.87rem; color:#b0b8c4; margin-top:3px; }
+
+.gj-progress { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+.prog-bar-wrap { flex:1; background:#e0e4ea; border-radius:99px; height:10px; overflow:hidden; }
+.prog-bar { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--debe),var(--haber)); transition:width .4s ease; width:0%; }
+.prog-label { font-size:.9rem; font-weight:700; color:#6b7684; white-space:nowrap; }
+
+.gj-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+@media(max-width:660px){ .gj-layout{ grid-template-columns:1fr; } }
+
+/* Question card */
+.q-card {
+  background:#fff; border-radius:var(--card-r); padding:28px 24px;
+  box-shadow:var(--shadow); text-align:center;
+}
+.q-card .qc-type {
+  font-size:0.75rem; text-transform:uppercase; letter-spacing:.08em;
+  padding:4px 12px; border-radius:20px; display:inline-block; margin-bottom:14px;
+  font-weight:700;
+}
+.q-card .qc-icon   { font-size:3rem; display:block; margin-bottom:10px; }
+.q-card .qc-name   { font-size:1.4rem; font-weight:900; margin-bottom:8px; }
+.q-card .qc-group  { font-size:0.88rem; color:#6b7684; margin-bottom:6px; }
+.q-card .qc-question {
+  font-size:1rem; font-weight:700; color:#3d4a5c;
+  background:var(--bg); border-radius:10px; padding:12px 16px; margin-top:14px;
+}
+
+/* Answer buttons */
+.answer-col { display:flex; flex-direction:column; gap:14px; }
+.ans-btn {
+  padding:24px 18px; border-radius:16px; border:none;
+  font-family:'Nunito',sans-serif; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:transform .15s, box-shadow .15s; box-shadow:var(--shadow);
+}
+.ans-btn:hover  { transform:translateY(-4px) scale(1.03); box-shadow:0 10px 28px rgba(0,0,0,.18); }
+.ans-btn:active { transform:scale(.97); }
+.ans-btn.debe-btn  { background:var(--debe);  color:#fff; }
+.ans-btn.haber-btn { background:var(--haber); color:#fff; }
+.ans-btn .ab-icon  { font-size:2.2rem; }
+.ans-btn .ab-label { font-size:1.2rem; font-weight:900; }
+.ans-btn .ab-sub   { font-size:0.8rem; opacity:.8; }
+
+.gj-feedback {
+  grid-column:1/-1; padding:16px 20px; border-radius:12px;
+  font-size:1rem; font-weight:700; text-align:center;
+  display:none; animation:popIn .25s ease;
+}
+@keyframes popIn{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.gj-feedback.correct   { background:var(--haber-lt); color:var(--haber); display:block; }
+.gj-feedback.incorrect { background:#FDECEA; color:#C0392B; display:block; }
+.gj-feedback.hidden    { display:none; }
+
+/* Score & result */
+.live-score {
+  background:#fff; border-radius:var(--card-r); padding:18px;
+  text-align:center; box-shadow:var(--shadow);
+  grid-column:1/-1; display:flex; gap:16px; justify-content:center; align-items:center;
+  flex-wrap:wrap;
+}
+.ls-item strong { display:block; font-size:1.8rem; font-weight:900; }
+.ls-item span   { font-size:0.8rem; color:#6b7684; }
+.ls-item.cor strong { color:var(--haber); }
+.ls-item.err strong { color:var(--pasivo); }
+.ls-divider { width:1px; height:40px; background:#e0e4ea; }
+
+.gj-result {
+  display:none; background:#fff; border-radius:var(--card-r);
+  padding:36px 28px; text-align:center; box-shadow:var(--shadow);
+  position:relative; overflow:hidden;
+}
+.confetti-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.confetti-piece { position:absolute; width:9px; height:9px; border-radius:2px; animation:confettiFall linear forwards; }
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(420px) rotate(720deg);opacity:0;}}
+.r-icon  { font-size:3.5rem; margin-bottom:10px; }
+.r-title { font-size:1.6rem; font-weight:900; margin-bottom:8px; }
+.r-score { font-size:4rem; font-weight:900; line-height:1; margin-bottom:6px; color:var(--debe); }
+.r-msg   { font-size:1rem; color:#3d4a5c; margin-bottom:20px; }
+.r-breakdown {
+  display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:24px;
+}
+.rb-card { background:var(--bg); border-radius:12px; padding:12px 18px; }
+.rb-card strong { display:block; font-size:1.4rem; font-weight:900; }
+.rb-card span   { font-size:0.8rem; color:#6b7684; }
+.rb-card.cor strong { color:var(--haber); }
+.rb-card.err strong { color:var(--pasivo); }
+.rb-card.pct strong { color:var(--dark); }
+
+.history-mini { text-align:left; max-width:480px; margin:0 auto 22px; }
+.history-mini h4 { font-size:0.8rem; text-transform:uppercase; letter-spacing:.07em; color:#9aa3ad; margin-bottom:10px; }
+.hm-item {
+  display:flex; align-items:center; gap:8px; padding:8px 12px;
+  border-radius:8px; margin-bottom:6px; font-size:0.88rem;
+  background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.hm-item .hm-r { font-size:1rem; }
+.hm-item .hm-name { flex:1; font-weight:700; }
+.hm-item .hm-ans  { font-size:0.8rem; color:#6b7684; }
+
+.retry-btn {
+  padding:14px 40px; background:var(--dark); color:#fff; border:none;
+  border-radius:12px; font-family:'Nunito',sans-serif;
+  font-size:1rem; font-weight:700; cursor:pointer;
+  transition:background .2s, transform .15s;
+}
+.retry-btn:hover { background:#2a3a54; transform:scale(1.03); }
+
+/* Detail modal */
+.det-modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(27,38,56,.6); backdrop-filter:blur(4px);
+  z-index:200; align-items:center; justify-content:center; padding:20px;
+}
+.det-modal-overlay.open { display:flex; }
+.det-modal {
+  background:#fff; border-radius:20px; padding:32px 36px;
+  max-width:500px; width:100%; box-shadow:0 24px 64px rgba(0,0,0,.22);
+  animation:popIn .3s ease; position:relative;
+}
+.det-modal .dm-icon  { font-size:3rem; margin-bottom:10px; }
+.det-modal h3        { font-size:1.5rem; font-weight:900; margin-bottom:10px; }
+.det-modal p         { line-height:1.65; color:#3d4a5c; margin-bottom:12px; }
+.det-modal .dm-rules { background:var(--bg); border-radius:12px; padding:14px 18px; }
+.det-modal .dm-rules h4 { font-size:0.8rem; text-transform:uppercase; letter-spacing:.07em; color:#9aa3ad; margin-bottom:10px; }
+.dm-rule-row { display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #e8ebef; font-size:.93rem; }
+.dm-rule-row:last-child { border-bottom:none; }
+.dm-rule-row .dr-action { font-weight:700; min-width:80px; }
+.dm-rule-row .dr-side   { font-family:'Source Code Pro',monospace; font-weight:700; padding:3px 10px; border-radius:6px; }
+.dr-side.d { background:var(--debe-lt); color:var(--debe); }
+.dr-side.h { background:var(--haber-lt); color:var(--haber); }
+.close-btn {
+  position:absolute; top:14px; right:16px;
+  background:var(--bg); border:none; border-radius:50%;
+  width:36px; height:36px; font-size:1.2rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:#6b7684; transition:background .2s;
+}
+.close-btn:hover { background:#e0e4ea; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="app-badge">Contabilidad Interactiva · Módulo 4</div>
+    <h1>Módulo 4: El Debe y el Haber</h1>
+    <p>Naturaleza de las cuentas contables — Partida doble</p>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('cuenta',this)">🔠 Cuenta en T</button>
+  <button class="tab-btn" onclick="showTab('partida',this)">⚡ Partida Doble</button>
+  <button class="tab-btn" onclick="showTab('juego',this)">🎯 Mini-Juego</button>
+</div>
+
+<!-- ══════════════ TAB 1: CUENTA EN T ══════════════ -->
+<div id="tab-cuenta" class="section active">
+
+  <p class="t-intro">La cuenta en T es la representación gráfica de una cuenta contable.<br>
+  <strong>Toca el DEBE o el HABER</strong> para ver qué tipo de cuentas van en cada lado.</p>
+
+  <!-- Big T -->
+  <div class="t-account-wrap">
+    <div class="t-account-title">📒 CUENTA CONTABLE — FORMA EN "T"</div>
+    <div class="t-account-body">
+      <div class="t-side debe" onclick="toggleTPanel('debe')">
+        <div class="t-side-label">DEBE</div>
+        <div class="t-side-sub">Lado izquierdo · Cargo</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+          <div style="background:var(--debe);color:#fff;border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;">
+            🏦 Activo ▲ aumenta
+          </div>
+          <div style="background:var(--debe);color:#fff;border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;opacity:.8;">
+            📉 Gastos ▲ aumenta
+          </div>
+          <div style="background:rgba(13,107,140,.15);color:var(--debe);border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;">
+            📋 Pasivo ▼ disminuye
+          </div>
+          <div style="background:rgba(13,107,140,.15);color:var(--debe);border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;opacity:.8;">
+            👤 Patrimonio ▼ disminuye
+          </div>
+        </div>
+        <div class="t-side-hint"><span>👆 Toca para más detalle</span></div>
+      </div>
+      <div class="t-side haber" onclick="toggleTPanel('haber')">
+        <div class="t-side-label">HABER</div>
+        <div class="t-side-sub">Lado derecho · Abono</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+          <div style="background:var(--haber);color:#fff;border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;">
+            📋 Pasivo ▲ aumenta
+          </div>
+          <div style="background:var(--haber);color:#fff;border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;opacity:.85;">
+            👤 Patrimonio ▲ aumenta
+          </div>
+          <div style="background:var(--haber);color:#fff;border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;opacity:.7;">
+            📈 Ingresos ▲ aumenta
+          </div>
+          <div style="background:rgba(26,138,74,.15);color:var(--haber);border-radius:10px;padding:10px 14px;font-size:.9rem;font-weight:700;text-align:center;">
+            🏦 Activo ▼ disminuye
+          </div>
+        </div>
+        <div class="t-side-hint"><span>👆 Toca para más detalle</span></div>
+      </div>
+    </div>
+    <div class="t-panel" id="panel-debe">
+      <h3 style="color:var(--debe);">📘 El DEBE (Cargo) — lado izquierdo</h3>
+      <div class="t-panel-grid">
+        <div class="t-panel-card" style="background:var(--debe-lt);">
+          <span class="tpc-icon">🏦</span>
+          <div><span class="tpc-name" style="color:var(--activo);">Activo</span><span class="tpc-desc">Registra entradas de bienes y derechos. Ej: compra de equipo, cobro a clientes.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:#F8F0FF;">
+          <span class="tpc-icon">📉</span>
+          <div><span class="tpc-name" style="color:var(--gasto);">Gastos</span><span class="tpc-desc">Registra el consumo de recursos. Ej: pago de sueldos, factura ENEE.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:#FFF0EF;">
+          <span class="tpc-icon">📋</span>
+          <div><span class="tpc-name" style="color:var(--pasivo);">Pasivo ▼</span><span class="tpc-desc">Cuando se paga una deuda, el pasivo baja por el Debe. Ej: pago de préstamo.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:#F0FFF5;">
+          <span class="tpc-icon">👤</span>
+          <div><span class="tpc-name" style="color:var(--patrim);">Patrimonio ▼</span><span class="tpc-desc">Retiro del dueño o pérdida que reduce el capital. Ej: dividendos repartidos.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="t-panel" id="panel-haber">
+      <h3 style="color:var(--haber);">📗 El HABER (Abono) — lado derecho</h3>
+      <div class="t-panel-grid">
+        <div class="t-panel-card" style="background:#FFF0EF;">
+          <span class="tpc-icon">📋</span>
+          <div><span class="tpc-name" style="color:var(--pasivo);">Pasivo</span><span class="tpc-desc">Registra el nacimiento de deudas. Ej: compra al crédito, préstamo recibido.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:#F0FFF5;">
+          <span class="tpc-icon">👤</span>
+          <div><span class="tpc-name" style="color:var(--patrim);">Patrimonio</span><span class="tpc-desc">Aportaciones del dueño y utilidades. Ej: capital inicial, reserva legal.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:#FFF5E6;">
+          <span class="tpc-icon">📈</span>
+          <div><span class="tpc-name" style="color:var(--ingreso);">Ingresos</span><span class="tpc-desc">Registra ventas, servicios cobrados y rentas. Ej: venta de mercadería en efectivo.</span></div>
+        </div>
+        <div class="t-panel-card" style="background:var(--debe-lt);">
+          <span class="tpc-icon">🏦</span>
+          <div><span class="tpc-name" style="color:var(--activo);">Activo ▼</span><span class="tpc-desc">Salida de bienes o derechos. Ej: pago con banco, venta de equipo.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla naturaleza 5 grupos -->
+  <div class="nat-title">Naturaleza de los 5 grupos de cuentas — Toca cada tarjeta para detalles</div>
+  <div class="nat-grid">
+    <div class="nat-card activo" onclick="openDetail('activo')">
+      <span class="nc-icon">🏦</span>
+      <span class="nc-name">ACTIVO</span>
+      <span class="nc-nat">Naturaleza DEUDORA</span>
+      <span class="nc-rule">Aumenta: DEBE<br>Disminuye: HABER<br>Saldo normal: Deudor</span>
+    </div>
+    <div class="nat-card pasivo" onclick="openDetail('pasivo')">
+      <span class="nc-icon">📋</span>
+      <span class="nc-name">PASIVO</span>
+      <span class="nc-nat">Naturaleza ACREEDORA</span>
+      <span class="nc-rule">Aumenta: HABER<br>Disminuye: DEBE<br>Saldo normal: Acreedor</span>
+    </div>
+    <div class="nat-card patrim" onclick="openDetail('patrim')">
+      <span class="nc-icon">👤</span>
+      <span class="nc-name">PATRIMONIO</span>
+      <span class="nc-nat">Naturaleza ACREEDORA</span>
+      <span class="nc-rule">Aumenta: HABER<br>Disminuye: DEBE<br>Saldo normal: Acreedor</span>
+    </div>
+    <div class="nat-card ingreso" onclick="openDetail('ingreso')">
+      <span class="nc-icon">📈</span>
+      <span class="nc-name">INGRESOS</span>
+      <span class="nc-nat">Naturaleza ACREEDORA</span>
+      <span class="nc-rule">Aumenta: HABER<br>Disminuye: DEBE<br>Saldo normal: Acreedor</span>
+    </div>
+    <div class="nat-card gasto" onclick="openDetail('gasto')">
+      <span class="nc-icon">📉</span>
+      <span class="nc-name">GASTOS</span>
+      <span class="nc-nat">Naturaleza DEUDORA</span>
+      <span class="nc-rule">Aumenta: DEBE<br>Disminuye: HABER<br>Saldo normal: Deudor</span>
+    </div>
+  </div>
+
+  <!-- Mnemónico -->
+  <div class="mnemo-box">
+    <span class="mnemo-icon">🧠</span>
+    <div class="mnemo-content">
+      <h3>Truco mnemónico: "La regla del DAGA y PIHA"</h3>
+      <p>Para recordar qué va en cada lado, usa dos palabras inventadas que agrupan los componentes por su comportamiento natural:</p>
+      <div class="mnemo-row">
+        <div class="mnemo-col d">
+          <h4>DEBE — Naturaleza Deudora</h4>
+          <span class="mnemo-tag d">🏦 Activo</span>
+          <span class="mnemo-tag d">📉 Gastos</span>
+          <p style="font-size:.82rem;color:#93d8f0;margin-top:8px;">"Lo que TIENES y lo que GASTAS → arranca por la izquierda"</p>
+        </div>
+        <div class="mnemo-col h">
+          <h4>HABER — Naturaleza Acreedora</h4>
+          <span class="mnemo-tag h">📋 Pasivo</span>
+          <span class="mnemo-tag h">👤 Patrimonio</span>
+          <span class="mnemo-tag h">📈 Ingresos</span>
+          <p style="font-size:.82rem;color:#a8efc1;margin-top:8px;">"Lo que DEBES, del DUEÑO y lo que GANAS → van a la derecha"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 2: PARTIDA DOBLE ══════════════ -->
+<div id="tab-partida" class="section">
+  <div class="anim-intro">
+    <span class="ai-icon">⚡</span>
+    <div>
+      <h3>Partida Doble: cada operación afecta al menos dos cuentas</h3>
+      <p>Principio de Luca Pacioli (1494) · Vigente en NIIF para PYMES Sección 2.42 · El Debe siempre igual al Haber</p>
+    </div>
+  </div>
+
+  <!-- Scenario tabs -->
+  <div class="scenario-tabs">
+    <button class="sc-tab active" onclick="loadScenario(0,this)">💻 Equipo al crédito</button>
+    <button class="sc-tab" onclick="loadScenario(1,this)">💵 Venta en efectivo</button>
+    <button class="sc-tab" onclick="loadScenario(2,this)">💡 Pago de luz ENEE</button>
+    <button class="sc-tab" onclick="loadScenario(3,this)">🏦 Préstamo bancario</button>
+  </div>
+
+  <!-- Operation description -->
+  <div class="op-desc" id="op-desc"></div>
+
+  <!-- Dual T -->
+  <div class="dual-t" id="dual-t"></div>
+
+  <!-- Step controls -->
+  <div class="step-controls">
+    <button class="step-btn secondary" onclick="resetScenario()">🔄 Reiniciar</button>
+    <button class="step-btn primary"   onclick="nextStep()" id="next-btn">▶ Siguiente paso</button>
+  </div>
+
+  <!-- Journal log -->
+  <div class="step-log">
+    <div class="sl-title">Asiento contable</div>
+    <div class="step-entry-head">
+      <span>#</span><span>Cuenta</span><span>DEBE (L)</span><span>HABER (L)</span>
+    </div>
+    <div id="journal-entries"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TAB 3: MINI-JUEGO ══════════════ -->
+<div id="tab-juego" class="section">
+  <div class="gj-header">
+    <span class="gh-icon">🎯</span>
+    <div>
+      <h3>¿Va al DEBE o al HABER?</h3>
+      <p>Se presenta una cuenta con su situación. Decide si se registra en el DEBE o en el HABER. 10 preguntas.</p>
+    </div>
+  </div>
+
+  <div class="gj-progress">
+    <div class="prog-bar-wrap"><div class="prog-bar" id="gj-prog-bar"></div></div>
+    <div class="prog-label" id="gj-prog-label">0 / 10</div>
+  </div>
+
+  <div id="gj-area">
+    <div class="gj-layout" id="gj-layout">
+      <div class="q-card" id="q-card">
+        <span class="qc-type" id="qc-type"></span>
+        <span class="qc-icon" id="qc-icon">❓</span>
+        <div class="qc-name"  id="qc-name">Cargando...</div>
+        <div class="qc-group" id="qc-group"></div>
+        <div class="qc-question" id="qc-question"></div>
+      </div>
+      <div class="answer-col">
+        <button class="ans-btn debe-btn" onclick="gjAnswer('debe')">
+          <span class="ab-icon">←</span>
+          <span class="ab-label">DEBE</span>
+          <span class="ab-sub">Cargo · lado izquierdo</span>
+        </button>
+        <button class="ans-btn haber-btn" onclick="gjAnswer('haber')">
+          <span class="ab-icon">→</span>
+          <span class="ab-label">HABER</span>
+          <span class="ab-sub">Abono · lado derecho</span>
+        </button>
+      </div>
+      <div class="gj-feedback hidden" id="gj-feedback"></div>
+      <div class="live-score" id="live-score">
+        <div class="ls-item cor"><strong id="ls-cor">0</strong><span>✅ Correctas</span></div>
+        <div class="ls-divider"></div>
+        <div class="ls-item err"><strong id="ls-err">0</strong><span>❌ Incorrectas</span></div>
+        <div class="ls-divider"></div>
+        <div class="ls-item"><strong id="ls-rem">10</strong><span>Restantes</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gj-result" id="gj-result">
+    <div class="confetti-bg" id="confetti-bg"></div>
+    <div class="r-icon"  id="r-icon">🏆</div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-score" id="r-score"></div>
+    <div class="r-msg"   id="r-msg"></div>
+    <div class="r-breakdown" id="r-breakdown"></div>
+    <div class="history-mini">
+      <h4>Detalle de respuestas</h4>
+      <div id="r-history"></div>
+    </div>
+    <button class="retry-btn" onclick="startGame()">🔄 Nuevo intento</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="det-modal-overlay" id="det-modal" onclick="closeDetail(event)">
+  <div class="det-modal">
+    <button class="close-btn" onclick="closeDetailDirect()">✕</button>
+    <div class="dm-icon" id="dm-icon"></div>
+    <h3 id="dm-title"></h3>
+    <p  id="dm-desc"></p>
+    <div class="dm-rules">
+      <h4>Reglas de registro</h4>
+      <div id="dm-rules-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── TABS ───
+function showTab(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── T PANELS ───
+let openPanel = null;
+function toggleTPanel(side) {
+  const p = document.getElementById('panel-' + side);
+  const other = document.getElementById('panel-' + (side==='debe'?'haber':'debe'));
+  other.classList.remove('open');
+  p.classList.toggle('open');
+}
+
+// ─── DETAIL MODAL ───
+const detailData = {
+  activo: {
+    icon:'🏦', title:'ACTIVO — Naturaleza Deudora',
+    desc:'Los activos representan lo que la empresa tiene o controla. Su saldo normal es deudor (izquierda). Piensa: cuando la empresa recibe algo valioso, ese bien entra por el Debe.',
+    rules:[
+      {action:'Compra de equipo',  side:'d', label:'DEBE — activo sube'},
+      {action:'Cobro a un cliente',side:'d', label:'DEBE — banco sube'},
+      {action:'Pago con banco',    side:'h', label:'HABER — banco baja'},
+      {action:'Venta de terreno',  side:'h', label:'HABER — terreno sale'},
+    ]
+  },
+  pasivo: {
+    icon:'📋', title:'PASIVO — Naturaleza Acreedora',
+    desc:'Los pasivos son obligaciones de pago. Su saldo normal es acreedor (derecha). Cuando la empresa contrae una deuda, esa deuda nace en el Haber.',
+    rules:[
+      {action:'Préstamo recibido', side:'h', label:'HABER — deuda nace'},
+      {action:'Compra al crédito', side:'h', label:'HABER — deuda por pagar'},
+      {action:'Pago de préstamo',  side:'d', label:'DEBE — deuda se cancela'},
+      {action:'Pago a proveedor',  side:'d', label:'DEBE — cuenta por pagar baja'},
+    ]
+  },
+  patrim: {
+    icon:'👤', title:'PATRIMONIO — Naturaleza Acreedora',
+    desc:'El patrimonio es el interés residual de los propietarios. Su saldo normal es acreedor. El capital aportado y las utilidades van al Haber; los retiros y pérdidas van al Debe.',
+    rules:[
+      {action:'Aportación del dueño', side:'h', label:'HABER — capital sube'},
+      {action:'Utilidad del período',  side:'h', label:'HABER — patrimonio sube'},
+      {action:'Retiro del socio',      side:'d', label:'DEBE — patrimonio baja'},
+      {action:'Pérdida del ejercicio', side:'d', label:'DEBE — patrimonio baja'},
+    ]
+  },
+  ingreso: {
+    icon:'📈', title:'INGRESOS — Naturaleza Acreedora',
+    desc:'Los ingresos aumentan el patrimonio. Su saldo normal es acreedor. Cada venta o servicio cobrado se abona (va al Haber). Al final del período se cierran contra la cuenta de resultados.',
+    rules:[
+      {action:'Venta de mercadería', side:'h', label:'HABER — ingreso registrado'},
+      {action:'Servicio cobrado',    side:'h', label:'HABER — ingreso por servicio'},
+      {action:'Cierre del período',  side:'d', label:'DEBE — se cierra la cuenta'},
+      {action:'Devolución de venta', side:'d', label:'DEBE — ingreso se revierte'},
+    ]
+  },
+  gasto: {
+    icon:'📉', title:'GASTOS — Naturaleza Deudora',
+    desc:'Los gastos disminuyen el patrimonio. Su saldo normal es deudor. Cada desembolso operativo o financiero se carga (va al Debe). Al cierre se transfieren contra utilidades.',
+    rules:[
+      {action:'Pago de sueldos',   side:'d', label:'DEBE — gasto registrado'},
+      {action:'Factura de ENEE',   side:'d', label:'DEBE — gasto de luz'},
+      {action:'Cierre del período',side:'h', label:'HABER — se cierra contra resultados'},
+      {action:'Recuperación',      side:'h', label:'HABER — se revierte el gasto'},
+    ]
+  },
+};
+
+function openDetail(type) {
+  const d = detailData[type];
+  document.getElementById('dm-icon').textContent  = d.icon;
+  document.getElementById('dm-title').textContent = d.title;
+  document.getElementById('dm-desc').textContent  = d.desc;
+  document.getElementById('dm-rules-body').innerHTML = d.rules.map(r => `
+    <div class="dm-rule-row">
+      <span class="dr-action">${r.action}</span>
+      <span class="dr-side ${r.side}">${r.side==='d'?'DEBE':'HABER'}</span>
+      <span style="font-size:.82rem;color:#6b7684;">${r.label}</span>
+    </div>`).join('');
+  document.getElementById('det-modal').classList.add('open');
+}
+function closeDetail(e) { if(e.target===document.getElementById('det-modal')) closeDetailDirect(); }
+function closeDetailDirect() { document.getElementById('det-modal').classList.remove('open'); }
+
+// ─── SCENARIOS (Partida Doble) ───
+const scenarios = [
+  {
+    id:0,
+    icon:'💻',
+    title:'Compra de equipo de cómputo en La Curacao al crédito',
+    detail:'La Ferretería "El Maestro" compra 2 computadoras en La Curacao por L 18,000 al crédito a 12 meses.',
+    norm:'NIIF PYMES Sección 17 — Propiedades, Planta y Equipo · Partida Doble (Luca Pacioli 1494)',
+    accounts:[
+      {name:'Equipo de Cómputo',    group:'activo',  color:'var(--activo)', icon:'💻', amount:18000, side:'debe'},
+      {name:'Cuentas por Pagar (La Curacao)', group:'pasivo', color:'var(--pasivo)', icon:'📋', amount:18000, side:'haber'},
+    ],
+    steps:[
+      {text:'La empresa recibe los equipos → el Activo (Equipo de Cómputo) aumenta → va al DEBE', acct:0},
+      {text:'La empresa queda debiendo → el Pasivo (Cuentas por Pagar) aumenta → va al HABER', acct:1},
+    ]
+  },
+  {
+    id:1,
+    icon:'💵',
+    title:'Venta de mercadería en efectivo L 5,000',
+    detail:'Un cliente compra materiales en la ferretería y paga L 5,000 en efectivo en caja.',
+    norm:'NIIF PYMES Sección 23 — Ingresos de Actividades Ordinarias',
+    accounts:[
+      {name:'Caja',              group:'activo',  color:'var(--activo)', icon:'💵', amount:5000, side:'debe'},
+      {name:'Ingresos por Ventas', group:'ingreso', color:'var(--ingreso)', icon:'📈', amount:5000, side:'haber'},
+    ],
+    steps:[
+      {text:'Entra dinero en caja → el Activo (Caja) aumenta → va al DEBE', acct:0},
+      {text:'La empresa generó un ingreso → Ingresos por Ventas aumenta → va al HABER', acct:1},
+    ]
+  },
+  {
+    id:2,
+    icon:'💡',
+    title:'Pago de factura de luz ENEE L 800',
+    detail:'La ferretería paga L 800 de electricidad a ENEE con cheque del Banco de Honduras, S.A..',
+    norm:'NIIF PYMES Sección 5 — Estado del Resultado Integral',
+    accounts:[
+      {name:'Gasto de Electricidad (ENEE)', group:'gasto',  color:'var(--gasto)', icon:'💡', amount:800, side:'debe'},
+      {name:'Banco de Honduras, S.A.',              group:'activo', color:'var(--activo)', icon:'🏦', amount:800, side:'haber'},
+    ],
+    steps:[
+      {text:'Se incurre en un gasto de luz → Gasto de Electricidad aumenta → va al DEBE', acct:0},
+      {text:'Sale dinero del banco → el Activo (Banco) disminuye → va al HABER', acct:1},
+    ]
+  },
+  {
+    id:3,
+    icon:'🏦',
+    title:'Préstamo recibido de Banco de Honduras, S.A. L 50,000',
+    detail:'La ferretería recibe un préstamo de L 50,000 a 3 años del Banco Banco de Honduras, S.A., depositado en cuenta corriente.',
+    norm:'NIIF PYMES Sección 11 — Instrumentos Financieros Básicos',
+    accounts:[
+      {name:'Banco Banco de Honduras, S.A. (cuenta corriente)', group:'activo', color:'var(--activo)', icon:'🏦', amount:50000, side:'debe'},
+      {name:'Préstamo Bancario L/P (Banco de Honduras, S.A.)',  group:'pasivo', color:'var(--pasivo)', icon:'📋', amount:50000, side:'haber'},
+    ],
+    steps:[
+      {text:'Entra dinero al banco → el Activo (Banco) aumenta → va al DEBE', acct:0},
+      {text:'La empresa asume una deuda → el Pasivo (Préstamo) aumenta → va al HABER', acct:1},
+    ]
+  },
+];
+
+let currentScenario = 0;
+let currentStep = 0;
+let tEntries = {};
+
+function loadScenario(idx, btn) {
+  currentScenario = idx;
+  currentStep = 0;
+  tEntries = {};
+  document.querySelectorAll('.sc-tab').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const sc = scenarios[idx];
+
+  // Op desc
+  document.getElementById('op-desc').innerHTML = `
+    <div class="od-label">Operación</div>
+    <div class="od-text">${sc.icon} ${sc.title}</div>
+    <div class="od-detail">${sc.detail}</div>
+    <div class="od-norm">📖 Base normativa: ${sc.norm}</div>`;
+
+  // Build dual T
+  const dt = document.getElementById('dual-t');
+  dt.innerHTML = sc.accounts.map((a,i) => `
+    <div class="t-mini-wrap" id="tmini-${i}">
+      <div class="t-mini-title" style="background:${a.color};">${a.icon} ${a.name}</div>
+      <div class="t-mini-body">
+        <div class="t-mini-side d">
+          <div class="t-mini-side-lbl">DEBE</div>
+          <div id="td-${i}-debe"></div>
+        </div>
+        <div class="t-mini-side h">
+          <div class="t-mini-side-lbl">HABER</div>
+          <div id="td-${i}-haber"></div>
+        </div>
+      </div>
+      <div class="t-mini-foot">
+        <span style="color:#9aa3ad;">Saldo</span>
+        <span class="tf-saldo" id="tf-saldo-${i}" style="color:${a.color};">L 0</span>
+      </div>
+    </div>
+    ${i < sc.accounts.length-1 ? '<div class="dual-t-equal">=</div>' : ''}`
+  ).join('');
+
+  // Clear journal
+  document.getElementById('journal-entries').innerHTML = '';
+  document.getElementById('next-btn').textContent = '▶ Siguiente paso';
+  document.getElementById('next-btn').disabled = false;
+}
+
+function fmt(n) { return 'L ' + n.toLocaleString('es-HN'); }
+
+function nextStep() {
+  const sc = scenarios[currentScenario];
+  if (currentStep >= sc.steps.length) return;
+  const step = sc.steps[currentStep];
+  const acct = sc.accounts[step.acct];
+  const side = acct.side;
+
+  // Add entry to T
+  const container = document.getElementById(`td-${step.acct}-${side}`);
+  const entry = document.createElement('div');
+  entry.className = `t-mini-entry ${side}-entry`;
+  entry.innerHTML = `
+    <span class="te-name">${acct.name}</span>
+    <span class="te-amount">${fmt(acct.amount)}</span>`;
+  container.appendChild(entry);
+  requestAnimationFrame(() => entry.classList.add('show'));
+
+  // Update saldo
+  const saldoEl = document.getElementById(`tf-saldo-${step.acct}`);
+  saldoEl.textContent = fmt(acct.amount);
+
+  // Journal entry
+  const je = document.getElementById('journal-entries');
+  const row = document.createElement('div');
+  row.className = 'step-entry';
+  row.style.animationDelay = '0s';
+  row.innerHTML = `
+    <span class="se-step">${currentStep+1}</span>
+    <span class="se-text" style="color:${acct.color}">${acct.icon} ${acct.name}</span>
+    <span class="se-debe">${side==='debe' ? fmt(acct.amount) : ''}</span>
+    <span class="se-haber">${side==='haber' ? fmt(acct.amount) : ''}</span>`;
+  je.appendChild(row);
+
+  currentStep++;
+  if (currentStep >= sc.steps.length) {
+    document.getElementById('next-btn').textContent = '✅ Completado — DEBE = HABER';
+    document.getElementById('next-btn').disabled = true;
+  }
+}
+
+function resetScenario() { loadScenario(currentScenario, null); }
+
+// ─── MINI-JUEGO ───
+const gjQuestions = [
+  { icon:'🏦', name:'Banco de Honduras, S.A.',         group:'Activo',     situation:'La empresa recibe dinero en su cuenta bancaria',        answer:'debe',  why:'El Activo (Banco) aumenta → DEBE' },
+  { icon:'📦', name:'Inventario de mercadería', group:'Activo',     situation:'Se compra mercadería para la venta',                    answer:'debe',  why:'El Activo (Inventario) aumenta → DEBE' },
+  { icon:'📋', name:'Cuentas por Pagar',        group:'Pasivo',     situation:'La empresa compra materiales al crédito',               answer:'haber', why:'El Pasivo (Deuda) aumenta → HABER' },
+  { icon:'👤', name:'Capital Social',           group:'Patrimonio', situation:'El dueño aporta capital a la empresa',                  answer:'haber', why:'El Patrimonio aumenta → HABER' },
+  { icon:'📈', name:'Ingresos por Ventas',      group:'Ingresos',   situation:'La ferretería vende productos a un cliente',            answer:'haber', why:'Los Ingresos aumentan → HABER' },
+  { icon:'💡', name:'Gasto de Electricidad',    group:'Gastos',     situation:'Se paga la factura de luz ENEE',                        answer:'debe',  why:'El Gasto aumenta → DEBE' },
+  { icon:'🚛', name:'Vehículo de Reparto',      group:'Activo',     situation:'La empresa adquiere un camión de entrega',              answer:'debe',  why:'El Activo aumenta → DEBE' },
+  { icon:'🏦', name:'Préstamo Bancario',        group:'Pasivo',     situation:'Se recibe un crédito de Banco de Honduras, S.A. a 5 años',            answer:'haber', why:'El Pasivo (Préstamo) nace → HABER' },
+  { icon:'👷', name:'Gasto de Sueldos',         group:'Gastos',     situation:'Se paga la nómina quincenal de los empleados',          answer:'debe',  why:'El Gasto aumenta → DEBE' },
+  { icon:'💰', name:'Utilidades Retenidas',     group:'Patrimonio', situation:'Se registra la utilidad del período anterior',          answer:'haber', why:'El Patrimonio aumenta → HABER' },
+  { icon:'💵', name:'Caja',                     group:'Activo',     situation:'El cliente paga en efectivo en la ferretería',          answer:'debe',  why:'El Activo (Caja) aumenta → DEBE' },
+  { icon:'🏛️', name:'Reserva Legal 5%',        group:'Patrimonio', situation:'Se constituye la reserva legal obligatoria del período', answer:'haber', why:'El Patrimonio aumenta → HABER' },
+  { icon:'🏠', name:'Gasto de Alquiler',        group:'Gastos',     situation:'Se paga el alquiler mensual del local en SPS',          answer:'debe',  why:'El Gasto aumenta → DEBE' },
+  { icon:'📄', name:'Cuentas por Cobrar',       group:'Activo',     situation:'Se vende a crédito — el cliente queda debiendo',        answer:'debe',  why:'El Activo (por cobrar) aumenta → DEBE' },
+  { icon:'📊', name:'ISR por Pagar',            group:'Pasivo',     situation:'Se calcula el impuesto sobre la renta del período',     answer:'haber', why:'El Pasivo (impuesto) nace → HABER' },
+];
+
+let gjDeck=[], gjIdx=0, gjCorrect=0, gjError=0, gjHistory=[];
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+function startGame(){
+  gjDeck    = shuffle(gjQuestions).slice(0,10);
+  gjIdx=0; gjCorrect=0; gjError=0; gjHistory=[];
+  document.getElementById('gj-result').style.display = 'none';
+  document.getElementById('gj-area').style.display   = 'block';
+  document.getElementById('gj-feedback').className   = 'gj-feedback hidden';
+  updateLiveScore();
+  updateGjProgress();
+  loadGjQ();
+}
+
+function loadGjQ(){
+  if(gjIdx>=gjDeck.length){ endGame(); return; }
+  const q = gjDeck[gjIdx];
+  const typeColors = {Activo:'var(--activo)',Pasivo:'var(--pasivo)',Patrimonio:'var(--patrim)',Ingresos:'var(--ingreso)',Gastos:'var(--gasto)'};
+  const typeNat    = {Activo:'Naturaleza DEUDORA',Pasivo:'Naturaleza ACREEDORA',Patrimonio:'Naturaleza ACREEDORA',Ingresos:'Naturaleza ACREEDORA',Gastos:'Naturaleza DEUDORA'};
+  const typeBg     = {Activo:'var(--debe-lt)',Pasivo:'var(--haber-lt)',Patrimonio:'var(--haber-lt)',Ingresos:'var(--haber-lt)',Gastos:'var(--debe-lt)'};
+  const c = typeColors[q.group];
+  document.getElementById('qc-type').textContent = typeNat[q.group];
+  document.getElementById('qc-type').style.background = typeBg[q.group];
+  document.getElementById('qc-type').style.color      = c;
+  document.getElementById('qc-icon').textContent   = q.icon;
+  document.getElementById('qc-name').textContent   = q.name;
+  document.getElementById('qc-name').style.color   = c;
+  document.getElementById('qc-group').textContent  = '📂 Grupo: ' + q.group;
+  document.getElementById('qc-question').textContent = '❓ Situación: ' + q.situation;
+  document.getElementById('gj-feedback').className = 'gj-feedback hidden';
+  document.getElementById('q-card').style.animation = 'none';
+  void document.getElementById('q-card').offsetWidth;
+  document.getElementById('q-card').style.animation = 'cardIn .3s ease';
+  document.querySelectorAll('.ans-btn').forEach(b => b.disabled=false);
+}
+
+function gjAnswer(side){
+  document.querySelectorAll('.ans-btn').forEach(b => b.disabled=true);
+  const q = gjDeck[gjIdx];
+  const correct = side === q.answer;
+  if(correct) gjCorrect++; else gjError++;
+  gjHistory.push({...q, chosen:side, correct});
+  const fb = document.getElementById('gj-feedback');
+  fb.className = 'gj-feedback ' + (correct?'correct':'incorrect');
+  fb.textContent = correct
+    ? `✅ ¡Correcto! ${q.why}`
+    : `❌ Era el ${q.answer.toUpperCase()} — ${q.why}`;
+  updateLiveScore();
+  gjIdx++;
+  updateGjProgress();
+  setTimeout(()=>loadGjQ(), correct?900:1600);
+}
+
+function updateLiveScore(){
+  document.getElementById('ls-cor').textContent = gjCorrect;
+  document.getElementById('ls-err').textContent = gjError;
+  document.getElementById('ls-rem').textContent = Math.max(0, gjDeck.length - gjIdx);
+}
+
+function updateGjProgress(){
+  const pct = gjDeck.length>0 ? (gjIdx/gjDeck.length*100) : 0;
+  document.getElementById('gj-prog-bar').style.width  = pct+'%';
+  document.getElementById('gj-prog-label').textContent = `${gjIdx} / ${gjDeck.length}`;
+}
+
+function endGame(){
+  document.getElementById('gj-area').style.display   = 'none';
+  const res = document.getElementById('gj-result');
+  res.style.display = 'block';
+  const pct = Math.round(gjCorrect/gjDeck.length*100);
+  document.getElementById('r-icon').textContent  = pct===100?'🏆':pct>=70?'🎉':'📚';
+  document.getElementById('r-title').textContent = pct>=70?'¡Buen manejo del Debe y el Haber!':'Sigue practicando la naturaleza de cuentas';
+  document.getElementById('r-score').textContent = `${gjCorrect} / ${gjDeck.length}`;
+  document.getElementById('r-msg').textContent   =
+    pct===100?'¡Perfecto! Dominas la partida doble. Luca Pacioli estaría orgulloso.'
+    :pct>=70 ?`${pct}% de aciertos. Repasa las cuentas que fallaste en el explorador.`
+    :pct>=50 ?`${pct}% de aciertos. Revisa la tabla de naturalezas y el mnemónico.`
+    :         `${pct}% de aciertos. Empieza desde la Cuenta en T y practica de nuevo.`;
+  document.getElementById('r-breakdown').innerHTML = `
+    <div class="rb-card cor"><strong>${gjCorrect}</strong><span>✅ Correctas</span></div>
+    <div class="rb-card err"><strong>${gjError}</strong><span>❌ Incorrectas</span></div>
+    <div class="rb-card pct"><strong>${pct}%</strong><span>🎯 Puntaje</span></div>`;
+  document.getElementById('r-history').innerHTML = gjHistory.map(h=>`
+    <div class="hm-item">
+      <span class="hm-r">${h.correct?'✅':'❌'}</span>
+      <span class="hm-name">${h.icon} ${h.name}</span>
+      <span class="hm-ans">${h.correct?h.answer.toUpperCase():'Elegiste '+h.chosen.toUpperCase()+' · Era '+h.answer.toUpperCase()}</span>
+    </div>`).join('');
+  if(pct>=70) spawnConfetti();
+}
+
+function spawnConfetti(){
+  const bg = document.getElementById('confetti-bg');
+  bg.innerHTML='';
+  const colors=['#F4A811','#1A8A4A','#0D6B8C','#C0392B','#7B2FBE','#fff','#a8efc1'];
+  for(let i=0;i<55;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.left=Math.random()*100+'%';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.width=(6+Math.random()*8)+'px';
+    el.style.height=(6+Math.random()*8)+'px';
+    el.style.borderRadius=Math.random()>.5?'50%':'2px';
+    el.style.animationDuration=(1.8+Math.random()*2)+'s';
+    el.style.animationDelay=(Math.random()*1.2)+'s';
+    bg.appendChild(el);
+  }
+}
+
+// ─── INIT ───
+loadScenario(0, null);
+startGame();
+</script>
+</body>
+</html>
