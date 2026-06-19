@@ -41,9 +41,9 @@ body{
   flex-direction:column;
 }
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    HERO HEADER
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .hero{
   background:linear-gradient(135deg,var(--dark) 0%, var(--dark2) 60%, #1a3a5c 100%);
   color:#fff;
@@ -107,9 +107,9 @@ body{
 }
 .hero-badge.gold{background:var(--gold);color:var(--dark);border-color:var(--gold);}
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    PROGRESS STRIP
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .progress-strip{
   background:#fff;
   border-bottom:2px solid #e8edf4;
@@ -128,9 +128,9 @@ body{
 .ps-chip.done{background:var(--gold);color:var(--dark);}
 .ps-tip{font-size:.78rem;color:#9aa3ad;font-style:italic;}
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    MAIN GRID
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .main{
   flex:1;
   padding:28px 20px 20px;
@@ -157,9 +157,9 @@ body{
 @media(max-width:860px){.modules-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.modules-grid{grid-template-columns:1fr;}}
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    MODULE CARDS
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .mod-card{
   border-radius:var(--card-r);
   overflow:hidden;
@@ -253,9 +253,9 @@ body{
   text-transform:uppercase;letter-spacing:.05em;
 }
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    INSTRUCTIONS PANEL
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .instructions{
   background:#fff;
   border-radius:var(--card-r);
@@ -280,9 +280,9 @@ body{
 .inst-item:last-child{border-bottom:none;}
 .inst-item .ii-icon{font-size:1.2rem;flex-shrink:0;}
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    FOOTER
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 footer{
   background:var(--dark);
   color:#b0c4de;
@@ -295,9 +295,9 @@ footer strong{color:var(--gold);}
 footer .f-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
 footer .f-divider{opacity:.3;}
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    TOUCH RIPPLE
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 @keyframes ripple{
   0%{transform:scale(0);opacity:.4;}
   100%{transform:scale(4);opacity:0;}
@@ -310,9 +310,9 @@ footer .f-divider{opacity:.3;}
   pointer-events:none;z-index:10;
 }
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    BACK BUTTON NOTE
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .back-note{
   background:var(--gold-lt);
   border-left:4px solid var(--gold);
@@ -323,9 +323,9 @@ footer .f-divider{opacity:.3;}
   margin-bottom:20px;
 }
 
-/* âââââââââââââââââââââââââââââââ
+/* ═══════════════════════════════
    SCROLL ANIMATION
-âââââââââââââââââââââââââââââââ */
+═══════════════════════════════ */
 .mod-card{opacity:0;transform:translateY(20px);}
 .mod-card.visible{
   opacity:1;transform:translateY(0);
@@ -335,48 +335,48 @@ footer .f-divider{opacity:.3;}
 </head>
 <body>
 
-<!-- âââ HERO âââ -->
+<!-- ═══ HERO ═══ -->
 <div class="hero">
-  <div class="app-logo"><span>ð</span></div>
+  <div class="app-logo"><span>🎓</span></div>
   <h1>Contabilidad <em>Interactiva</em></h1>
   <p>Módulos didácticos táctiles para el aprendizaje de Principios de Contabilidad</p>
   <div class="hero-badges">
-    <span class="hero-badge gold">ð 10 Módulos</span>
-    <span class="hero-badge">ð­ð³ Empresa Hondureña</span>
-    <span class="hero-badge">ð± Táctil & Offline</span>
-    <span class="hero-badge">ð¯ NIIF PYMES</span>
+    <span class="hero-badge gold">📚 10 Módulos</span>
+    <span class="hero-badge">🇭🇳 Empresa Hondureña</span>
+    <span class="hero-badge">📱 Táctil & Offline</span>
+    <span class="hero-badge">🎯 NIIF PYMES</span>
   </div>
 </div>
 
-<!-- âââ PROGRESS STRIP âââ -->
+<!-- ═══ PROGRESS STRIP ═══ -->
 <div class="progress-strip">
-  <span class="ps-label">ð Módulos disponibles</span>
+  <span class="ps-label">📊 Módulos disponibles</span>
   <div class="ps-chips" id="ps-chips"></div>
   <span class="ps-tip">Toca una tarjeta para comenzar</span>
 </div>
 
-<!-- âââ MAIN âââ -->
+<!-- ═══ MAIN ═══ -->
 <div class="main">
 
   <!-- Back button instructions -->
   <div class="back-note">
-    ð¡ <strong>Navegación:</strong> Al abrir un módulo, usa el botón <strong>â Atrás</strong> de tu navegador o dispositivo para regresar a este menú. En pantallas táctiles, desliza desde el borde izquierdo. Todos los módulos funcionan <strong>sin conexión a internet</strong>.
+    💡 <strong>Navegación:</strong> Al abrir un módulo, usa el botón <strong>← Atrás</strong> de tu navegador o dispositivo para regresar a este menú. En pantallas táctiles, desliza desde el borde izquierdo. Todos los módulos funcionan <strong>sin conexión a internet</strong>.
   </div>
 
   <!-- Instructions -->
   <div class="section-label">¿Cómo usar los módulos?</div>
   <div class="instructions">
     <div class="inst-block">
-      <h4>ð Estructura de cada módulo</h4>
-      <div class="inst-item"><span class="ii-icon">ð</span><span><strong>Concepto:</strong> Explicación visual con ejemplos hondureños (Ferretería, Distribuidora, SAR, ENEE)</span></div>
-      <div class="inst-item"><span class="ii-icon">â¡</span><span><strong>Simulación:</strong> Interactúa con casos prácticos paso a paso</span></div>
-      <div class="inst-item"><span class="ii-icon">ð¯</span><span><strong>Mini-Juego:</strong> Evalúa tu comprensión con puntaje inmediato</span></div>
+      <h4>📋 Estructura de cada módulo</h4>
+      <div class="inst-item"><span class="ii-icon">📘</span><span><strong>Concepto:</strong> Explicación visual con ejemplos hondureños (Ferretería, Distribuidora, SAR, ENEE)</span></div>
+      <div class="inst-item"><span class="ii-icon">⚡</span><span><strong>Simulación:</strong> Interactúa con casos prácticos paso a paso</span></div>
+      <div class="inst-item"><span class="ii-icon">🎯</span><span><strong>Mini-Juego:</strong> Evalúa tu comprensión con puntaje inmediato</span></div>
     </div>
     <div class="inst-block">
-      <h4>ð Recomendaciones</h4>
-      <div class="inst-item"><span class="ii-icon">1ï¸â£</span><span>Estudia los módulos <strong>en orden</strong> â cada uno construye sobre el anterior</span></div>
-      <div class="inst-item"><span class="ii-icon">ð</span><span>Repite el mini-juego hasta obtener <strong>70% o más</strong> antes de avanzar</span></div>
-      <div class="inst-item"><span class="ii-icon">ð</span><span>Complementa con el libro de texto <strong>Principios de Contabilidad</strong> Contabilidad Interactiva</span></div>
+      <h4>📌 Recomendaciones</h4>
+      <div class="inst-item"><span class="ii-icon">1ï¸⃣</span><span>Estudia los módulos <strong>en orden</strong> — cada uno construye sobre el anterior</span></div>
+      <div class="inst-item"><span class="ii-icon">🔁</span><span>Repite el mini-juego hasta obtener <strong>70% o más</strong> antes de avanzar</span></div>
+      <div class="inst-item"><span class="ii-icon">📖</span><span>Complementa con el libro de texto <strong>Principios de Contabilidad</strong> Contabilidad Interactiva</span></div>
     </div>
   </div>
 
@@ -386,7 +386,7 @@ footer .f-divider{opacity:.3;}
 
 </div>
 
-<!-- âââ FOOTER âââ -->
+<!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="f-row">
     <span style="font-size:.85rem;">Herramienta didáctica interactiva desarrollada por</span>
@@ -396,7 +396,7 @@ footer .f-divider{opacity:.3;}
     <a href="mailto:juancreyes.hn@gmail.com"
        style="color:var(--gold);text-decoration:none;font-weight:700;transition:opacity .2s;"
        onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
-      âï¸ juancreyes.hn@gmail.com
+      ✉ï¸ juancreyes.hn@gmail.com
     </a>
   </div>
   <div style="margin-top:6px;font-size:.75rem;opacity:.55;">
@@ -405,12 +405,12 @@ footer .f-divider{opacity:.3;}
 </footer>
 
 <script>
-// âââ MODULE DATA âââ
+// ═══ MODULE DATA ═══
 const MODULES = [
   {
     id: 1,
     file: 'modulo1_ecuacion_contable.html',
-    icon: 'âï¸',
+    icon: '⚖ï¸',
     name: 'La Ecuación Contable',
     desc: 'Activo = Pasivo + Patrimonio. Fundamento de toda la contabilidad.',
     tag: 'Base fundamental',
@@ -421,9 +421,9 @@ const MODULES = [
   {
     id: 2,
     file: 'modulo2_componentes.html',
-    icon: 'ð³',
+    icon: '🌳',
     name: 'Subcuentas por Componente',
-    desc: 'Activo Circulante/Corriente, No Corriente, Pasivo, Patrimonio â con ISV 15%.',
+    desc: 'Activo Circulante/Corriente, No Corriente, Pasivo, Patrimonio — con ISV 15%.',
     tag: 'Clasificación',
     color: '#1565C0',
     colorLt: '#E3F2FD',
@@ -432,7 +432,7 @@ const MODULES = [
   {
     id: 3,
     file: 'modulo3_ingresos_gastos.html',
-    icon: 'ð',
+    icon: '📈',
     name: 'Ingresos y Gastos',
     desc: 'Cómo afectan al Patrimonio. Termómetro animado del resultado del período.',
     tag: 'Estado de Resultados',
@@ -443,7 +443,7 @@ const MODULES = [
   {
     id: 4,
     file: 'modulo4_naturaleza_cuentas.html',
-    icon: 'ð',
+    icon: '📖',
     name: 'Naturaleza de las Cuentas',
     desc: 'El Debe y el Haber. Cuentas deudoras y acreedoras. Partida doble.',
     tag: 'Debe · Haber',
@@ -454,7 +454,7 @@ const MODULES = [
   {
     id: 5,
     file: 'modulo5_libro_diario.html',
-    icon: 'âï¸',
+    icon: '✏ï¸',
     name: 'El Libro Diario',
     desc: 'Registro cronológico de asientos. Partida doble. ISV 15% en cada operación.',
     tag: 'ISV 15% incluido',
@@ -465,7 +465,7 @@ const MODULES = [
   {
     id: 6,
     file: 'modulo6_libro_mayor.html',
-    icon: 'ð',
+    icon: '📋',
     name: 'El Libro Mayor',
     desc: 'Mayorización animada. Cuentas T con saldos. Balance de Comprobación.',
     tag: 'Mayorización',
@@ -476,7 +476,7 @@ const MODULES = [
   {
     id: 7,
     file: 'modulo7_estados_financieros.html',
-    icon: 'ðï¸',
+    icon: '🏛ï¸',
     name: 'Estados Financieros',
     desc: 'Balance General y Estado de Resultados (P&G). Conexión entre ambos estados.',
     tag: 'Balance · P&G',
@@ -487,7 +487,7 @@ const MODULES = [
   {
     id: 8,
     file: 'modulo8_ciclo_contable.html',
-    icon: 'ð',
+    icon: '🔄',
     name: 'El Ciclo Contable',
     desc: 'Simulación completa: 7 estaciones desde la apertura hasta el cierre formal.',
     tag: 'Ciclo completo',
@@ -498,7 +498,7 @@ const MODULES = [
   {
     id: 9,
     file: 'modulo9_asientos_ajuste.html',
-    icon: 'ð§',
+    icon: '🔧',
     name: 'Asientos de Ajuste',
     desc: 'Los 4 tipos: prepagados, diferidos, gastos devengados e ingresos devengados.',
     tag: 'NIIF PYMES Sec.2.36',
@@ -509,7 +509,7 @@ const MODULES = [
   {
     id: 10,
     file: 'modulo10_hoja_trabajo.html',
-    icon: 'ð',
+    icon: '📊',
     name: 'La Hoja de Trabajo',
     desc: 'Planilla de 10 columnas. Del BC sin ajustar hasta los Estados Financieros.',
     tag: '10 columnas',
@@ -519,7 +519,7 @@ const MODULES = [
   },
 ];
 
-// âââ BUILD CHIPS âââ
+// ═══ BUILD CHIPS ═══
 function buildChips() {
   const container = document.getElementById('ps-chips');
   MODULES.forEach(m => {
@@ -534,7 +534,7 @@ function buildChips() {
   });
 }
 
-// âââ BUILD CARDS âââ
+// ═══ BUILD CARDS ═══
 function buildCards() {
   const grid = document.getElementById('modules-grid');
   MODULES.forEach((m, i) => {
@@ -552,7 +552,7 @@ function buildCards() {
         <div class="mc-desc">${m.desc}</div>
         <div class="mc-footer">
           <span class="mc-tag" style="background:${m.colorLt};color:${m.color};">${m.tag}</span>
-          <span class="mc-arrow">â</span>
+          <span class="mc-arrow">→</span>
         </div>
       </div>`;
 
@@ -574,7 +574,7 @@ function buildCards() {
   });
 }
 
-// âââ SCROLL REVEAL âââ
+// ═══ SCROLL REVEAL ═══
 function revealCards() {
   const cards = document.querySelectorAll('.mod-card');
   const io = new IntersectionObserver((entries) => {
@@ -588,7 +588,7 @@ function revealCards() {
   cards.forEach(c => io.observe(c));
 }
 
-// âââ INIT âââ
+// ═══ INIT ═══
 buildChips();
 buildCards();
 // Small delay so CSS transition kicks in
