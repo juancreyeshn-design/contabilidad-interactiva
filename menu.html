@@ -17,7 +17,7 @@
   --shadow-lg: 0 16px 48px rgba(0,0,0,0.18);
   --card-r:    20px;
 
-  /* Módulo colors */
+  /* MÃ³dulo colors */
   --m1:  #0D6B8C; --m1-lt:  #E0F4FA;
   --m2:  #1565C0; --m2-lt:  #E3F2FD;
   --m3:  #2E7D32; --m3-lt:  #E8F5E9;
@@ -41,9 +41,9 @@ body{
   flex-direction:column;
 }
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    HERO HEADER
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .hero{
   background:linear-gradient(135deg,var(--dark) 0%, var(--dark2) 60%, #1a3a5c 100%);
   color:#fff;
@@ -107,9 +107,9 @@ body{
 }
 .hero-badge.gold{background:var(--gold);color:var(--dark);border-color:var(--gold);}
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    PROGRESS STRIP
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .progress-strip{
   background:#fff;
   border-bottom:2px solid #e8edf4;
@@ -128,9 +128,9 @@ body{
 .ps-chip.done{background:var(--gold);color:var(--dark);}
 .ps-tip{font-size:.78rem;color:#9aa3ad;font-style:italic;}
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    MAIN GRID
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .main{
   flex:1;
   padding:28px 20px 20px;
@@ -157,9 +157,9 @@ body{
 @media(max-width:860px){.modules-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.modules-grid{grid-template-columns:1fr;}}
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    MODULE CARDS
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .mod-card{
   border-radius:var(--card-r);
   overflow:hidden;
@@ -253,9 +253,9 @@ body{
   text-transform:uppercase;letter-spacing:.05em;
 }
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    INSTRUCTIONS PANEL
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .instructions{
   background:#fff;
   border-radius:var(--card-r);
@@ -280,9 +280,9 @@ body{
 .inst-item:last-child{border-bottom:none;}
 .inst-item .ii-icon{font-size:1.2rem;flex-shrink:0;}
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    FOOTER
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 footer{
   background:var(--dark);
   color:#b0c4de;
@@ -295,9 +295,9 @@ footer strong{color:var(--gold);}
 footer .f-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
 footer .f-divider{opacity:.3;}
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    TOUCH RIPPLE
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 @keyframes ripple{
   0%{transform:scale(0);opacity:.4;}
   100%{transform:scale(4);opacity:0;}
@@ -310,9 +310,9 @@ footer .f-divider{opacity:.3;}
   pointer-events:none;z-index:10;
 }
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    BACK BUTTON NOTE
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .back-note{
   background:var(--gold-lt);
   border-left:4px solid var(--gold);
@@ -323,9 +323,9 @@ footer .f-divider{opacity:.3;}
   margin-bottom:20px;
 }
 
-/* ═══════════════════════════════
+/* âââââââââââââââââââââââââââââââ
    SCROLL ANIMATION
-═══════════════════════════════ */
+âââââââââââââââââââââââââââââââ */
 .mod-card{opacity:0;transform:translateY(20px);}
 .mod-card.visible{
   opacity:1;transform:translateY(0);
@@ -335,83 +335,83 @@ footer .f-divider{opacity:.3;}
 </head>
 <body>
 
-<!-- ═══ HERO ═══ -->
+<!-- âââ HERO âââ -->
 <div class="hero">
-  <div class="app-logo"><span>🎓</span></div>
+  <div class="app-logo"><span>ð</span></div>
   <h1>Contabilidad <em>Interactiva</em></h1>
-  <p>Módulos didácticos táctiles para el aprendizaje de Principios de Contabilidad</p>
+  <p>MÃ³dulos didÃ¡cticos tÃ¡ctiles para el aprendizaje de Principios de Contabilidad</p>
   <div class="hero-badges">
-    <span class="hero-badge gold">📚 10 Módulos</span>
-    <span class="hero-badge">🇭🇳 Empresa Hondureña</span>
-    <span class="hero-badge">📱 Táctil & Offline</span>
-    <span class="hero-badge">🎯 NIIF PYMES</span>
+    <span class="hero-badge gold">ð 10 MÃ³dulos</span>
+    <span class="hero-badge">ð­ð³ Empresa HondureÃ±a</span>
+    <span class="hero-badge">ð± TÃ¡ctil & Offline</span>
+    <span class="hero-badge">ð¯ NIIF PYMES</span>
   </div>
 </div>
 
-<!-- ═══ PROGRESS STRIP ═══ -->
+<!-- âââ PROGRESS STRIP âââ -->
 <div class="progress-strip">
-  <span class="ps-label">📊 Módulos disponibles</span>
+  <span class="ps-label">ð MÃ³dulos disponibles</span>
   <div class="ps-chips" id="ps-chips"></div>
   <span class="ps-tip">Toca una tarjeta para comenzar</span>
 </div>
 
-<!-- ═══ MAIN ═══ -->
+<!-- âââ MAIN âââ -->
 <div class="main">
 
   <!-- Back button instructions -->
   <div class="back-note">
-    💡 <strong>Navegación:</strong> Al abrir un módulo, usa el botón <strong>← Atrás</strong> de tu navegador o dispositivo para regresar a este menú. En pantallas táctiles, desliza desde el borde izquierdo. Todos los módulos funcionan <strong>sin conexión a internet</strong>.
+    ð¡ <strong>NavegaciÃ³n:</strong> Al abrir un mÃ³dulo, usa el botÃ³n <strong>â AtrÃ¡s</strong> de tu navegador o dispositivo para regresar a este menÃº. En pantallas tÃ¡ctiles, desliza desde el borde izquierdo. Todos los mÃ³dulos funcionan <strong>sin conexiÃ³n a internet</strong>.
   </div>
 
   <!-- Instructions -->
-  <div class="section-label">¿Cómo usar los módulos?</div>
+  <div class="section-label">Â¿CÃ³mo usar los mÃ³dulos?</div>
   <div class="instructions">
     <div class="inst-block">
-      <h4>📋 Estructura de cada módulo</h4>
-      <div class="inst-item"><span class="ii-icon">📘</span><span><strong>Concepto:</strong> Explicación visual con ejemplos hondureños (Ferretería, Distribuidora, SAR, ENEE)</span></div>
-      <div class="inst-item"><span class="ii-icon">⚡</span><span><strong>Simulación:</strong> Interactúa con casos prácticos paso a paso</span></div>
-      <div class="inst-item"><span class="ii-icon">🎯</span><span><strong>Mini-Juego:</strong> Evalúa tu comprensión con puntaje inmediato</span></div>
+      <h4>ð Estructura de cada mÃ³dulo</h4>
+      <div class="inst-item"><span class="ii-icon">ð</span><span><strong>Concepto:</strong> ExplicaciÃ³n visual con ejemplos hondureÃ±os (FerreterÃ­a, Distribuidora, SAR, ENEE)</span></div>
+      <div class="inst-item"><span class="ii-icon">â¡</span><span><strong>SimulaciÃ³n:</strong> InteractÃºa con casos prÃ¡cticos paso a paso</span></div>
+      <div class="inst-item"><span class="ii-icon">ð¯</span><span><strong>Mini-Juego:</strong> EvalÃºa tu comprensiÃ³n con puntaje inmediato</span></div>
     </div>
     <div class="inst-block">
-      <h4>📌 Recomendaciones</h4>
-      <div class="inst-item"><span class="ii-icon">1️⃣</span><span>Estudia los módulos <strong>en orden</strong> — cada uno construye sobre el anterior</span></div>
-      <div class="inst-item"><span class="ii-icon">🔁</span><span>Repite el mini-juego hasta obtener <strong>70% o más</strong> antes de avanzar</span></div>
-      <div class="inst-item"><span class="ii-icon">📖</span><span>Complementa con el libro de texto <strong>Principios de Contabilidad</strong> Contabilidad Interactiva</span></div>
+      <h4>ð Recomendaciones</h4>
+      <div class="inst-item"><span class="ii-icon">1ï¸â£</span><span>Estudia los mÃ³dulos <strong>en orden</strong> â cada uno construye sobre el anterior</span></div>
+      <div class="inst-item"><span class="ii-icon">ð</span><span>Repite el mini-juego hasta obtener <strong>70% o mÃ¡s</strong> antes de avanzar</span></div>
+      <div class="inst-item"><span class="ii-icon">ð</span><span>Complementa con el libro de texto <strong>Principios de Contabilidad</strong> Contabilidad Interactiva</span></div>
     </div>
   </div>
 
   <!-- Modules grid -->
-  <div class="section-label">Módulos del curso</div>
+  <div class="section-label">MÃ³dulos del curso</div>
   <div class="modules-grid" id="modules-grid"></div>
 
 </div>
 
-<!-- ═══ FOOTER ═══ -->
+<!-- âââ FOOTER âââ -->
 <footer>
   <div class="f-row">
-    <span style="font-size:.85rem;">Herramienta didáctica interactiva desarrollada por</span>
-    <span class="f-divider">·</span>
+    <span style="font-size:.85rem;">Herramienta didÃ¡ctica interactiva desarrollada por</span>
+    <span class="f-divider">Â·</span>
     <span><strong style="color:#fff;">Juan Carlos Reyes</strong></span>
-    <span class="f-divider">·</span>
+    <span class="f-divider">Â·</span>
     <a href="mailto:juancreyes.hn@gmail.com"
        style="color:var(--gold);text-decoration:none;font-weight:700;transition:opacity .2s;"
        onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
-      ✉️ juancreyes.hn@gmail.com
+      âï¸ juancreyes.hn@gmail.com
     </a>
   </div>
   <div style="margin-top:6px;font-size:.75rem;opacity:.55;">
-    Principios de Contabilidad · 10 módulos interactivos · NIIF PYMES
+    Principios de Contabilidad Â· 10 mÃ³dulos interactivos Â· NIIF PYMES
   </div>
 </footer>
 
 <script>
-// ═══ MODULE DATA ═══
+// âââ MODULE DATA âââ
 const MODULES = [
   {
     id: 1,
     file: 'modulo1_ecuacion_contable.html',
-    icon: '⚖️',
-    name: 'La Ecuación Contable',
+    icon: 'âï¸',
+    name: 'La EcuaciÃ³n Contable',
     desc: 'Activo = Pasivo + Patrimonio. Fundamento de toda la contabilidad.',
     tag: 'Base fundamental',
     color: '#0D6B8C',
@@ -421,10 +421,10 @@ const MODULES = [
   {
     id: 2,
     file: 'modulo2_componentes.html',
-    icon: '🌳',
+    icon: 'ð³',
     name: 'Subcuentas por Componente',
-    desc: 'Activo Circulante/Corriente, No Corriente, Pasivo, Patrimonio — con ISV 15%.',
-    tag: 'Clasificación',
+    desc: 'Activo Circulante/Corriente, No Corriente, Pasivo, Patrimonio â con ISV 15%.',
+    tag: 'ClasificaciÃ³n',
     color: '#1565C0',
     colorLt: '#E3F2FD',
     isNew: false,
@@ -432,9 +432,9 @@ const MODULES = [
   {
     id: 3,
     file: 'modulo3_ingresos_gastos.html',
-    icon: '📈',
+    icon: 'ð',
     name: 'Ingresos y Gastos',
-    desc: 'Cómo afectan al Patrimonio. Termómetro animado del resultado del período.',
+    desc: 'CÃ³mo afectan al Patrimonio. TermÃ³metro animado del resultado del perÃ­odo.',
     tag: 'Estado de Resultados',
     color: '#2E7D32',
     colorLt: '#E8F5E9',
@@ -443,10 +443,10 @@ const MODULES = [
   {
     id: 4,
     file: 'modulo4_naturaleza_cuentas.html',
-    icon: '📖',
+    icon: 'ð',
     name: 'Naturaleza de las Cuentas',
     desc: 'El Debe y el Haber. Cuentas deudoras y acreedoras. Partida doble.',
-    tag: 'Debe · Haber',
+    tag: 'Debe Â· Haber',
     color: '#6A1B9A',
     colorLt: '#F3E5F5',
     isNew: false,
@@ -454,9 +454,9 @@ const MODULES = [
   {
     id: 5,
     file: 'modulo5_libro_diario.html',
-    icon: '✏️',
+    icon: 'âï¸',
     name: 'El Libro Diario',
-    desc: 'Registro cronológico de asientos. Partida doble. ISV 15% en cada operación.',
+    desc: 'Registro cronolÃ³gico de asientos. Partida doble. ISV 15% en cada operaciÃ³n.',
     tag: 'ISV 15% incluido',
     color: '#0D6B8C',
     colorLt: '#E0F4FA',
@@ -465,10 +465,10 @@ const MODULES = [
   {
     id: 6,
     file: 'modulo6_libro_mayor.html',
-    icon: '📋',
+    icon: 'ð',
     name: 'El Libro Mayor',
-    desc: 'Mayorización animada. Cuentas T con saldos. Balance de Comprobación.',
-    tag: 'Mayorización',
+    desc: 'MayorizaciÃ³n animada. Cuentas T con saldos. Balance de ComprobaciÃ³n.',
+    tag: 'MayorizaciÃ³n',
     color: '#00695C',
     colorLt: '#E0F2F1',
     isNew: false,
@@ -476,10 +476,10 @@ const MODULES = [
   {
     id: 7,
     file: 'modulo7_estados_financieros.html',
-    icon: '🏛️',
+    icon: 'ðï¸',
     name: 'Estados Financieros',
-    desc: 'Balance General y Estado de Resultados (P&G). Conexión entre ambos estados.',
-    tag: 'Balance · P&G',
+    desc: 'Balance General y Estado de Resultados (P&G). ConexiÃ³n entre ambos estados.',
+    tag: 'Balance Â· P&G',
     color: '#C62828',
     colorLt: '#FFEBEE',
     isNew: false,
@@ -487,9 +487,9 @@ const MODULES = [
   {
     id: 8,
     file: 'modulo8_ciclo_contable.html',
-    icon: '🔄',
+    icon: 'ð',
     name: 'El Ciclo Contable',
-    desc: 'Simulación completa: 7 estaciones desde la apertura hasta el cierre formal.',
+    desc: 'SimulaciÃ³n completa: 7 estaciones desde la apertura hasta el cierre formal.',
     tag: 'Ciclo completo',
     color: '#E65100',
     colorLt: '#FFF3E0',
@@ -498,7 +498,7 @@ const MODULES = [
   {
     id: 9,
     file: 'modulo9_asientos_ajuste.html',
-    icon: '🔧',
+    icon: 'ð§',
     name: 'Asientos de Ajuste',
     desc: 'Los 4 tipos: prepagados, diferidos, gastos devengados e ingresos devengados.',
     tag: 'NIIF PYMES Sec.2.36',
@@ -509,7 +509,7 @@ const MODULES = [
   {
     id: 10,
     file: 'modulo10_hoja_trabajo.html',
-    icon: '📊',
+    icon: 'ð',
     name: 'La Hoja de Trabajo',
     desc: 'Planilla de 10 columnas. Del BC sin ajustar hasta los Estados Financieros.',
     tag: '10 columnas',
@@ -519,7 +519,7 @@ const MODULES = [
   },
 ];
 
-// ═══ BUILD CHIPS ═══
+// âââ BUILD CHIPS âââ
 function buildChips() {
   const container = document.getElementById('ps-chips');
   MODULES.forEach(m => {
@@ -534,14 +534,14 @@ function buildChips() {
   });
 }
 
-// ═══ BUILD CARDS ═══
+// âââ BUILD CARDS âââ
 function buildCards() {
   const grid = document.getElementById('modules-grid');
   MODULES.forEach((m, i) => {
     const a = document.createElement('a');
     a.className = 'mod-card';
     a.href = m.file;
-    a.setAttribute('aria-label', `Módulo ${m.id}: ${m.name}`);
+    a.setAttribute('aria-label', `MÃ³dulo ${m.id}: ${m.name}`);
     a.innerHTML = `
       <div class="mc-stripe" style="background:${m.color};"></div>
       ${m.isNew ? '<span class="mc-new">Nuevo</span>' : ''}
@@ -552,7 +552,7 @@ function buildCards() {
         <div class="mc-desc">${m.desc}</div>
         <div class="mc-footer">
           <span class="mc-tag" style="background:${m.colorLt};color:${m.color};">${m.tag}</span>
-          <span class="mc-arrow">→</span>
+          <span class="mc-arrow">â</span>
         </div>
       </div>`;
 
@@ -574,7 +574,7 @@ function buildCards() {
   });
 }
 
-// ═══ SCROLL REVEAL ═══
+// âââ SCROLL REVEAL âââ
 function revealCards() {
   const cards = document.querySelectorAll('.mod-card');
   const io = new IntersectionObserver((entries) => {
@@ -588,11 +588,273 @@ function revealCards() {
   cards.forEach(c => io.observe(c));
 }
 
-// ═══ INIT ═══
+// âââ INIT âââ
 buildChips();
 buildCards();
 // Small delay so CSS transition kicks in
 requestAnimationFrame(() => setTimeout(revealCards, 80));
 </script>
+
+  <!-- ===== CHAT FLOTANTE - ASISTENTE CONTABLE ===== -->
+  <style>
+    #floating-chat * { box-sizing: border-box; }
+    #chat-window { display: none; flex-direction: column; }
+    #chat-window.open { display: flex; }
+    @keyframes chat-blink { 0%,100%{opacity:0.3} 50%{opacity:1} }
+    @keyframes chat-slide-up {
+      from { opacity:0; transform: translateY(20px) scale(0.95); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+    #chat-window.open { animation: chat-slide-up 0.25s ease; }
+    #chat-toggle-btn { transition: transform 0.2s, box-shadow 0.2s; }
+    #chat-toggle-btn:hover { transform: scale(1.1) !important; box-shadow: 0 6px 22px rgba(45,108,223,0.55) !important; }
+    #chat-send-btn:hover { opacity: 0.85; }
+    #chat-input:focus { border-color: #2d6cdf !important; background: #fff !important; outline: none !important; }
+    #chat-messages::-webkit-scrollbar { width: 4px; }
+    #chat-messages::-webkit-scrollbar-thumb { background: #d0d7e2; border-radius: 4px; }
+  </style>
+
+  <div id="floating-chat" style="position:fixed;bottom:24px;right:24px;z-index:99999;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;">
+
+    <!-- Ventana de chat -->
+    <div id="chat-window" style="
+      flex-direction:column;
+      width:320px;
+      height:430px;
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.18);
+      overflow:hidden;
+      margin-bottom:12px;
+      border:1px solid #e0e7f0;
+    ">
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#2d6cdf,#1a4fa8);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:38px;height:38px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;">🎓</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;letter-spacing:0.2px;">Asistente Contable</div>
+            <div style="font-size:11px;opacity:0.85;display:flex;align-items:center;gap:4px;">
+              <span style="width:7px;height:7px;background:#4dff91;border-radius:50%;display:inline-block;"></span> En línea
+            </div>
+          </div>
+        </div>
+        <button id="chat-close-btn" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px;line-height:1;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;" title="Cerrar">✕</button>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f4f7fc;scroll-behavior:smooth;">
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#2d6cdf;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🎓</div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px 14px 14px 2px;padding:10px 13px;font-size:13px;color:#2d3748;max-width:220px;box-shadow:0 1px 4px rgba(0,0,0,0.06);line-height:1.5;">
+            ¡Hola! 👋 Soy tu <strong>Asistente de Contabilidad</strong>. ¿En qué puedo ayudarte hoy?
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div style="width:28px;height:28px;border-radius:50%;background:#2d6cdf;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🎓</div>
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px 14px 14px 2px;padding:10px 13px;font-size:13px;color:#2d3748;max-width:220px;box-shadow:0 1px 4px rgba(0,0,0,0.06);line-height:1.5;">
+            Puedo explicarte sobre la ecuación contable, los módulos, el libro diario, estados financieros y más 📚
+          </div>
+        </div>
+      </div>
+
+      <!-- Sugerencias rápidas -->
+      <div id="chat-suggestions" style="padding:8px 12px;background:#f4f7fc;border-top:1px solid #e8edf4;display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="chat-suggestion" data-msg="¿Qué es la ecuación contable?" style="background:#e8f0fe;border:1px solid #c5d5f7;border-radius:12px;padding:5px 10px;font-size:11px;color:#2d6cdf;cursor:pointer;white-space:nowrap;">⚖️ Ecuación contable</button>
+        <button class="chat-suggestion" data-msg="¿Qué es el Debe y el Haber?" style="background:#e8f0fe;border:1px solid #c5d5f7;border-radius:12px;padding:5px 10px;font-size:11px;color:#2d6cdf;cursor:pointer;white-space:nowrap;">📒 Debe y Haber</button>
+        <button class="chat-suggestion" data-msg="¿Qué es el ISV 15%?" style="background:#e8f0fe;border:1px solid #c5d5f7;border-radius:12px;padding:5px 10px;font-size:11px;color:#2d6cdf;cursor:pointer;white-space:nowrap;">🇭🇳 ISV 15%</button>
+      </div>
+
+      <!-- Input -->
+      <div style="padding:10px 12px;background:#fff;border-top:1px solid #e8edf4;display:flex;gap:8px;align-items:center;">
+        <input id="chat-input" type="text" placeholder="Escribe tu pregunta..." style="flex:1;border:1.5px solid #dde2ea;border-radius:20px;padding:9px 14px;font-size:13px;color:#333;background:#f7f9fc;font-family:inherit;" />
+        <button id="chat-send-btn" style="background:linear-gradient(135deg,#2d6cdf,#1a4fa8);border:none;border-radius:50%;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px rgba(45,108,223,0.4);">➤</button>
+      </div>
+    </div>
+
+    <!-- Botón flotante -->
+    <div style="position:relative;display:inline-block;">
+      <button id="chat-toggle-btn" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2d6cdf,#1a4fa8);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 18px rgba(45,108,223,0.45);color:#fff;" title="Asistente Contable" aria-label="Abrir asistente">💬</button>
+      <span id="chat-badge" style="position:absolute;top:-4px;right:-4px;width:20px;height:20px;background:#ff4444;border-radius:50%;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #fff;pointer-events:none;">2</span>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    // Base de conocimiento de contabilidad
+    const KB = [
+      {
+        keys: ['ecuacion','activo','pasivo','patrimonio','formula','base'],
+        reply: '⚖️ <strong>Ecuación Contable:</strong><br><code>Activo = Pasivo + Patrimonio</code><br>Es el principio fundamental. Todo lo que la empresa tiene (Activo) fue financiado por deudas (Pasivo) o por los dueños (Patrimonio). ¡El Módulo 1 lo explica con ejemplos hondureños!'
+      },
+      {
+        keys: ['debe','haber','debito','credito','naturaleza','cargo','abono'],
+        reply: '📒 <strong>Debe y Haber:</strong><br>• <strong>DEBE</strong> (izquierda): aumenta Activos y Gastos<br>• <strong>HABER</strong> (derecha): aumenta Pasivos, Patrimonio e Ingresos<br>La partida doble garantiza que Debe = Haber siempre. Ver Módulo 4 🎯'
+      },
+      {
+        keys: ['isv','impuesto','15','ventas','impuesto sobre ventas'],
+        reply: '🇭🇳 <strong>ISV 15% en Honduras:</strong><br>El Impuesto Sobre Ventas es del 15% sobre el precio de venta. Se registra como: Cuentas por Cobrar = Ventas + ISV por Pagar. El Módulo 5 (Libro Diario) tiene ejemplos completos con SAR y ENEE.'
+      },
+      {
+        keys: ['libro diario','asiento','registro','cronologico','diario'],
+        reply: '📖 <strong>Libro Diario:</strong><br>Es el registro cronológico de todas las transacciones. Cada asiento incluye: fecha, cuentas, Debe, Haber y descripción. Aplica la partida doble y el ISV 15%. ¡Explóralo en el Módulo 5! ✏️'
+      },
+      {
+        keys: ['libro mayor','mayorizar','cuenta t','saldo','balance comprobacion'],
+        reply: '📋 <strong>Libro Mayor:</strong><br>Clasifica las transacciones por cuenta usando las "Cuentas T". El saldo de cada cuenta se calcula restando el menor al mayor lado. El Módulo 6 tiene mayorización animada paso a paso.'
+      },
+      {
+        keys: ['estados financieros','balance general','estado resultados','p&g','perdidas','ganancias'],
+        reply: '🏛️ <strong>Estados Financieros:</strong><br>• <strong>Balance General:</strong> Activo = Pasivo + Patrimonio en una fecha<br>• <strong>Estado de Resultados:</strong> Ingresos - Gastos = Utilidad<br>La utilidad conecta ambos estados. Ver Módulo 7.'
+      },
+      {
+        keys: ['ciclo contable','ciclo','apertura','cierre','proceso'],
+        reply: '🔄 <strong>Ciclo Contable (7 pasos):</strong><br>1. Apertura → 2. Transacciones → 3. Libro Diario → 4. Libro Mayor → 5. Balance de Comprobación → 6. Ajustes → 7. Cierre<br>El Módulo 8 lo simula completo.'
+      },
+      {
+        keys: ['ajuste','ajustes','prepagado','diferido','devengado','accrual'],
+        reply: '🔧 <strong>Asientos de Ajuste (NIIF PYMES):</strong><br>Los 4 tipos: prepagados, diferidos, gastos devengados e ingresos devengados. Se registran al final del período para presentar cifras reales. Módulo 9.'
+      },
+      {
+        keys: ['hoja trabajo','planilla','10 columnas','worksheet'],
+        reply: '📊 <strong>Hoja de Trabajo (10 columnas):</strong><br>Organiza: Balance de Comprobación sin ajustes → Ajustes → BC ajustado → Estado de Resultados → Balance General. Es el puente entre el Libro Mayor y los Estados Financieros. Módulo 10.'
+      },
+      {
+        keys: ['ingresos','gastos','resultado','utilidad','perdida','periodo'],
+        reply: '📈 <strong>Ingresos y Gastos:</strong><br>• <strong>Ingresos</strong> aumentan el Patrimonio (Haber)<br>• <strong>Gastos</strong> disminuyen el Patrimonio (Debe)<br><strong>Utilidad = Ingresos - Gastos</strong><br>Si es negativo = Pérdida. Ver Módulo 3.'
+      },
+      {
+        keys: ['subcuenta','circulante','corriente','no corriente','clasificacion','componente'],
+        reply: '🌳 <strong>Subcuentas por Componente:</strong><br>• <strong>Activo Corriente:</strong> efectivo, cuentas por cobrar, inventario<br>• <strong>Activo No Corriente:</strong> propiedad, equipo<br>• <strong>Pasivo Corriente/No Corriente</strong><br>• <strong>Patrimonio</strong><br>Módulo 2 con ISV 15%.'
+      },
+      {
+        keys: ['niif','pymes','norma','internacional','ifrs'],
+        reply: '📑 <strong>NIIF PYMES:</strong><br>Normas Internacionales de Información Financiera para Pequeñas y Medianas Empresas. Honduras las adoptó para mejorar la transparencia contable. Los Módulos 9 y 10 se basan en la Sección 2.36.'
+      },
+      {
+        keys: ['modulo','modulos','cuantos','hay','contenido','temas'],
+        reply: '📚 <strong>10 Módulos disponibles:</strong><br>1️⃣ Ecuación Contable · 2️⃣ Subcuentas · 3️⃣ Ingresos y Gastos · 4️⃣ Naturaleza de Cuentas · 5️⃣ Libro Diario · 6️⃣ Libro Mayor · 7️⃣ Estados Financieros · 8️⃣ Ciclo Contable · 9️⃣ Ajustes · 🔟 Hoja de Trabajo'
+      },
+      {
+        keys: ['partida doble','doble','principio','contable','regla'],
+        reply: '⚡ <strong>Partida Doble:</strong><br>Por cada transacción contable siempre hay AL MENOS dos efectos: uno en el Debe y otro en el Haber, por el mismo importe. Así se mantiene el equilibrio de la ecuación contable. Módulo 4.'
+      },
+      {
+        keys: ['hola','hi','buenos','buenas','saludos','ola'],
+        reply: '¡Hola! 👋 Soy tu asistente de <strong>Contabilidad Interactiva</strong>. Puedes preguntarme sobre la ecuación contable, el Debe y Haber, el ISV 15%, los libros contables, estados financieros y más. ¿Qué tema quieres explorar? 📚'
+      },
+      {
+        keys: ['gracias','thank','perfecto','excelente','genial'],
+        reply: '¡Con mucho gusto! 😊 Si tienes más preguntas sobre contabilidad, aquí estaré. ¡Mucho éxito en el estudio! 🎓'
+      }
+    ];
+
+    const defaultReplies = [
+      '🤔 No encontré esa respuesta en mi base de datos. Te recomiendo revisar el módulo relacionado o escribir palabras clave como: <em>ecuación, Debe, Haber, diario, mayor, ajustes, NIIF</em>.',
+      '📖 Esa es una pregunta interesante. Por ahora te sugiero explorar los módulos del menú — están ordenados de lo más básico a lo más avanzado. ¿Sobre qué módulo tienes dudas?',
+      '💡 Intenta ser más específico, por ejemplo: "¿qué es el ISV?", "¿cómo funciona el libro diario?". Estoy aquí para ayudarte.'
+    ];
+    let defaultIdx = 0;
+
+    function getBotReply(msg) {
+      const lower = msg.toLowerCase();
+      for (const item of KB) {
+        if (item.keys.some(k => lower.includes(k))) {
+          return item.reply;
+        }
+      }
+      return defaultReplies[defaultIdx++ % defaultReplies.length];
+    }
+
+    const chatWindow   = document.getElementById('chat-window');
+    const toggleBtn    = document.getElementById('chat-toggle-btn');
+    const closeBtn     = document.getElementById('chat-close-btn');
+    const input        = document.getElementById('chat-input');
+    const sendBtn      = document.getElementById('chat-send-btn');
+    const messagesEl   = document.getElementById('chat-messages');
+    const badge        = document.getElementById('chat-badge');
+    const suggestions  = document.querySelectorAll('.chat-suggestion');
+    let isOpen = false;
+
+    function scrollBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function addMsg(html, isUser) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-end;' + (isUser ? 'flex-direction:row-reverse;' : '');
+
+      if (!isUser) {
+        const av = document.createElement('div');
+        av.style.cssText = 'width:28px;height:28px;border-radius:50%;background:#2d6cdf;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;';
+        av.textContent = '🎓';
+        wrap.appendChild(av);
+      }
+
+      const bubble = document.createElement('div');
+      bubble.style.cssText = isUser
+        ? 'background:linear-gradient(135deg,#2d6cdf,#1a4fa8);color:#fff;border-radius:14px 14px 2px 14px;padding:10px 13px;font-size:13px;max-width:220px;box-shadow:0 1px 4px rgba(0,0,0,0.12);line-height:1.5;'
+        : 'background:#fff;border:1px solid #e2e8f0;border-radius:14px 14px 14px 2px;padding:10px 13px;font-size:13px;color:#2d3748;max-width:225px;box-shadow:0 1px 4px rgba(0,0,0,0.06);line-height:1.5;';
+      if (isUser) {
+        bubble.textContent = html;
+      } else {
+        bubble.innerHTML = html;
+      }
+      wrap.appendChild(bubble);
+      messagesEl.appendChild(wrap);
+      scrollBottom();
+    }
+
+    function showTyping() {
+      const d = document.createElement('div');
+      d.id = 'chat-typing';
+      d.style.cssText = 'display:flex;gap:8px;align-items:flex-end;';
+      d.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:#2d6cdf;display:flex;align-items:center;justify-content:center;font-size:14px;">🎓</div><div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px 14px 14px 2px;padding:10px 14px;"><span style="display:inline-flex;gap:3px;"><span style="animation:chat-blink 1s infinite;font-size:16px;line-height:1;color:#2d6cdf;">●</span><span style="animation:chat-blink 1s infinite 0.3s;font-size:16px;line-height:1;color:#2d6cdf;">●</span><span style="animation:chat-blink 1s infinite 0.6s;font-size:16px;line-height:1;color:#2d6cdf;">●</span></span></div>';
+      messagesEl.appendChild(d);
+      scrollBottom();
+    }
+
+    function sendMessage(text) {
+      const msg = (text || input.value).trim();
+      if (!msg) return;
+      input.value = '';
+      addMsg(msg, true);
+      showTyping();
+      setTimeout(function() {
+        const t = document.getElementById('chat-typing');
+        if (t) t.remove();
+        addMsg(getBotReply(msg), false);
+      }, 900 + Math.random() * 600);
+    }
+
+    function toggleChat() {
+      isOpen = !isOpen;
+      if (isOpen) {
+        chatWindow.classList.add('open');
+        badge.style.display = 'none';
+        toggleBtn.textContent = '✕';
+        toggleBtn.title = 'Cerrar';
+        setTimeout(function() { input.focus(); }, 300);
+      } else {
+        chatWindow.classList.remove('open');
+        toggleBtn.textContent = '💬';
+        toggleBtn.title = 'Asistente Contable';
+      }
+    }
+
+    toggleBtn.addEventListener('click', toggleChat);
+    closeBtn.addEventListener('click', function() { if (isOpen) toggleChat(); });
+    sendBtn.addEventListener('click', function() { sendMessage(); });
+    input.addEventListener('keypress', function(e) { if (e.key === 'Enter') sendMessage(); });
+    suggestions.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        sendMessage(btn.getAttribute('data-msg'));
+        document.getElementById('chat-suggestions').style.display = 'none';
+      });
+    });
+  })();
+  </script>
+  <!-- ===== FIN CHAT FLOTANTE ===== -->
+
 </body>
 </html>
