@@ -165,7 +165,7 @@ function erData(){
  return {ingresos,costos,bruta,gastos,gf,antes,isr,neta};
 }
 function bgData(){
- const bal=balanceRows(); const g=(grupo)=>bal.filter(r=>r.estado==='BG'&&r.grupo===grupo).reduce((a,r)=>a+(r.naturaleza==='D'?r.saldoDeudor-r.saldoAcreedor:r.saldoAcreedor-r.saldoDeudor),0);
+ const bal=balanceRows(); const g=(grupo)=>bal.filter(r=>r.estado==='BG'&&r.grupo===grupo).reduce((a,r)=>a+(r.tipo==='Activo'?r.saldoDeudor-r.saldoAcreedor:r.saldoAcreedor-r.saldoDeudor),0);
  const ac=g('Activo Corriente'), anc=g('Activo No Corriente'), pc=g('Pasivo Corriente'), pnc=g('Pasivo No Corriente'), pat=g('Patrimonio'), res=erData().neta;
  return {ac,anc,activo:ac+anc,pc,pnc,pasivo:pc+pnc,patrimonio:pat+res,resultado:res,totalPP:pc+pnc+pat+res,cuadre:(ac+anc)-(pc+pnc+pat+res)};
 }
