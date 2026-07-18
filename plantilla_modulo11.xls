@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+<Styles>
+<Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#1E3A5F" ss:Pattern="Solid"/></Style>
+<Style ss:ID="Title"><Font ss:Bold="1" ss:Size="14" ss:Color="#1E3A5F"/></Style>
+</Styles>
+<Worksheet ss:Name="Instrucciones">
+<Table>
+<Row><Cell ss:StyleID="Title"><Data ss:Type="String">Plantilla - Sistema Contable NIIF (Modulo 11)</Data></Cell></Row>
+<Row></Row>
+<Row><Cell><Data ss:Type="String">Esta plantilla acompana al Modulo 11 "Sistema Contable NIIF Integral".</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Incluye una hoja por cada seccion del modulo: Inicio, Catalogo de Cuentas, Situaciones, Diario, Mayor, Balance de Comprobacion, Resultados, Balance General y Dashboard.</Data></Cell></Row>
+<Row></Row>
+<Row><Cell><Data ss:Type="String">Uso sugerido: complete la hoja Diario con sus asientos usando los codigos de la hoja Catalogo de Cuentas. Las demas hojas se calculan automaticamente dentro de la aplicacion web a partir del Diario; aqui se incluyen solo como referencia de formato.</Data></Cell></Row>
+<Row></Row>
+<Row><Cell><Data ss:Type="String">Modulo en linea: juancreyeshn-design.github.io/contabilidad-interactiva/modulo11_sistema_contable_niif.html</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Inicio">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Empresa</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Pais</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Periodo</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Empresa Emprendedora S. de R.L.</Data></Cell><Cell><Data ss:Type="String">Honduras</Data></Cell><Cell><Data ss:Type="String">2026</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Catalogo de Cuentas">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Codigo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Cuenta</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Naturaleza</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1101</Data></Cell><Cell><Data ss:Type="String">Caja</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1102</Data></Cell><Cell><Data ss:Type="String">Bancos</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1103</Data></Cell><Cell><Data ss:Type="String">Clientes</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1104</Data></Cell><Cell><Data ss:Type="String">IVA Credito Fiscal</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1105</Data></Cell><Cell><Data ss:Type="String">Inventarios</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1106</Data></Cell><Cell><Data ss:Type="String">Anticipos a Proveedores</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1201</Data></Cell><Cell><Data ss:Type="String">Mobiliario y Equipo</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1202</Data></Cell><Cell><Data ss:Type="String">Equipo de Computacion</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1203</Data></Cell><Cell><Data ss:Type="String">Vehiculos</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1291</Data></Cell><Cell><Data ss:Type="String">Depreciacion Acumulada Mobiliario</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1292</Data></Cell><Cell><Data ss:Type="String">Depreciacion Acumulada Equipo Computacion</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">1293</Data></Cell><Cell><Data ss:Type="String">Depreciacion Acumulada Vehiculos</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2101</Data></Cell><Cell><Data ss:Type="String">Proveedores</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2102</Data></Cell><Cell><Data ss:Type="String">ISR por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2103</Data></Cell><Cell><Data ss:Type="String">IVA Debito Fiscal</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2104</Data></Cell><Cell><Data ss:Type="String">Retenciones ISR por Enterar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2105</Data></Cell><Cell><Data ss:Type="String">IHSS Empleado por Enterar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2106</Data></Cell><Cell><Data ss:Type="String">ISR Empleado por Enterar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2107</Data></Cell><Cell><Data ss:Type="String">IHSS Patronal por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2108</Data></Cell><Cell><Data ss:Type="String">INFOP por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2109</Data></Cell><Cell><Data ss:Type="String">RAP por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2110</Data></Cell><Cell><Data ss:Type="String">Salarios por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2111</Data></Cell><Cell><Data ss:Type="String">Honorarios por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2112</Data></Cell><Cell><Data ss:Type="String">Alquileres por Pagar</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2113</Data></Cell><Cell><Data ss:Type="String">IVA por Pagar Neto</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">2201</Data></Cell><Cell><Data ss:Type="String">Prestamos Bancarios LP</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">3101</Data></Cell><Cell><Data ss:Type="String">Capital Social</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">3102</Data></Cell><Cell><Data ss:Type="String">Utilidades Acumuladas</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">3103</Data></Cell><Cell><Data ss:Type="String">Resultado del Periodo</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">4101</Data></Cell><Cell><Data ss:Type="String">Ventas de Bienes</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">4102</Data></Cell><Cell><Data ss:Type="String">Ingresos por Servicios</Data></Cell><Cell><Data ss:Type="String">H</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">4109</Data></Cell><Cell><Data ss:Type="String">Devoluciones y Descuentos sobre Ventas</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">5101</Data></Cell><Cell><Data ss:Type="String">Costo de Ventas</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6101</Data></Cell><Cell><Data ss:Type="String">Gasto por Salarios</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6102</Data></Cell><Cell><Data ss:Type="String">Gasto IHSS Patronal</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6103</Data></Cell><Cell><Data ss:Type="String">Gasto INFOP</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6104</Data></Cell><Cell><Data ss:Type="String">Gasto RAP</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6105</Data></Cell><Cell><Data ss:Type="String">Gasto Honorarios Profesionales</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6106</Data></Cell><Cell><Data ss:Type="String">Gasto Arrendamiento</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6107</Data></Cell><Cell><Data ss:Type="String">Gasto Servicios Publicos</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6108</Data></Cell><Cell><Data ss:Type="String">Gasto Depreciacion</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6109</Data></Cell><Cell><Data ss:Type="String">Gasto Publicidad</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6110</Data></Cell><Cell><Data ss:Type="String">Gasto Combustible</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6201</Data></Cell><Cell><Data ss:Type="String">Gasto Intereses</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">6301</Data></Cell><Cell><Data ss:Type="String">Gasto ISR</Data></Cell><Cell><Data ss:Type="String">D</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Situaciones">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Codigo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Nombre</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Categoria</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Nivel</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Cuadre</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">S001</Data></Cell><Cell><Data ss:Type="String">Venta de bienes al contado #1</Data></Cell><Cell><Data ss:Type="String">Ingresos</Data></Cell><Cell><Data ss:Type="String">Basico</Data></Cell><Cell><Data ss:Type="String">0.00</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">S002</Data></Cell><Cell><Data ss:Type="String">Venta de servicios al contado #2</Data></Cell><Cell><Data ss:Type="String">Ingresos</Data></Cell><Cell><Data ss:Type="String">Intermedio</Data></Cell><Cell><Data ss:Type="String">0.00</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">S003</Data></Cell><Cell><Data ss:Type="String">Venta de bienes al contado #3</Data></Cell><Cell><Data ss:Type="String">Ingresos</Data></Cell><Cell><Data ss:Type="String">Avanzado</Data></Cell><Cell><Data ss:Type="String">0.00</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">...</Data></Cell><Cell><Data ss:Type="String">Lista completa (113 situaciones) disponible en la pestana Situaciones del modulo en linea.</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Diario">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Asiento</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Fecha</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Documento</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Codigo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Cuenta</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Descripcion</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Debe</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Haber</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">A001</Data></Cell><Cell><Data ss:Type="String">2026-01-01</Data></Cell><Cell><Data ss:Type="String">FAC-001</Data></Cell><Cell><Data ss:Type="String">1101</Data></Cell><Cell><Data ss:Type="String">Caja</Data></Cell><Cell><Data ss:Type="String">Cobro/factura total con IVA 15%</Data></Cell><Cell><Data ss:Type="Number">1150</Data></Cell><Cell><Data ss:Type="Number">0</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">A001</Data></Cell><Cell><Data ss:Type="String">2026-01-01</Data></Cell><Cell><Data ss:Type="String">FAC-001</Data></Cell><Cell><Data ss:Type="String">4101</Data></Cell><Cell><Data ss:Type="String">Ventas de Bienes</Data></Cell><Cell><Data ss:Type="String">Base neta de venta</Data></Cell><Cell><Data ss:Type="Number">0</Data></Cell><Cell><Data ss:Type="Number">1000</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">A001</Data></Cell><Cell><Data ss:Type="String">2026-01-01</Data></Cell><Cell><Data ss:Type="String">FAC-001</Data></Cell><Cell><Data ss:Type="String">2103</Data></Cell><Cell><Data ss:Type="String">IVA Debito Fiscal</Data></Cell><Cell><Data ss:Type="String">IVA Debito Fiscal 15%</Data></Cell><Cell><Data ss:Type="Number">0</Data></Cell><Cell><Data ss:Type="Number">150</Data></Cell></Row>
+<Row></Row><Row></Row><Row></Row><Row></Row><Row></Row><Row></Row><Row></Row><Row></Row><Row></Row><Row></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Mayor">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Codigo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Cuenta</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Naturaleza</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Debe</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Haber</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Saldo Deudor</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Saldo Acreedor</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Saldo Neto</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Se calcula automaticamente desde el Diario dentro de la aplicacion web. Esta hoja se incluye solo como referencia de formato.</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Balance Comprobacion">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Codigo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Cuenta</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Grupo</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Debe</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Haber</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Saldo Deudor</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Saldo Acreedor</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Se calcula automaticamente desde el Mayor dentro de la aplicacion web. Esta hoja se incluye solo como referencia de formato.</Data></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Resultados">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Concepto</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Valor</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Ingresos netos</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">(-) Costos</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Utilidad bruta</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">(-) Gastos de operacion</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">(-) Gastos financieros</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Utilidad antes de ISR</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">(-) ISR registrado en Diario</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Utilidad neta</Data></Cell><Cell></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Balance General">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Concepto</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Valor</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Activo Corriente</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Activo No Corriente</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Total Activo</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Pasivo Corriente</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Pasivo No Corriente</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Total Pasivo</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Patrimonio antes de resultado</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Resultado del periodo</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Total Pasivo + Patrimonio</Data></Cell><Cell></Cell></Row>
+</Table>
+</Worksheet>
+<Worksheet ss:Name="Dashboard">
+<Table>
+<Row><Cell ss:StyleID="Header"><Data ss:Type="String">Indicador</Data></Cell><Cell ss:StyleID="Header"><Data ss:Type="String">Valor</Data></Cell></Row>
+<Row><Cell><Data ss:Type="String">Liquidez corriente</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Endeudamiento</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Margen neto</Data></Cell><Cell></Cell></Row>
+<Row><Cell><Data ss:Type="String">Cuadre balance</Data></Cell><Cell></Cell></Row>
+</Table>
+</Worksheet>
+</Workbook>
